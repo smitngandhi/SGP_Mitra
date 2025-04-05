@@ -1,0 +1,32 @@
+.start-experience-button {
+    padding: 1rem 2.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(106, 17, 203, 0.6);
+    animation: pulseGlow 2s infinite;
+    z-index: 10000;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  
+  .start-experience-button:hover {
+    transform: scale(1.05);
+  }
+  
+  @keyframes pulseGlow {
+    0% {
+      box-shadow: 0 0 20px rgba(106, 17, 203, 0.6);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(106, 17, 203, 0.9);
+    }
+    100% {
+      box-shadow: 0 0 20px rgba(106, 17, 203, 0.6);
+    }
+  }
+  

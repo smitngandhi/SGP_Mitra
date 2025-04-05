@@ -1,0 +1,1236 @@
+:root {
+    --primary-purple: #6d5ed4;
+    --light-purple: #f0eeff;
+    --text-color: #333;
+    --bg-color: #f9f9ff;
+    /* width: 100%;
+    height: 100%; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  body {
+    margin: 0;
+    
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    width: 100%;
+    height: 100%;
+  }
+  
+  .app-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+  }
+  
+  /* SIDEBAR */
+  /* LEFT SIDEBAR */
+  
+  /* MAIN CONTENT */
+  .main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    /* overflow-y: auto;
+    margin-right: 20px; */
+  }
+  
+  /* TOP BAR (gradient) */
+  .top-bar {
+    margin-top: 15px;
+    background: linear-gradient(to right, #f6e5ff, #fff8e6);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 20px;
+    border-radius: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    margin-left: 10px;
+    margin-left: 28px;
+  }
+  
+  /* MIND & RELAXATION PLAN SECTION */
+  .plan-section {
+    padding: 20px;
+    margin-top: 10px;
+    margin-left: 28px;
+  }
+  
+  .plan-section h2 {
+    font-size: 25px;
+    margin: 0 0 5px;
+    color: #333;
+  }
+  
+  .plan-section p {
+    margin: 0 0 20px;
+    color: #666;
+    font-size: 15px;
+  }
+  
+  /* STEPS GRID */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    width: 70%;
+  
+    row-gap: 45px;
+    column-gap: 100px;
+  }
+  
+  /* STEP CARD */
+  .step-card {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 12px;
+    position: relative;
+  }
+  
+  .step-card.completed {
+    border: 2px solid var(--primary-purple);
+  }
+  
+  .step-card .image-container {
+    background-color: var(--light-purple);
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .step-card .step-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .step-card .step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .step-card .step-name {
+    font-weight: bold;
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .step-card .step-number {
+    font-size: 13px;
+    color: #888;
+    margin-right: 30px;
+  }
+  
+  .step-card .step-description {
+    font-size: 15px;
+    color: #666;
+  }
+  
+  .step-card .lets-start-btn {
+    background-color: #f0e6ff;
+    color: var(--primary-purple);
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 13px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .step-card .lets-start-btn:hover {
+    background-color: #e0d6ff;
+    transform: scale(1.02);
+  }
+  
+  .step-card .completed-check {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background-color: var(--primary-purple);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+  }
+  
+  /* PROGRESS TRACKING SECTION */
+  .progress-tracking {
+    margin-top: 30px;
+    padding: 0 20px;
+    margin-left: 28px;
+  }
+  
+  .progress-tracking h2 {
+    font-size: 25px;
+    margin: 0 0 5px;
+    color: #333;
+  }
+  
+  .progress-tracking p {
+    margin: 0 0 20px;
+    color: #666;
+    font-size: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .progress-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  /* LEFT: Plan & Task Progress */
+  .progress-left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Plan Progress Container */
+  .plan-progress-container {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .progress-title {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .progress-bar {
+    background-color: #e0e0e0;
+    height: 8px;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    margin: 10px 0;
+  }
+  
+  .progress-fill {
+    background-color: var(--primary-purple);
+    height: 100%;
+    border-radius: 5px;
+    transform-origin: left;
+    transition: width 0.5s ease;
+  }
+  
+  .progress-percent {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Task Progress Container */
+  .task-progress-container {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  /* RIGHT: Mood Tracker */
+  .progress-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .mood-chart-placeholder {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 220px;
+    position: relative;
+    margin-right: 20px;
+  }
+  
+  /* Add these styles to your App.css file */
+  
+  /* Task progress bar line */
+  .task-progress-wrapper {
+    position: relative;
+    flex: 1;
+    margin: 0 10px;
+  }
+  
+  .progress-bar {
+    height: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #6d5ed4, #a091e8);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  
+  .progress-bar-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-right: 2px dashed #ccc;
+    pointer-events: none;
+  }
+  
+  /* Calendar styles */
+  .calendar-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        height: 354px;
+  }
+  
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  
+  .calendar-day {
+    border: 1px solid #eaeaea;
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+    background-color: #f9f9f9;
+    transition: all 0.2s ease;
+  }
+  
+  .calendar-day:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .calendar-date {
+    font-size: 12px;
+    color: #555;
+  }
+  
+  .calendar-status {
+    font-size: 16px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6d5ed4;
+  }
+  
+  .completed-day {
+    background-color: #e9f7ef;
+    border-color: #6d5ed4;
+  }
+  
+  .today {
+    background-color: #f3e5f5;
+    box-shadow: 0 0 0 2px #6d5ed4;
+  }
+  
+  .calendar-legend {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 5px;
+  }
+  
+  .legend-color.completed-day {
+    background-color: #e9f7ef;
+    border: 1px solid #6d5ed4;
+  }
+  
+  .legend-color.today {
+    background-color: #f3e5f5;
+    border: 1px solid #6d5ed4;
+  }
+  
+  /* Step card button updates */
+  .lets-start-btn {
+    background-color: #6d5ed4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .lets-start-btn:hover {
+    background-color: #5b4dba;
+  }
+  
+  .completed .lets-start-btn {
+    background-color: #f0e6ff;
+  }
+  
+  .completed .lets-start-btn:hover {
+    background-color: #f0e6ff;
+  }
+  
+  /* Task item adjustments */
+  .task-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .task-item span:first-child {
+    width: 150px;
+  }
+  
+  .task-item span:last-child {
+    width: 40px;
+    text-align: right;
+  }
+  
+  /* Streak container styling */
+  .streak-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .streak-info {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+  }
+  
+  .streak-card {
+    flex: 1;
+    text-align: center;
+    padding: 15px;
+    background-color: #f8f9fd;
+    border-radius: 8px;
+    border-left: 4px solid #6D5ED4;
+  }
+  
+  .streak-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #6D5ED4;
+  }
+  
+  .streak-label {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+  }
+  /* Journal Popup Styles */
+.journal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .journal-popup {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: popup-fade-in 0.3s ease;
+  }
+  
+  @keyframes popup-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .journal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: linear-gradient(to right, #6D5ED4, #8B75E8);
+    color: white;
+  }
+  
+  .journal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  
+  .journal-content {
+    padding: 20px;
+  }
+  
+  .journal-content p {
+    margin-top: 0;
+    color: #555;
+    margin-bottom: 16px;
+  }
+  
+  .journal-content textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    font-family: inherit;
+    font-size: 14px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  
+  .journal-content textarea:focus {
+    outline: none;
+    border-color: #6D5ED4;
+    box-shadow: 0 0 0 3px rgba(109, 94, 212, 0.1);
+  }
+  
+  .submit-button {
+    background: #6D5ED4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+  }
+  
+  .submit-button:hover {
+    background: #5C4EC0;
+  }
+  /* Global styles */
+html, body {
+    /* margin: 0; */
+    /* padding: 0; */
+    /* height: 100%;
+    width:100%; */
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Container Layout */
+  .container {
+    width:100%;
+    display: flex;
+    gap: 10px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  /* --- LEFT SIDEBAR --- */
+  .sidebar {
+    margin-left: 0;  /* Remove the left margin */
+    margin-top: 0;   /* Optional: Remove top margin too for flush alignment */
+    width: 279px;
+    /* other properties */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #423e99;
+    color: #fff;
+    border-radius: 30px;
+    margin-bottom: 50px;
+    box-shadow: 0 4px 15px rgba(66, 62, 153, 0.3);
+    animation: slideInLeft 0.8s ease-out forwards;
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .Mitra {
+    font-size: xx-large;
+    margin-top: 20px;
+    border-bottom: 3px solid #ddd;
+    padding-bottom: 30px;
+    color: white;
+    padding-left: 40px;
+    position: relative;
+    animation: glow 3s infinite alternate;
+  }
+  
+  @keyframes glow {
+    0% {
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    100% {
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+  }
+  
+  /* Navigation */
+  .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 25px;
+    padding: 10px 0;
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar ul li:hover {
+    transform: translateX(10px);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px 0 0 10px;
+  }
+  
+  .nav-item {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: width 0.3s ease;
+  }
+  
+  .nav-item:hover::after {
+    width: 100%;
+  }
+  
+  .active {
+    font-weight: bolder;
+    font-size: 30px;
+    position: relative;
+  }
+  
+  .active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 70%;
+    width: 4px;
+    background-color: white;
+    transform: translateY(-50%);
+    border-radius: 0 2px 2px 0;
+    animation: activeIndicator 0.5s ease-out forwards;
+  }
+  
+  @keyframes activeIndicator {
+    from {
+      height: 0;
+    }
+    to {
+      height: 70%;
+    }
+  }
+  
+  .menu-logo {
+    width: 40px;
+    /* height: 20px; */
+    margin-right: 12px;
+    filter: brightness(0) invert(1);
+    padding-left: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  .nav-item:hover .menu-logo {
+    transform: scale(1.2);
+  }
+  
+  /* Sidebar Bottom */
+  .sidebar-bottom {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Happiness Meter Container */
+  .happiness-meter-container {
+    width: 400px;
+    height: 170px;
+    margin: 0 auto;
+    position: relative;
+    align-items: center;
+    padding-left: 0;
+  }
+  
+  /* Optional: Subtle drop shadow for the meter */
+  .happiness-meter-container svg {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+  
+  /* Happiness Meter Animations */
+  .meter-arc {
+    stroke-dasharray: 251;
+    stroke-dashoffset: 251;
+    animation: drawArc 1.5s ease forwards;
+  }
+  
+  @keyframes drawArc {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  
+  .knob-pulse {
+    animation: pulse 1s ease-in-out;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.3);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .meter-title {
+    opacity: 0;
+    animation: fadeIn 1s ease 0.5s forwards;
+  }
+  
+  .meter-label-box {
+    transform: scale(0);
+    animation: scaleIn 0.5s ease 1s forwards;
+  }
+  
+  .meter-label-text {
+    opacity: 0;
+    animation: fadeIn 0.5s ease 1.3s forwards;
+  }
+  
+  @keyframes scaleIn {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* --- RIGHT CONTAINER --- */
+  .right-container {
+    height: 890px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 30px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    margin-bottom: 45px;
+    width: 1200px;
+    margin-left: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: slideInRight 0.8s ease-out forwards;
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  .Mindchat {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .Mindchat::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #423e99;
+    animation: lineExpand 1s ease forwards 0.5s;
+  }
+  
+  @keyframes lineExpand {
+    to {
+      width: 100%;
+    }
+  }
+  
+  /* Hero Container */
+  .hero-container {
+    text-align: center;
+    margin: auto 0;
+    animation: fadeIn 1s ease-out;
+  }
+  
+  .welcome-animation {
+    animation: welcomePulse 2s ease;
+  }
+  
+  @keyframes welcomePulse {
+    0% {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .center-image {
+    display: block; /* Ensures it behaves like a block element */
+    width: 300px;
+    height: auto;
+    margin: 0 auto 20px; /* Centers horizontally using auto */
+    transition: transform 0.3s ease;
+  }
+  
+  
+  .hover-bounce {
+    animation: floatAnimation 3s ease-in-out infinite;
+  }
+  
+  @keyframes floatAnimation {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  .center-image:hover {
+    transform: scale(1.05);
+  }
+  
+  .hero-title {
+    font-size: 35px;
+    color: #333;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeIn 1s ease-out forwards 0.5s;
+  }
+  
+  .fade-in {
+    opacity: 0;
+    animation: fadeIn 1s ease-out forwards 0.5s;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .hero-subtitle {
+    font-size: 23px;
+    color: #666;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: slideUp 1s ease-out forwards 0.8s;
+  }
+  
+  .slide-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideUp 1s ease-out forwards 0.8s;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Chat Container */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0px 13px 0px 13px;
+    scroll-behavior: smooth;
+  }
+  
+  /* Message Bubbles */
+  .message-bubble {
+    font-size: 30px;
+    padding: 30px 20px;
+    margin-bottom: 20px;
+    max-width: 80%;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    animation: messageFadeIn 0.5s ease;
+  }
+  
+  .message-new {
+    animation: messageAppear 0.5s ease-out;
+  }
+  
+  @keyframes messageAppear {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  @keyframes messageFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .ai-message {
+    background-color: #fff1c5;
+    align-self: flex-start;
+    font-size: 20px;
+    color: #311944;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform-origin: left;
+  }
+  
+  .ai-message:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .user-message {
+    background-color: #e6e4fe;
+    align-self: flex-end;
+    font-size: 20px;
+    color: #311944;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform-origin: right;
+  }
+  
+  .user-message:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Typing indicator */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    align-self: flex-start;
+    background-color: #f1f1f1;
+    border-radius: 50px;
+    padding: 10px 15px;
+    margin: 10px 0;
+  }
+  
+  .typing-indicator span {
+    height: 10px;
+    width: 10px;
+    margin: 0 2px;
+    background-color: #9E9EA1;
+    display: block;
+    border-radius: 50%;
+    opacity: 0.4;
+  }
+  
+  .typing-indicator span:nth-child(1) {
+    animation: typing 1s infinite 0s;
+  }
+  
+  .typing-indicator span:nth-child(2) {
+    animation: typing 1s infinite 0.2s;
+  }
+  
+  .typing-indicator span:nth-child(3) {
+    animation: typing 1s infinite 0.4s;
+  }
+  
+  @keyframes typing {
+    0% {
+      transform: translateY(0px);
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(-5px);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(0px);
+      opacity: 0.4;
+    }
+  }
+  
+  /* Chat Input Container */
+  .chat-input-container {
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+    animation: slideUp 0.5s ease;
+  }
+  
+  /* Ask Input & Arrow */
+  .ask-input-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    animation: expandWidth 0.8s ease-out forwards
+  }
+  
+  /* Ask Input Field */
+  .ask-input {
+    flex: 1;
+    padding: 12px 15px;
+    font-size: 18px;
+    border: 2px solid #423e99;
+    border-radius: 25px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .ask-input:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+  }
+  
+  /* Send Button */
+  .send-button {
+    background-color: #423e99;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .send-button:hover {
+    background-color: #6c63ff;
+    transform: scale(1.1);
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 1024px) {
+    .container {
+      flex-direction: column;
+      height: auto;
+    }
+    .sidebar {
+      width: 100%;
+      margin-left: 0;
+      margin-bottom: 20px;
+    }
+    .right-container {
+      width: 100%;
+      margin-left: 0;
+    }
+    .happiness-meter-container {
+      width: 100%;
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .message-bubble {
+      font-size: 18px;
+      padding: 15px;
+    }
+    .ask-input {
+      font-size: 16px;
+      padding: 10px;
+    }
+    .send-button {
+      padding: 10px;
+    }
+  }
+  
+  
+  /* Suggestions Row */
+  .suggestions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  /* Suggestion Buttons */
+  .suggestion-btn {
+    background: linear-gradient(135deg, #6a5acd, #836fff);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    margin-top: 20px;
+    margin-right: 15px;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+  
+  .suggestion-btn:hover {
+    background: linear-gradient(135deg, #5a4dcf, #6f7aff);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  
+  .arrow-icon{
+    padding-left: 15px;
+    height: 30px;
+  }
+  /* SCROLL & HOVER ANIMATIONS (optional) can be added here */

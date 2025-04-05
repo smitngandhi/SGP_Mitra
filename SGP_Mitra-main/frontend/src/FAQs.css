@@ -1,0 +1,81 @@
+
+.faq-wrapper {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  align-items: center;
+  padding:2.5%/* Ensures vertical centering */
+}
+
+.faq-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #e0e7ff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.faq-title {
+  text-align: center;
+  color: #4f46e5;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* FAQ item */
+.faq-item {
+  background: white;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* FAQ question button */
+.faq-question {
+  width: 100%;
+  background: white;
+  border: none;
+  padding: 15px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
+  color: #1e293b;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.faq-question:hover {
+  background: #c7d2fe;
+}
+
+/* Arrow for expansion */
+.faq-arrow {
+  font-size: 18px;
+  color: #4f46e5;
+}
+
+/* Answer section */
+.faq-answer {
+  max-height: 0;
+  padding: 0 15px;
+  font-size: 14px;
+  color: #374151;
+  background: white;
+  transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+/* When the FAQ is open, show answer */
+.faq-item.open .faq-answer {
+  max-height: 100px;
+  padding: 15px;
+}

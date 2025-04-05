@@ -1,0 +1,56 @@
+/* Make the page fill the screen with a neutral background */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #ffffff;
+  }
+  
+  /* Container to center content vertically and horizontally */
+  .breathing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  /* Instruction text styling */
+  .instruction-text {
+    font-size: 30px;
+    color: #555;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Larger circular video (500×500). Adjust as needed. */
+  .breathing-video {
+    width: 400px;         /* Increase width */
+    height: 400px;        /* Increase height (same as width) */
+    border-radius: 50%;   /* Keep it circular */
+     object-fit: cover;   /* Scale/crop the video to fill the circle */
+  }
+  
+  /* "Completed" box at the bottom */
+  .completed-box {
+    background-color: #6d5ed4; /* or your preferred color */
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease forwards;
+    margin-top: 30px; /* Add some space above if desired */
+  }
+  
+  /* Simple fade-in animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
