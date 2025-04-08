@@ -18,7 +18,7 @@ import Meditation from "./pages/Meditation";
 import Breathing from "./pages/Breathing";
 import Music_Generation from "./pages/Music_Generation";
 import VideoIntro from "./components/VideoIntro";
-
+import Chatbotnew from "./pages/Chatbotnew";
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
 
@@ -33,6 +33,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<After_Login_Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/chat-bot" element={<Chatbotnew />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/register" element={<Register />} />
             <Route path="/faqs" element={<FAQS />} />

@@ -60,8 +60,8 @@ const Navbar = () => {
 
   return (
     <>
-    <nav className="flex justify-between items-center bg-white p-3">
-  <div className="mx-auto  px-3 py-3 flex w-full">
+    <nav className="flex justify-between items-center bg-white p-2">
+  <div className="mx-auto  px-3  flex w-full">
     
     {/* Left: MITRA (Logo) */}
     <div onClick={handleMitraClick} className="cursor-pointer">

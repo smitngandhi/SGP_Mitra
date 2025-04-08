@@ -66,7 +66,7 @@ def register():
     users_collection.insert_one(new_user)
     access_token = generate_token(user["email"])
 
-    response = make_response(jsonify({"msg": f"{user["username"]} registered successfully", "user_id": user_id}))
+    response = make_response(jsonify({"msg": f"{user['username']} registered successfully", "user_id": user_id}))
     response.set_cookie("access_token", access_token, httponly=True, secure=False, samesite="None")  
 
     # print(response.headers)
@@ -147,7 +147,7 @@ def forgot_password():
     )
 
         send_reset_email(data["email"], reset_token)
-        return jsonify({"msg": f"Password reset email sent to {data["email"]}"}), 200
+        return jsonify({"msg": f"Password reset email sent to {data['email']}"}), 200
 
     if(field=="username"):
 
@@ -160,7 +160,7 @@ def forgot_password():
         user = users_collection.find_one({"username": data["username"]})
 
         send_reset_email(user["email"], reset_token)
-        return jsonify({"msg": f"Password reset email sent to {user["email"]}"}), 200
+        return jsonify({"msg": f"Password reset email sent to {user['email']}"}), 200
 
 
 @auth_routes.route("/reset-password/<token>", methods=["POST"])

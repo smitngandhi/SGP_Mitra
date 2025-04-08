@@ -12,7 +12,7 @@ from langchain.chains import ConversationChain
 
 # Initialize MongoDB connection
 client = MongoClient(os.getenv("MONGO_URL"))
-db = client["mydatabase"]
+db = client["Mydatabase"]
 
 
 # Collections
