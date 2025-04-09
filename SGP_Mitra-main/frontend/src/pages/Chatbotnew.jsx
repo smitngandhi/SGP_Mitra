@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import MoodDetector from "../components/MoodDetector";
 import "../Chatbotnew.css";
-import arrow1 from '../assets/arrow1.svg';
 import send from "../assets/up-arrow.png";
 import voice from "../assets/radio.png";
 import robotImage from "../assets/robotnew.png"; 
@@ -90,7 +89,6 @@ const Chatbotnew = () => {
                     });
                     
                     // Reset user scrolling when a new message is added
-                    // This allows auto-scroll to happen for new messages
                     setIsUserScrolling(false);
                     
                     // Update mood meter if sentiment score is provided
@@ -200,88 +198,85 @@ const Chatbotnew = () => {
     return (
         <>
             <Navbar />
-            <div className="outerbox">
-                <div className="maintext">
-                    <div className="textsection">
-                        {!chatStarted ? (
-                            <div className="welcome-container">
-                                <div className="floating-robot">
-                                    <img src={robotImage} alt="MITRA Robot" className="robot-image" />
-                                </div>
-                                
-                                <div className="welcome-header">
-                                    <div className="pulsing-circle"></div>
-                                    <h2>Welcome to MITRA</h2>
-                                </div>
-                                <p className="welcome-subtitle">I'm here to support your emotional health in any way I can!</p>
-                                
-                                <div className="horizontal-suggestions">
-                                    <p>Try saying:</p>
-                                    <div className="suggestion-row">
-                                        {suggestionOptions.map((option, index) => (
-                                            <button 
-                                                key={index} 
-                                                className="suggestion-button"
-                                                onClick={() => handleQuickQuestion(option)}
-                                            >
-                                                {option}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div 
-                                className="messages-container"
-                                ref={messagesContainerRef}
-                                onScroll={handleScroll}
-                            >
-                                {messages.map((message, index) => (
-                                    <div 
+            <div className="chat-container">
+                {!chatStarted ? (
+                    <div className="welcome-screen">
+                        <div className="floating-robot">
+                            <img src={robotImage} alt="MITRA Robot" className="robot-image" />
+                        </div>
+                        
+                        <div className="welcome-header">
+                            <div className="pulsing-circle"></div>
+                            <h2>Welcome to MITRA</h2>
+                        </div>
+                        <p className="welcome-subtitle">I'm here to support your emotional health in any way I can!</p>
+                        
+                        <div className="horizontal-suggestions">
+                            <p>Try saying:</p>
+                            <div className="suggestion-row">
+                                {suggestionOptions.map((option, index) => (
+                                    <button 
                                         key={index} 
-                                        className={`message ${message.sender === "user" ? "user-message" : "bot-message"} ${message.isNew ? 'message-new' : ''}`}
+                                        className="suggestion-button"
+                                        onClick={() => handleQuickQuestion(option)}
                                     >
-                                        {message.text}
-                                    </div>
+                                        {option}
+                                    </button>
                                 ))}
-                                
-                                {/* Typing indicator when loading */}
-                                {isLoading && (
-                                    <div className="message bot-message typing-indicator">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                )}
-                                
-                                {/* Invisible element for scrolling to bottom */}
-                                <div ref={messagesEndRef} />
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div 
+                        className="messages-container"
+                        ref={messagesContainerRef}
+                        onScroll={handleScroll}
+                    >
+                        {messages.map((message, index) => (
+                            <div 
+                                key={index} 
+                                className={`message ${message.sender === "user" ? "user-message" : "bot-message"} ${message.isNew ? 'message-new' : ''}`}
+                            >
+                                {message.text}
+                            </div>
+                        ))}
+                        
+                        {/* Typing indicator when loading */}
+                        {isLoading && (
+                            <div className="message bot-message typing-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
                             </div>
                         )}
+                        
+                        {/* Invisible element for scrolling to bottom */}
+                        <div ref={messagesEndRef} />
                     </div>
-                    <div className="inputtext">
-                        <input 
-                            type="text" 
-                            className="entertext" 
-                            value={inputText}
-                            onChange={handleInputChange}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Type your message here..."
-                        />
-                        <button 
-                            className={`submittext ${messageSent ? 'send-animation' : ''}`} 
-                            onClick={handleSubmit}
-                        >
-                            <img src={send} alt="send" />
-                        </button>
-                        <button className="voiceassist">
-                            <img src={voice} alt="voice" />
-                        </button>
+                )}
+                
+                <div className="input-area">
+                    <input 
+                        type="text" 
+                        className="message-input" 
+                        value={inputText}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Type your message here..."
+                    />
+                    <button 
+                        className={`send-button ${messageSent ? 'send-animation' : ''}`} 
+                        onClick={handleSubmit}
+                    >
+                        <img src={send} alt="send" />
+                    </button>
+                    <button className="voice-button">
+                        <img src={voice} alt="voice" />
+                    </button>
 
-                        {/* Non-interactive Mood Meter */}
-                        <div style={{ width: '20%' }}>
-                            <MoodDetector sentiment={sentiment} />
-                        </div>
+                    {/* Mood Meter */}
+                    <div className="mood-meter">
+                        <MoodDetector sentiment={sentiment} />
                     </div>
                 </div>
             </div>

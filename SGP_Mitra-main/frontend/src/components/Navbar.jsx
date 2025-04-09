@@ -72,7 +72,7 @@ const Navbar = () => {
     {/* Right: Nav Links (Push to right with ml-auto) */}
     <div className="hidden md:flex items-center  space-x-5 ml-auto">
       <Link to="/test" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">Know Your Mind</Link>
-      <Link to="/Chatbot" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">MindChat</Link>
+      <Link to="/chat-bot" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">MindChat</Link>
       <Link to="/selfcare" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">SelfCare Plans</Link>
       <Link to="/music_generation" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">ZenBeats</Link>
       <Link to="/faqs" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">FAQs</Link>
@@ -85,10 +85,10 @@ const Navbar = () => {
         <p className="text-gray-500">Loading...</p>
       ) : username ? (
         <div className="flex items-center space-x-4">
-          <span className="text-indigo-600 font-semibold hidden md:block"><Link to ="/profile">Hello, {username}</Link></span>
+          <span className="text-[#7a3fa9] font-semibold hidden md:block"><Link to ="/profile">Hello, {username}</Link></span>
           <button 
             onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 text-white rounded-md text-sm transition-all duration-300 hover:bg-red-600"
+            className="px-4 py-2 bg-[#7a3fa9] text-white font-semibold rounded-md text-sm transition-all duration-300 hover:bg-red-600"
           >
             Logout
           </button>

@@ -33,7 +33,7 @@ function Test() {
   }, {});
 
   const [responses, setResponses] = useState(initialResponses);
-  const [loading, setLoading] = useState(false); // Loading state added
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -109,7 +109,7 @@ function Test() {
       return;
     }
 
-    setLoading(true); // Start loading
+    setLoading(true);
 
     const totalScore = Object.values(responses).reduce(
       (sum, value) => sum + (value !== null ? value : 0),
@@ -145,59 +145,49 @@ function Test() {
       alert("Failed to submit score. Please try again.");
     }
 
-    setLoading(false); // Stop loading after process completes
+    setLoading(false);
   };
 
   return (
     <div className='main'>
       <Navbar/>
-    <div className="app">
-      <div className="questionnaire-container">
-        <div className="questionnaire-header">
-          <div className="header-content">
-            <h1>Patient Health Questionnaire (PHQ-9)</h1>
-            <p>Your Mental Health Today Test</p>
-            <div className="header-illustration">
-              <img src={illustration} alt="Questionnaire Illustration" className="w-20 h-20" />
-            </div>
+      <div className="app">
+        {/* New instruction div added here */}
+        <div className="quiz-instructions">
+          <h2>Mental Health Assessment</h2>
+          <p>Please answer the following questions honestly. Select how often you have been bothered by each problem over the last 2 weeks.</p>
+        </div>
+        
+        <div className="questionnaire-container">
+          <div className="questions-scroll">
+            <form onSubmit={handleSubmit} className="phq-form">
+              {questions.map((q, index, arr) => (
+                <React.Fragment key={q.key}>
+                  <div className="question">
+                    <label>{q.text}</label>
+                    {renderQuestionOptions(q.key)}
+                  </div>
+                  {index < arr.length - 1 && <div className="question-divider"></div>}
+                </React.Fragment>
+              ))}
+            </form>
           </div>
-        </div>
 
-        <div className="questionnaire-instructions">
-          Over the last 2 weeks, how often have you been bothered by any of the following problems?
+          <button
+            type="submit"
+            className="submit-button"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="loader">Loading...</span>
+            ) : (
+              "Submit"
+            )}
+          </button>
         </div>
-
-        <div className="questions-scroll">
-          <form onSubmit={handleSubmit} className="phq-form">
-            {questions.map((q, index, arr) => (
-              <React.Fragment key={q.key}>
-                <div className="question">
-                  <label>{q.text}</label>
-                  {renderQuestionOptions(q.key)}
-                </div>
-                {index < arr.length - 1 && <div className="question-divider"></div>}
-              </React.Fragment>
-            ))}
-          </form>
-        </div>
-
-        {/* Submit Button with Loading State */}
-        <button
-          type="submit"
-          className="submit-button"
-          onClick={handleSubmit}
-          disabled={loading} // Disable button while loading
-        >
-          {loading ? (
-            <span className="loader">Loading...</span> // Show loader animation
-          ) : (
-            "Submit"
-          )}
-        </button>
       </div>
     </div>
-    </div>
-
   );
 }
 

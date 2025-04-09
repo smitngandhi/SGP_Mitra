@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import '../Profile.css';
 import personheart from '../assets/personheart.svg'
 import person from '../assets/person.svg'
 import house from '../assets/house.svg'
 import chat from '../assets/chat.svg'
-
+import Navbar from '../components/Navbar'
 import test from "../assets/pencil-fill.svg"
 import question from "../assets/question-circle.svg"
 import axios from 'axios';
 import user_profile from "../assets/user_profile.png"
 import { useNavigate } from 'react-router-dom';
-
+import profileimg from '../assets/profile.jpg'
+import "../Profile.css"
 function Profile() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
@@ -142,133 +142,91 @@ function Profile() {
     ];
   
   return (
-    <div className="app-container">
-      {/* Sidebar */}
-      
-      <aside className="sidebar">
-        <h2 className="Mitra">MITRA</h2>
-        <nav>
-          <ul>
-            {navItems.map((item, idx) => (
-              <li 
-                key={idx} 
-                className="nav-item" 
-                onClick={() => navigate(item.path)}
-              >
-                <img src={item.icon} alt={`${item.label} Logo`} className="menu-logo" />
-                {item.label}
-              </li>
-            ))}
-          </ul>
-        </nav>
-        </aside>
-
-      {/* Main content */}
-      <div className="main-content">
-        <div className="header">
-          <h1>Welcome, {profileData.username}</h1>
-          <p className="date">{currentDate}</p>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="error-banner" style={{
-            backgroundColor: '#ffdddd',
-            color: '#ff0000',
-            padding: '10px',
-            marginBottom: '15px',
-            borderRadius: '5px'
-          }}>
-            {error}
-          </div>
-        )}
-
-        <div className="profile-banner">
-          <div className="profile-avatar-container">
-            <div className="profile-avatar">
-              <img src={user_profile} alt="Profile" />
-            </div>
-          </div>
-          <div className="profile-details">
-            <h2 className="user-name">{profileData.full_name}</h2>
-            <button 
-              className="edit-btn" 
-              onClick={isEditing ? saveProfileChanges : handleEditToggle}
-            >
-              {isEditing ? 'Save' : 'Edit'}
-            </button>
-          </div>
-        </div>
-
-        <div className="profile-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label className="Text">Full Name</label>
-              <input 
-                type="text" 
-                name="full_name"
-                value={profileData.full_name} 
-                onChange={isEditing ? handleInputChange : undefined}
-                disabled={!isEditing} 
-                className="form-control" 
-              />
-            </div>
-            <div className="form-group">
-              <div className="label-with-tag">
-                <label className="Text">Phone Number</label>
-                {!isEditing && !profileData.phone_number}
-              </div>
-              {isEditing ? (
+    <>
+    <Navbar/>
+    <div>
+      <div className='WelcomeDisplay'>
+        <h1 >Welcome, {profileData.username}</h1>
+        <p>Tell me more about you</p>
+      </div>
+      <div className='Content'>
+        <div><img src={profileimg} className='profilevector'></img></div>
+        <div className='Details'>
+            <div className='twoitem'>
+              <div className='detailitem'>
+                <div className="Text">Full Name</div>
+                <div className='colon'> : </div>
+                <div className='inputdata'>
                 <input 
                   type="text" 
-                  name="phone_number"
-                  value={profileData.phone_number}
-                  onChange={handleInputChange}
-                  placeholder="Enter Phone Number" 
+                  name="full_name"
+                  value={profileData.full_name} 
+                  onChange={isEditing ? handleInputChange : undefined}
+                  disabled={!isEditing} 
                   className="form-control" 
                 />
-              ) : (
-                <input 
-                  type="text" 
-                  value={profileData.phone_number || ''} 
-                  disabled 
-                  className="form-control" 
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label className="Text">Gender</label>
-              {isEditing ? (
-                <div className="select-wrapper">
-                  <select 
-                    name="gender"
-                    className="form-control"
-                    value={profileData.gender}
-                    onChange={handleInputChange}
-                  >
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
-                  </select>
                 </div>
-              ) : (
-                <input 
-                  type="text" 
-                  value={profileData.gender} 
-                  disabled 
-                  className="form-control" 
-                />
-              )}
-            </div>
-            <div className="form-group">
-              <div className="label-with-tag">
-                <label className="Text">Country</label>
-                {!isEditing && profileData.country === 'India'}
               </div>
-              {isEditing ? (
+
+              <div className='detailitem'>
+                <div className="Text">Phone Number</div>
+                <div className='colon'> : </div>
+                <div className='inputdata'>
+                    {isEditing ? (
+                    <input 
+                      type="text" 
+                      name="phone_number"
+                      value={profileData.phone_number}
+                      onChange={handleInputChange}
+                      placeholder="Enter Phone Number" 
+                      className="form-control" 
+                    />
+                  ) : (
+                    <input 
+                      type="text" 
+                      value={profileData.phone_number || ''} 
+                      disabled 
+                      className="form-control" 
+                    />
+                  )}
+                </div>
+              </div>
+              </div>
+
+              <div className='twoitem'>
+              <div className='detailitem'>
+                <div className="Text">Gender</div>
+                <div className='colon2'> : </div>
+                <div className='inputdata'>
+                {isEditing ? (
+                  <div className="select-wrapper">
+                    <select 
+                      name="gender"
+                      className="form-control"
+                      value={profileData.gender}
+                      onChange={handleInputChange}
+                    >
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                ) : (
+                  <input 
+                    type="text" 
+                    value={profileData.gender} 
+                    disabled 
+                    className="form-control" 
+                  />
+                )}
+                </div>
+              </div>
+
+              <div className='detailitem'>
+                <div className="Text">Country</div>
+                <div className='colon3'> : </div>
+                <div className='inputdata'>
+                {isEditing ? (
                 <div className="select-wrapper">
                   <select 
                     name="country"
@@ -289,40 +247,35 @@ function Profile() {
                   className="form-control" 
                 />
               )}
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label className="Text">Language</label>
-              <input 
-                type="text" 
-                value="English" 
-                disabled 
-                className="form-control" 
-              />
-            </div>
-          </div>
-
-          <div className="email-section">
-            <label className="My-Email">My email Address</label>
-            <div className="email-container">
-              <div className="email-box">
-                <div className="email-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                  </svg>
-                </div>
-                <div className="email-info">
-                  <div className="email">{profileData.email}</div>
                 </div>
               </div>
+              </div>
+              
+
+              <div className='twoitem'>
+              <div className='detailitem1'>
+                <div className="Text">Email</div>
+                <div className='colon4'> : </div>
+                <div className='inputdata'>
+                <div className="Text">{profileData.email}</div>
+                </div>
+              </div>
+
+              
             </div>
-          </div>
+            <div className='editbtncls'>
+                  <button 
+                    className="edit-btn" 
+                    onClick={isEditing ? saveProfileChanges : handleEditToggle}
+                  >
+                    {isEditing ? 'Save' : 'Edit'}
+                  </button>
+              </div>
         </div>
       </div>
     </div>
+    
+    </>
   );
 }
 

@@ -34,7 +34,6 @@ const App = () => {
             <Route path="/home" element={<After_Login_Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/chat-bot" element={<Chatbotnew />} />
-            <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/register" element={<Register />} />
             <Route path="/faqs" element={<FAQS />} />
             <Route path="/forgot_password" element={<ForgotPassword />} />

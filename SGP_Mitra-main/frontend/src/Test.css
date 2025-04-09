@@ -1,280 +1,337 @@
 /* ===== GLOBAL STYLES ===== */
 .main{
   background-color: white;
+  min-height: 100vh; /* Ensures no negative space at bottom */
+  display: flex;
+  flex-direction: column;
 }
+
 body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-  }
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* Full screen width */
+.app {
+  width: 100%;
+  flex: 1; /* Takes available space */
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* New quiz instructions styling */
+.quiz-instructions {
+  background-color: #7a3fa9;
+  color: white;
+  padding: 20px 40px;
+  margin: 20px 20px 10px;
+  border-radius: 15px;
+  text-align: center;
   
-  /* Full screen width */
-  .app {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #fff;
-  }
-  
-  /* ===== HEADER ===== */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #4a4a8a;
-  }
-  
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .user-profile {
-    display: flex;
-    align-items: center;
-    background-color: #4a4a8a;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    gap: 10px;
-  }
-  
-  /* ===== QUESTIONNAIRE CONTAINER ===== */
-  .questionnaire-container {
-    background-color: #ffffff;
-    margin: 20px;
-    border-radius: 30px;
-    padding: 20px 40px;
-  
-  }
-  
-  /* Gradient header section */
-  .questionnaire-header {
-    background: linear-gradient(to right, #f0f0fc, #fff6e0);
-    padding: 80px 40px;
-    position: relative;
-    margin-bottom: 20px;
-    border-radius: 30px;
-    margin-left: 40px;
-    margin-right: 40px;
-  }
-  
-  .header-content {
-    color: #4a4a8a;
-  }
-  
-  .header-content h1 {
-    margin: 0;
-    font-size: 40px;
-  }
-  
-  .header-content p {
-    margin: 10px 0;
-    font-size: 30px;
+}
+
+.quiz-instructions h2 {
+  color: white;
+  margin-top: 0;
+  font-size: 24px;
+}
+
+.quiz-instructions p {
+  color: rgb(219, 219, 219);
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid #eee;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #4a4a8a;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  background-color: #4a4a8a;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  gap: 10px;
+}
+
+/* ===== QUESTIONNAIRE CONTAINER ===== */
+.questionnaire-container {
+  background-color: #f1ebf6;
+  margin: 10px 20px 20px;
+  border-radius: 30px;
+  padding: 20px 40px;
+  flex: 1; /* Takes up available space */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Gradient header section */
+.questionnaire-header {
+  background: linear-gradient(to right, #f0f0fc, #fff6e0);
+  padding: 80px 40px;
+  position: relative;
+  margin-bottom: 20px;
+  border-radius: 30px;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+.header-content {
+  color: #4a4a8a;
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 40px;
+}
+
+.header-content p {
+  margin: 10px 0;
+  font-size: 30px;
+}
+
+.header-illustration {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.header-illustration img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+/* Purple prompt bar */
+.questionnaire-instructions {
+  background-color: #565689;
+  color: white;
+  text-align: center;
+  padding: 30px;
+  margin: 0 40px;
+  border-radius: 20px;
+  font-size: 30px;
+}
+
+/* ===== SCROLLABLE QUESTIONS CONTAINER ===== */
+.questions-scroll {
+  flex: 1; /* Takes up available space */
+  overflow-y: auto;
+  margin: 20px 40px;
+  border: 1px solid #b9b9b9;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.question {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px; /* Padding on left and right for fixed width effect */
+}
+
+.question label {
+  display: block;
+  margin-bottom: 15px;
+  color: #4a4a8a;
+  font-weight: bold;
+  font-size: 20px; /* Smaller than before for multi-line wrapping */
+  text-align: center;
+}
+
+/* Divider below each question */
+.question-divider {
+  width: 100%;
+  height: 1px;
+  border: 1px solid #b9b9b9;
+  margin: 20px 0;
+}
+
+/* ===== OPTIONS ROW ===== */
+.question-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Option group: contains small left circle, main circle, small right circle */
+.option-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin: 0 20px; /* Increased spacing between option groups */
+}
+
+/* Small circles (14px) */
+.small-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--option-color);
+  z-index: 2;
+}
+
+.small-circle.left {
+  margin-right: 8px;
+}
+
+.small-circle.right {
+  margin-left: 8px;
+}
+
+/* Main clickable circle (70px) */
+.option {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.outer-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 3px solid var(--option-color);
+  transition: background-color 0.3s ease;
+}
+
+/* Connector line: dashed, extended to touch small circles */
+.connector {
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connector-line {
+  width: 100%;
+  border-bottom: 2px dashed #ccc;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Hover effect on option */
+.option:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Selected effect: fill main circle with border color */
+.option.selected .outer-circle {
+  background-color: var(--option-color);
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submit-button {
+  display: block;
+  margin: 20px auto;
+  padding: 15px 40px;
+  background-color: #4a4a8a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  background: linear-gradient(to right, #4a4a8a, #6c55c7);
+}
+
+/* Loading spinner */
+.loader {
+  display: inline-block;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .quiz-instructions {
+    margin: 20px 20px 10px;
+    padding: 15px 20px;
   }
   
   .header-illustration {
-    position: absolute;
-    right: 40px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 20px;
   }
   
-  .header-illustration img {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-  
-  /* Purple prompt bar */
-  .questionnaire-instructions {
-    background-color: #565689;
-    color: white;
-    text-align: center;
-    padding: 30px;
-    margin: 0 40px;
-    border-radius: 20px;
-    font-size: 30px;
-  }
-  
-  /* ===== SCROLLABLE QUESTIONS CONTAINER ===== */
-  .questions-scroll {
-    max-height: 40vh; /* Adjust as needed */
-    overflow-y: auto;
-    margin: 20px 40px;
-    border: 1px solid #ddd;
-    border-radius: 20px;
+  .questionnaire-header {
     padding: 20px;
   }
   
-  .question {
-    margin-bottom: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 20px; /* Padding on left and right for fixed width effect */
+  .questionnaire-instructions {
+    margin: 0 20px;
   }
   
-  .question label {
-    display: block;
-    margin-bottom: 15px;
-    color: #4a4a8a;
-    font-weight: bold;
-    font-size: 20px; /* Smaller than before for multi-line wrapping */
-    text-align: center;
+  .phq-form {
+    padding: 20px;
   }
   
-  /* Divider below each question */
-  .question-divider {
-    width: 100%;
-    height: 1px;
-    background-color: #ddd;
-    margin: 20px 0;
+  .connector {
+    width: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .quiz-instructions h2 {
+    font-size: 20px;
   }
   
-  /* ===== OPTIONS ROW ===== */
-  .question-options {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 20px;
+  .quiz-instructions p {
+    font-size: 14px;
   }
   
-  /* Option group: contains small left circle, main circle, small right circle */
-  .option-wrapper {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin: 0 20px; /* Increased spacing between option groups */
-  }
-  
-  /* Small circles (14px) */
-  .small-circle {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background-color: var(--option-color);
-    z-index: 2;
-  }
-  
-  .small-circle.left {
-    margin-right: 8px;
-  }
-  
-  .small-circle.right {
-    margin-left: 8px;
-  }
-  
-  /* Main clickable circle (70px) */
   .option {
-    width: 70px;
-    height: 70px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 60px;
+    height: 60px;
   }
   
   .outer-circle {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background-color: #ffffff;
-    border: 3px solid var(--option-color);
-    transition: background-color 0.3s ease;
+    width: 60px;
+    height: 60px;
   }
   
-  /* Connector line: dashed, extended to touch small circles */
+  .small-circle {
+    width: 12px;
+    height: 12px;
+  }
+  
   .connector {
-    width: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 50px;
   }
   
-  .connector-line {
-    width: 100%;
-    border-bottom: 2px dashed #ccc;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+  .question label {
+    font-size: 18px;
   }
-  
-  /* Hover effect on option */
-  .option:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  }
-  
-  /* Selected effect: fill main circle with border color */
-  .option.selected .outer-circle {
-    background-color: var(--option-color);
-  }
-  
-  /* ===== SUBMIT BUTTON ===== */
-  .submit-button {
-    display: block;
-    margin: 30px auto 40px;
-    padding: 15px 40px;
-    background-color: #4a4a8a;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.3s ease, 4 0.3s ease, background 0.3s ease;
-  }
-  
-  .submit-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    background: linear-gradient(to right, #4a4a8a, #6c55c7);
-  }
-  
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 1024px) {
-    .header-illustration {
-      right: 20px;
-    }
-    .questionnaire-header {
-      padding: 20px;
-    }
-    .questionnaire-instructions {
-      margin: 0 20px;
-    }
-    .phq-form {
-      padding: 20px;
-    }
-    .connector {
-      width: 60px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .option {
-      width: 60px;
-      height: 60px;
-    }
-    .outer-circle {
-      width: 60px;
-      height: 60px;
-    }
-    .small-circle {
-      width: 12px;
-      height: 12px;
-    }
-    .connector {
-      width: 50px;
-    }
-    .question label {
-      font-size: 20px;
-    }
-  }
+}
