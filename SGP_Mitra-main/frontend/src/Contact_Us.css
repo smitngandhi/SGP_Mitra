@@ -8,10 +8,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(to right, #f0f0fc, #fff6e0);
+    min-height: 100%;
+    background: white;
     font-family: "Poppins", sans-serif;
-    padding: 40px 20px;
+    padding: 30px 20px;
 }
 
 /* Title Styling */
@@ -19,7 +19,7 @@
     font-size: 2.5rem;
     font-weight: 700;
     color: #4a4a8a;
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
     text-transform: uppercase;
     letter-spacing: 2px;
     animation: fadeIn 1s ease-in-out;
@@ -31,7 +31,7 @@
     justify-content: center;
     gap: 60px; /* Increased space between cards */
     flex-wrap: wrap; /* Allows wrapping on smaller screens */
-    padding: 20px 0;
+    /* padding: 20px 0; */
     max-width: 95vw;
 }
 
@@ -74,11 +74,11 @@
 
 /* Front side (only name) */
 .card-front {
-    background: linear-gradient(to right, #6161aa, #8072ee);
+    background: linear-gradient(to right, #e5d6ec, #ebb3ff);
     color: white;
     font-size: 1.5rem;
     font-weight: 600;
-    padding: 20px;
+    padding: 0px 20px 20px 20px;
 }
 
 /* Back side (full details) */

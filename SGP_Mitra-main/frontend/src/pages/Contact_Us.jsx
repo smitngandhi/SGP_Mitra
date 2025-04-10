@@ -27,8 +27,6 @@ const ContactUs = () => {
     <div className="contact-navbar">
       <Navbar/>
     <div className="contact-container">
-      
-      <h1 className="contact-title">Meet Our Team</h1>
       <div className="team-flex">
         {teamMembers.map((member, index) => (
           <div key={index} className="team-card">

@@ -2,21 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import '../Selfcare.css';
-import music from '../assets/relax_music.mp3'
+import music from '../assets/relax_music.mp3';
+import Navbar from '../components/Navbar';
+import personheart from '../assets/personheart.svg';
+import person from '../assets/person.svg';
+import house from '../assets/house.svg';
+import chat from '../assets/chat.svg';
 
-import personheart from '../assets/personheart.svg'
-import person from '../assets/person.svg'
-import house from '../assets/house.svg'
-import chat from '../assets/chat.svg'
-
-import test from "../assets/pencil-fill.svg"
-import question from "../assets/question-circle.svg"
+import test from "../assets/pencil-fill.svg";
+import question from "../assets/question-circle.svg";
 
 
 // Simple MeditationIcon placeholder
 const MeditationIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="40" height="40">
-    <circle cx="32" cy="32" r="30" fill="#6D5ED4" />
+    <circle cx="32" cy="32" r="30" fill="#7a3fa9" />
     <circle cx="32" cy="32" r="20" fill="#fff" />
   </svg>
 );
@@ -389,51 +389,10 @@ const App = () => {
   ];
 
   return (
+    <>
+    <Navbar/>
     <div className="app-container">
-      {/* LEFT SIDEBAR - STATIC NAVBAR */}
-      <aside className="sidebar" style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        height: '100vh',
-        zIndex: 1000,
-        overflowY: 'auto'
-      }}>
-        <h2 className="Mitra">MITRA</h2>
-        <nav>
-          <ul className="nav-list">
-            {navItems.map((item, idx) => (
-              <li key={idx} className={item.active ? 'active' : ''}>
-                <Link to={item.path} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
-                  <img
-                    src={item.icon}
-                    alt={`${item.label} Logo`}
-                    className="menu-logo"
-                  />
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
-
-      {/* MAIN CONTENT - Add left margin to accommodate fixed sidebar */}
-      <div className="main-content" style={{ marginLeft: '250px' }}>
-        {/* TOP BAR (gradient) */}
-        <div className="top-bar">
-          <h1 style={{ margin: 0, fontSize: 20, color: '#333' }}>Welcome, {username ? username : "Rahul"}</h1>
-          <span style={{ fontSize: 14, color: '#666' }}>
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'short',
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-            })}
-          </span>
-        </div>
-
-        {/* Mindfulness & Relaxation Plan */}
+      <div className="main-content">
         <section className="plan-section">
           <h2>Mindfulness &amp; Relaxation Plan</h2>
           <p>Plans especially designed for your wellness</p>
@@ -747,6 +706,7 @@ const App = () => {
         )}
       </div>
     </div>
+  </>
   );
 };
 
