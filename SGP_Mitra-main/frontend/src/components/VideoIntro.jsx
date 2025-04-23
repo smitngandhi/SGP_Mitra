@@ -17,13 +17,26 @@ const VideoIntro = ({ onFinish }) => {
   useEffect(() => {
     if (shouldPlay) {
       const video = videoRef.current;
-      video?.play();
-      video.onended = () => {
-        sessionStorage.setItem("hasSeenIntro", "true"); // Mark intro as watched
-        if (onFinish) onFinish();
-      };
+      if (video) {
+        video
+          .play()
+          .catch((err) => {
+            console.warn("Autoplay failed, waiting for user interaction", err);
+            const tryPlay = () => {
+              video.play();
+              window.removeEventListener("click", tryPlay);
+            };
+            window.addEventListener("click", tryPlay);
+          });
+  
+        video.onended = () => {
+          sessionStorage.setItem("hasSeenIntro", "true"); // Mark intro as watched
+          if (onFinish) onFinish();
+        };
+      }
     }
   }, [shouldPlay, onFinish]);
+  
 
   if (!shouldPlay) return null;
 

@@ -155,115 +155,115 @@ def update_profile():
     except Exception as e:
         return jsonify({"msg": "Error updating profile", "error": str(e)}), 500
 
+
+
+
+
+
+
+
+
+
+
+model = Sequential()
+model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
+model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(7, activation='softmax'))
+
+# Load the model weights
+model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\model.h5'
+try:
+    model.load_weights(model_path)
+    print("Weights loaded successfully!")
+except Exception as e:
+    print(f"Error loading weights: {e}")
+
+# Load pre-trained emotion model
+
+# Haar Cascade for face detection
+CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\haarcascade_frontalface_default.xml"
+face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
+
+# Emotion labels
+emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
+
+# Load music dataset
+df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\spotify_dataset.csv")
+
+df = df.dropna()
+
+
+def detect_emotions():
+    """Captures webcam video, detects face, and classifies emotions."""
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        return {"error": "Could not open webcam."}
+
+    detected_emotions = []
+    count = 0
+
+    while count < 20:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
+
+        for (x, y, w, h) in faces:
+            roi_gray = gray[y:y + h, x:x + w]
+            roi_gray_resized = cv2.resize(roi_gray, (48, 48))
+            cropped_img = np.expand_dims(np.expand_dims(roi_gray_resized, -1), 0)
+
+            # Predict emotion
+            prediction = model.predict(cropped_img)
+            max_index = int(np.argmax(prediction))
+            detected_emotions.append(emotion_dict[max_index])
+
+        count += 1
+
+        # Stop capturing when 's' is pressed
+        if cv2.waitKey(1) & 0xFF == ord('s'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    return list(set(detected_emotions))
+
+def recommend_music(emotions):
+    """Filters music dataset based on detected emotions."""
+    recommended_songs = df[df["seeds"].apply(lambda x: any(e in x for e in emotions))]
+    recommended_songs["spotify_id"] = recommended_songs["lastfm_url"].apply(lambda x: x.split("/")[-1])
+    return recommended_songs[["track", "artist", "spotify_id", "genre"]].to_dict(orient="records")
+
+@user_routes.route("/detect_emotion", methods=["GET"])
+def handle_emotion_detection():
+    emotions = detect_emotions()
+    if "error" in emotions:
+        return jsonify({"error": emotions["error"]})
+    
+    print(f'Emotions detected {emotions}')
+
+    recommendations = recommend_music(emotions)
+
+    
+    # recommendations = recommendations.replace({np.nan: None})
+    print("after")
     
 
-
-
-
-
-
-
-
-
-# model = Sequential()
-# model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
-# model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-# model.add(Flatten())
-# model.add(Dense(1024, activation='relu'))
-# model.add(Dropout(0.5))
-# model.add(Dense(7, activation='softmax'))
-
-# # Load the model weights
-# model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_github_updated\\app\\data\\model.h5'
-# try:
-#     model.load_weights(model_path)
-#     print("Weights loaded successfully!")
-# except Exception as e:
-#     print(f"Error loading weights: {e}")
-
-# # Load pre-trained emotion model
-
-# # Haar Cascade for face detection
-# CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_github_updated\\app\\data\\haarcascade_frontalface_default.xml"
-# face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
-
-# # Emotion labels
-# emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
-
-# # Load music dataset
-# df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_github_updated\\app\\data\\spotify_dataset.csv")
-
-# df = df.dropna()
-
-
-# def detect_emotions():
-#     """Captures webcam video, detects face, and classifies emotions."""
-#     cap = cv2.VideoCapture(0)
-#     if not cap.isOpened():
-#         return {"error": "Could not open webcam."}
-
-#     detected_emotions = []
-#     count = 0
-
-#     while count < 20:
-#         ret, frame = cap.read()
-#         if not ret:
-#             break
-
-#         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
-
-#         for (x, y, w, h) in faces:
-#             roi_gray = gray[y:y + h, x:x + w]
-#             roi_gray_resized = cv2.resize(roi_gray, (48, 48))
-#             cropped_img = np.expand_dims(np.expand_dims(roi_gray_resized, -1), 0)
-
-#             # Predict emotion
-#             prediction = model.predict(cropped_img)
-#             max_index = int(np.argmax(prediction))
-#             detected_emotions.append(emotion_dict[max_index])
-
-#         count += 1
-
-#         # Stop capturing when 's' is pressed
-#         if cv2.waitKey(1) & 0xFF == ord('s'):
-#             break
-
-#     cap.release()
-#     cv2.destroyAllWindows()
-
-#     return list(set(detected_emotions))
-
-# def recommend_music(emotions):
-#     """Filters music dataset based on detected emotions."""
-#     recommended_songs = df[df["seeds"].apply(lambda x: any(e in x for e in emotions))]
-#     recommended_songs["spotify_id"] = recommended_songs["lastfm_url"].apply(lambda x: x.split("/")[-1])
-#     return recommended_songs[["track", "artist", "spotify_id", "genre"]].to_dict(orient="records")
-
-# @user_routes.route("/detect_emotion", methods=["GET"])
-# def handle_emotion_detection():
-#     emotions = detect_emotions()
-#     if "error" in emotions:
-#         return jsonify({"error": emotions["error"]})
-    
-#     print(f'Emotions detected {emotions}')
-
-#     recommendations = recommend_music(emotions)
-
-    
-#     # recommendations = recommendations.replace({np.nan: None})
-#     print("after")
-    
-
-#     response = jsonify({"detected_emotions": emotions, "recommendations": recommendations})
-#     response.headers["Content-Type"] = "application/json"
-#     return response
+    response = jsonify({"detected_emotions": emotions, "recommendations": recommendations})
+    response.headers["Content-Type"] = "application/json"
+    return response
 
 # import os
 # import torch
@@ -272,18 +272,21 @@ def update_profile():
 # from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 
-# OUTPUT_DIR = "C:\\Users\\SANDIP JOSHI\\OneDrive\\Desktop\\musicnew\\static\\generated_music"
+# OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_github_updated\\app\\static\\generated_music"
 # os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# # # Load MusicGen model and processor
+
+# # Load MusicGen model and processor
 # device = "cuda" if torch.cuda.is_available() else "cpu"
-# model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
+# model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
 # processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
 # @user_routes.route("generate_music", methods=["POST"])
 # def generate_music():
 #     data = request.get_json()
 #     prompt = data.get("prompt", "")
+
+#     print(f'Prompt: {prompt}')
 
 #     if not prompt:
 #         return jsonify({"error": "No prompt provided"}), 400
@@ -293,23 +296,35 @@ def update_profile():
 #         inputs = processor(text=[prompt], return_tensors="pt").to(device)
 
 #         # Generate AI music
-#         with torch.no_grad():
-#             music_waveform = model.generate(**inputs, max_new_tokens=500)
+#         print("Generating")
+#         music_waveform = model_musicgen.generate(**inputs, max_new_tokens=500)
+#         print("Before")
 
+#         print(music_waveform.shape)
+
+#         # print("Converting to 2D")
 #         # Convert waveform to 2D (mono)
 #         music_waveform = music_waveform.squeeze(0).cpu()
 
+#         print("After")
+
+#         print(music_waveform.shape)
+
+
 #         # Define output file path
+#         print("Getting folder output")
 #         output_path = os.path.join(OUTPUT_DIR, "generated_music.wav")
 
+#         print(f'Output Path {output_path}')
+
 #         # Save generated music
-#         torchaudio.save(output_path, music_waveform, 24000)
+#         print("Saving")
+#         torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\SGP_Mitra_system\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
 
 #         # Return audio URL
+
+
 #         return jsonify({"audio_url": f"http://127.0.0.1:5000/static/generated_music/generated_music.wav"})
 
 #     except Exception as e:
 #         return jsonify({"error": str(e)}), 500
-
-
-#         return jsonify({"msg": "Error updating profile", "error": str(e)}), 500

@@ -6,13 +6,19 @@ from app.config import Config
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
+import whisper
 
 
+SAMPLE_RATE = 16000
+ENERGY_THRESHOLD = 30
+CHUNK_DURATION = 0.2
+CHUNK_SIZE = int(SAMPLE_RATE * CHUNK_DURATION)
+SILENCE_DURATION = 1.5
 
 
 # Initialize MongoDB connection
 client = MongoClient(os.getenv("MONGO_URL"))
-db = client["Mydatabase"]
+db = client["mydatabase"]
 
 
 # Collections
@@ -29,10 +35,14 @@ llm = ChatOpenAI(
 )
 
 
-conversation_buf = ConversationChain(
-    llm = llm,
-    memory = ConversationBufferMemory()
-)
+# conversation_buf = ConversationChain(
+#     llm = llm,
+#     memory = ConversationBufferMemory()
+# )
+
+whisper_model = whisper.load_model("base")
+
+
 
 
 

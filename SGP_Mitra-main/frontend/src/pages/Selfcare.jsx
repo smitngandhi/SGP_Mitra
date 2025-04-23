@@ -21,7 +21,7 @@ const MeditationIcon = () => (
   </svg>
 );
 
-const App = () => {
+const SelfCare = () => {
 
   const [username, setUsername] = useState("User"); // Default value
   const [cookies] = useCookies(["access_token"]); // Access cookies
@@ -710,4 +710,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default SelfCare;

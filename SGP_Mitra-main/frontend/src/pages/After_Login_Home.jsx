@@ -1,10 +1,7 @@
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import heroImage from "../assets/image1.jpg";
 import { useNavigate } from "react-router-dom";
 import User from '../assets/User.png'
 import image1 from '../assets/image1.jpg'
-import bing from '../assets/bing.svg'
 import React, { useState } from 'react';
 import '../After_Login.css';
 import { useCookies } from "react-cookie";
@@ -26,14 +23,18 @@ const After_Login_Home = () => {
               console.log("Inside")
               setCookie("access_token", accessTokenFromURL, {
                   path: "/",
-                  maxAge : 3600
+                  maxAge : 360000
               });
 
 
               console.log("Access token stored in cookies!");
 
               // Remove the access_token from the URL
-              const newURL = window.location.pathname;
+              let newURL = window.location.pathname;
+
+              if (newURL.endsWith('/')) {
+                newURL = newURL.slice(0, -1);
+              }
               window.history.replaceState({}, document.title, newURL);
           }
         }, [cookies.access_token, setCookie]);
@@ -109,7 +110,7 @@ const After_Login_Home = () => {
             <p>Mitra: A Gentle Whisper in the Storm, A Light in Your Darkest Hour</p>
             <button 
           className="px-6 py-3 bg-[#965ec7] text-white rounded-md transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md"
-          onClick={() => navigate("/chatbot")}
+          onClick={() => navigate("/chat-bot")}
         >Get Started</button>
           </div>
           <div className="hero-image">

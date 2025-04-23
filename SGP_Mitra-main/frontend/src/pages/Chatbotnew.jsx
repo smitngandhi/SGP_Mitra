@@ -5,8 +5,16 @@ import "../Chatbotnew.css";
 import send from "../assets/up-arrow.png";
 import voice from "../assets/radio.png";
 import robotImage from "../assets/robotnew.png"; 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { useCookies } from 'react-cookie';
+import VoiceAssistantModal from "./VoiceAssistantModel";
+
+
+
 
 const Chatbotnew = () => {
+    const [cookies] = useCookies(['access_token']);
     const [sentiment, setSentiment] = useState(0.5); // 0 (sad) to 1 (happy)
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState("");
@@ -14,6 +22,7 @@ const Chatbotnew = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [messageSent, setMessageSent] = useState(false);
     const [isUserScrolling, setIsUserScrolling] = useState(false);
+    const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
     
     // Ref for auto-scrolling to bottom of messages
     const messagesEndRef = useRef(null);
@@ -58,6 +67,8 @@ const Chatbotnew = () => {
 
     // Handle fetching response from API
     const fetchChatbotResponse = async (message) => {
+        const accessToken = cookies.access_token || null;
+        console.log(accessToken)
         // Set loading state to show typing indicator
         setIsLoading(true);
         
@@ -70,11 +81,12 @@ const Chatbotnew = () => {
                 },
                 body: JSON.stringify({
                     message: message,
+                    access_token: accessToken,
                 }),
             });
 
             const data = await response.json();
-            
+            // console.log(data)
             // Short delay to show typing animation
             setTimeout(() => {
                 if (response.ok) {
@@ -82,8 +94,8 @@ const Chatbotnew = () => {
                     setMessages(prev => {
                         const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
                         return [...updatedPrev, { 
-                            text: data.reply, 
-                            sender: "bot",
+                            role: 'ai',
+                            text: <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.reply}</ReactMarkdown>,
                             isNew: true 
                         }];
                     });
@@ -195,6 +207,48 @@ const Chatbotnew = () => {
         fetchChatbotResponse(question);
     };
 
+    // Handle voice chat response
+    const handleVoiceResponse = (reply) => {
+        console.log(reply)
+        // Add a placeholder user message for voice input
+        setMessages(prev => {
+            const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
+            return [...updatedPrev, { 
+                text: `${reply.user_message || "Voice message"}`, 
+                sender: "user",
+                isNew: true 
+            }];
+        });
+
+        setMessageSent(true);
+        setTimeout(() => setMessageSent(false), 500);
+        
+        setInputText("");
+        
+        // Set chat as started, which removes welcome screen
+        setChatStarted(true);
+        
+        // Reset user scrolling when sending a new message
+        setIsUserScrolling(false);
+        
+        // Add the AI response from voice chat
+        setMessages(prev => {
+            const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
+            return [...updatedPrev, { 
+                role: 'ai',
+                text: <ReactMarkdown remarkPlugins={[remarkGfm]}>{reply.reply}</ReactMarkdown>,
+                isNew: true 
+            }];
+        });
+        
+        // Reset user scrolling when a new message is added
+        setIsUserScrolling(false);
+        
+
+        setSentiment(reply.sentiment_score);
+
+    };
+
     return (
         <>
             <Navbar />
@@ -270,7 +324,12 @@ const Chatbotnew = () => {
                     >
                         <img src={send} alt="send" />
                     </button>
-                    <button className="voice-button">
+                    <button 
+                        className="voice-button"
+                        onClick={() => {
+                        console.log("Voice button CLicked")
+                        setIsVoiceModalOpen(true)}}
+                    >
                         <img src={voice} alt="voice" />
                     </button>
 
@@ -280,6 +339,13 @@ const Chatbotnew = () => {
                     </div>
                 </div>
             </div>
+            
+            {/* Voice Assistant Modal */}
+            <VoiceAssistantModal 
+                isOpen={isVoiceModalOpen}
+                onClose={() => setIsVoiceModalOpen(false)}
+                onVoiceResponse={handleVoiceResponse}
+            />
         </>
     );
 };

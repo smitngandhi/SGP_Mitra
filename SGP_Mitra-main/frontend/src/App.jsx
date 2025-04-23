@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import Chatbot from "./pages/Chatbot";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import FAQS from "./pages/FAQs";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import After_Login_Home from "./pages/After_Login_Home";
+import AFTER_LOGIN_HOME from "./pages/After_Login_Home";
 import Profile from "./pages/Profile";
 import Test from "./pages/Test";
 import ContactUs from "./pages/Contact_Us";
 import Selfcare from "./pages/Selfcare";
 import Meditation from "./pages/Meditation";
 import Breathing from "./pages/Breathing";
-import Music_Generation from "./pages/Music_Generation";
+import MUSIC_GENERATION from "./pages/Music_Generation";
 import VideoIntro from "./components/VideoIntro";
 import Chatbotnew from "./pages/Chatbotnew";
+import VoiceAssistantModel from "./pages/VoiceAssistantModel";
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
 
@@ -31,7 +29,7 @@ const App = () => {
           {/* Optional: <Navbar /> */}
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/home" element={<After_Login_Home />} />
+            <Route path="/home" element={<AFTER_LOGIN_HOME />} />
             <Route path="/login" element={<Login />} />
             <Route path="/chat-bot" element={<Chatbotnew />} />
             <Route path="/register" element={<Register />} />
@@ -44,7 +42,8 @@ const App = () => {
             <Route path="/selfcare" element={<Selfcare />} />
             <Route path="/meditation" element={<Meditation />} />
             <Route path="/breathing" element={<Breathing />} />
-            <Route path="/music_generation" element={<Music_Generation />} />
+            <Route path="/music_generation" element={<MUSIC_GENERATION />} />
+            <Route path="/voice_assistant" element={<VoiceAssistantModel  />} />
           </Routes>
           {/* <Footer /> */}
         </>

@@ -184,3 +184,56 @@ def generate_selfcare_pdf():
 
 
 
+@chatbot_routes.route("/voice_chat", methods=["POST"])
+def voice_chat():
+    data = request.get_json()
+    
+    if data.get("from_mic"):
+        # Transcribe directly
+        message = transcribe_audio_from_mic()
+        print(f"[Voice Input] Transcribed: {message}")
+    else:
+        message = data["message"]
+        print(message)
+
+    if "access_token" in data and data["access_token"]:
+        access_token = data["access_token"]
+        decoded_token = decode_token(access_token)
+        email = decoded_token.get("sub")
+        user = users_collection.find_one({"email": email})
+
+        chatbot_preference = user["chatbot_preference"]
+        username = user["username"]
+        print(f'Username : {username}')
+        response_text, sentiment_score = generate_llm_response_sentiment(message, chatbot_preference, username)
+
+        # Play the audio response
+        asyncio.run(speak_and_play(response_text))
+
+        chat_entry = {
+            "user_id": user["user_id"],
+            "user_message": message,
+            "bot_response": response_text,
+            "timestamp": datetime.now(timezone.utc),
+            "sentiment_score": sentiment_score
+        }
+        chats_collection.insert_one(chat_entry)
+
+        return jsonify({"reply": response_text, "sentiment_score": sentiment_score , "user_message": message})
+
+    print("Unauthenticated user")
+    response_text, sentiment_score = generate_llm_response_sentiment(message, None, None)
+    asyncio.run(speak_and_play(response_text))
+
+    user_id = str(uuid.uuid4())
+    chat_entry = {
+        "user_id": user_id,
+        "user_message": message,
+        "bot_response": response_text,
+        "timestamp": datetime.now(timezone.utc),
+        "sentiment_score": sentiment_score
+    }
+
+    chats_collection.insert_one(chat_entry)
+
+    return jsonify({"reply": response_text, "sentiment_score": sentiment_score , "user_message": message})

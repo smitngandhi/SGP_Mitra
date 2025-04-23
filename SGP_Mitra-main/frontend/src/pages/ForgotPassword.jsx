@@ -49,7 +49,7 @@ const ForgotPassword = () => {
             <div className="mt-6">
               <label className="block text-gray-700 font-medium">Email</label>
               <input
-                type="email"
+                type="email/text"
                 placeholder="example@gmail.com"
                 className="w-full border rounded-lg px-3 py-2 mt-1 bg-gray-100 focus:outline-none"
                 value={email}

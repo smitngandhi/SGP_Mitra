@@ -24,7 +24,7 @@
     text-align: center;
     background-color: rgb(232, 207, 249);;
     border-radius: 15px 15px 0 0;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 
 /* Messages display area */
@@ -299,3 +299,5 @@
         width: 15%;
     }
 }
+
+

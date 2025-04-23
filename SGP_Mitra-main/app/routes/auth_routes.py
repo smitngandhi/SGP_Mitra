@@ -56,11 +56,11 @@ def register():
         "email": user["email"],
         "username": user["username"],
         "password": hashed_password,
-        "gender": "Male",
-        "phone_number":"",
-        "country":"India",
+        "gender": "Unspecified",
+        "phone_number":"Unspecified",
+        "country":"Unspecified",
         "test_results": [],  
-        "chatbot_preference": None
+        "chatbot_preference": "Mild_support"
     }
 
     users_collection.insert_one(new_user)
@@ -129,7 +129,7 @@ def forgot_password():
     user = users_collection.find_one({"email": data["email"]})
 
     if not user:
-        user = users_collection.find_one({"email": data["username"]})
+        user = users_collection.find_one({"username": data["email"]})
         field="username"
 
     if not user:
@@ -153,11 +153,11 @@ def forgot_password():
 
     
         users_collection.update_one(
-            {"username": data["username"]},
+            {"username": data["email"]},
             {"$set": {"reset_token": hashed_reset_token, "reset_token_expiry": expiration_time}}
         )
 
-        user = users_collection.find_one({"username": data["username"]})
+        user = users_collection.find_one({"username": data["email"]})
 
         send_reset_email(user["email"], reset_token)
         return jsonify({"msg": f"Password reset email sent to {user['email']}"}), 200
@@ -197,7 +197,7 @@ def reset_password(token):
     else:
         return jsonify({"msg": "Password must be at least 8 characters long, include a number, an uppercase letter, and a special character"}), 400
 
-    # Update password and remove reset token
+
 
 
 @auth_routes.route("/login/google", methods=["GET"])
@@ -244,11 +244,11 @@ def callback():
             "email": email,
             "username": username,
             "password": "hashed_password",  # Replace with actual hashing if needed
-            "gender": "Male",
-            "phone_number": "",
-            "country": "India",
+            "gender": "Unspecified",
+            "phone_number": "Unspecified",
+            "country": "Unspecified",
             "test_results": [],
-            "chatbot_preference": None
+            "chatbot_preference": "Mild_support"
         }
 
         users_collection.insert_one(new_user)
@@ -260,7 +260,6 @@ def callback():
         print(f'First name: {first_name}')
         print(f"Generated Access Token: {access_token}")
         response = make_response(jsonify({"message": "Login successful" , "access_token" : access_token}))
-        print("Existing User")
         response.set_cookie("access_token", access_token, httponly=False, secure=False, samesite="None")  
         print("Cookies set")
         response.headers["Location"] = f"http://localhost:3000/home/?access_token={access_token}"
