@@ -87,17 +87,17 @@ const Music_Generation = () => {
             </div>
             
             {/* Tracks container with scroll */}
-            <div className="mt-4 overflow-y-auto max-h-96 pr-2 tracklist-scroll">
-              {tracks.length > 0 ? (
+            <div className="mt-4 pr-2 tracklist-scroll overflow-y-auto" style={{ maxHeight: '330px' }}>
+            {tracks.length > 0 ? (
                 tracks.slice(0, 10).map((track, index) => (
                   <div 
                     key={index} 
-                    className="bg-white/10 backdrop-blur-md text-white p-4 rounded-lg shadow-lg mb-4 track-card"
+                    className="backdrop-blur-md text-white p-4 rounded-lg shadow-lg mb-4 track-card bg-[#7a3fa9] group-hover:bg-[#d7c6e6]"
                     style={{animationDelay: `${index * 0.1}s`}}
                   >
-                    <h3 className="text-xl font-semibold">🎵 {track.track}</h3>
-                    <p><strong>Artist:</strong> {track.artist}</p>
-                    <p><strong>Genre:</strong> {track.genre}</p>
+                    <h3 className="text-xl font-bold transition-all duration-500 text-[#d7c6e6] group-hover:text-black">🎵 {track.track}</h3>
+                    <p className="transition-all duration-500 text-[#d7c6e6] group-hover:text-black"><strong>Artist:</strong> {track.artist}</p>
+                    <p className="transition-all duration-500 text-[#d7c6e6] group-hover:text-black"><strong>Genre:</strong> {track.genre}</p>
                     
                     {/* Spotify Embed Player */}
                     <div className="mt-3">
