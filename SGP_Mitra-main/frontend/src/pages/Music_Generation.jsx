@@ -166,11 +166,7 @@ const Music_Generation = () => {
             {/* Generated Music Player */}
             {generatedMusic ? (
               <div className="mt-6 music-player-container animate-fadeIn">
-                <h3 className="text-lg font-semibold mb-3 flex items-center">
-                  <span className="animate-pulse mr-2">🎵</span> 
-                  Your Generated Masterpiece:
-                </h3>
-                <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 p-4 rounded-xl backdrop-blur-md">
+                <div className="bg-[#7a3fa9]/40 group-hover:bg-[#d7c6e6]/40 p-4 rounded-xl">
                   <div className="audio-visualizer mb-3"></div>
                   <audio 
                     controls 
@@ -181,15 +177,6 @@ const Music_Generation = () => {
                     <source src={generatedMusic} type="audio/mp3" />
                     Your browser does not support the audio element.
                   </audio>
-                  <div className="flex justify-between text-sm mt-2 text-purple-200">
-                    <span>AI Generated</span>
-                    <span>Based on your prompt</span>
-                  </div>
-                </div>
-                <div className="text-center mt-4">
-                  <button className="text-purple-300 hover:text-white text-sm underline transition">
-                    Download MP3
-                  </button>
                 </div>
               </div>
             ) : (

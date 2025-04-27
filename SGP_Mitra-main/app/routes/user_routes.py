@@ -288,11 +288,15 @@ def generate_music():
 
     print(f'Prompt: {prompt}')
 
+
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
 
     try:
         # Process text input
+        prompt = generate_prompt_for_music_generation(prompt)
+
+        print(f"New prompt: {prompt}" )
         inputs = processor(text=[prompt], return_tensors="pt").to(device)
 
         # Generate AI music
@@ -319,7 +323,7 @@ def generate_music():
 
         # Save generated music
         print("Saving")
-        torchaudio.save('output.wav', music_waveform, 24000)
+        torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
         print("here")
         # Return audio URL
 

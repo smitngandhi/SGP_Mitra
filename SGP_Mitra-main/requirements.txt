@@ -49,3 +49,4 @@ edge-tts
 pydub
 torchaudio
 torchvision
+soundfile

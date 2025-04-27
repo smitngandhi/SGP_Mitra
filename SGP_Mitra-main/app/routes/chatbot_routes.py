@@ -99,80 +99,88 @@ def generate_selfcare_pdf():
         return jsonify({"error": "No chat history found"}), 404
 
     analyzer = SentimentIntensityAnalyzer()
+    print("here pdf")
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     pdf.set_font("Arial", size=12)
 
     pdf.cell(200, 10, txt=f"Self-Care Plan for {username}", ln=True, align='C')
+    print("here 1")
     pdf.ln(10)
 
     avg_sentiment = 0
     num_chats = len(chats)
 
     for chat in chats:
+        print("here 2")
         timestamp = chat["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
         user_message = chat["user_message"]
         scores = analyzer.polarity_scores(user_message)
         sentiment_score = (scores["compound"] + 1) / 2
         avg_sentiment += sentiment_score
 
-        pdf.multi_cell(0, 10, f"[{timestamp}] {username}: {user_message}")
+        pdf.multi_cell(0 , 10 , f"[{timestamp}] {username}: {user_message}")
         pdf.multi_cell(0, 10, f"[{timestamp}] Bot: {chat['bot_response']}")
         pdf.multi_cell(0, 10, f"Sentiment Score: {sentiment_score:.2f}", border="B")
         pdf.ln(5)
 
     avg_sentiment /= num_chats
 
+    print("here 3")
     pdf.add_page()
     pdf.cell(200, 10, txt="Personalized Self-Care Plan", ln=True, align='C')
     pdf.ln(10)
 
     if avg_sentiment < 0.4:
+        print("here 4")
         pdf.multi_cell(0, 10, "Your mood has been quite low recently. A structured self-care routine can help improve your emotional well-being. Follow these personalized steps to feel better:")
 
-        pdf.multi_cell(0, 10, "1.Wake-up Routine (7:30 AM): Start your day with exposure to natural sunlight for at least 10 minutes. Sunlight helps regulate your circadian rhythm and boosts serotonin levels, which improve mood.")
-        
-        pdf.multi_cell(0, 10, "2.Mindful Breathing (4-7-8 method, twice daily): Inhale for 4 seconds, hold for 7 seconds, exhale for 8 seconds. This technique helps activate the parasympathetic nervous system, reducing stress and anxiety.")
-        
-        pdf.multi_cell(0, 10, "3.Journaling Prompt: 'Write about a moment when you felt truly happy and what made it special.' Writing about positive experiences can help rewire your brain to focus on the good.")
-        
-        pdf.multi_cell(0, 10, "4.Nutrition Tip: Begin your day with a protein-rich breakfast (e.g., eggs, yogurt, nuts) to stabilize blood sugar and energy levels.")
-        
-        pdf.multi_cell(0, 10, "5.Evening Relaxation: Listen to calming music or nature sounds before bed to promote relaxation and improve sleep quality.")
-        
-        pdf.multi_cell(0, 10, "6.Social Connection: Reach out to one person today, even if it's just a short message. Social interaction releases oxytocin, which helps reduce stress.")
+        steps = [
+            "Wake-up Routine (7:30 AM): Start your day with exposure to natural sunlight for at least 10 minutes. Sunlight helps regulate your circadian rhythm and boosts serotonin levels, which improve mood.",
+            "Mindful Breathing (4-7-8 method, twice daily): Inhale for 4 seconds, hold for 7 seconds, exhale for 8 seconds. This technique helps activate the parasympathetic nervous system, reducing stress and anxiety.",
+            "Journaling Prompt: 'Write about a moment when you felt truly happy and what made it special.' Writing about positive experiences can help rewire your brain to focus on the good.",
+            "Nutrition Tip: Begin your day with a protein-rich breakfast (e.g., eggs, yogurt, nuts) to stabilize blood sugar and energy levels.",
+            "Evening Relaxation: Listen to calming music or nature sounds before bed to promote relaxation and improve sleep quality.",
+            "Social Connection: Reach out to one person today, even if it's just a short message. Social interaction releases oxytocin, which helps reduce stress."
+        ]
+        for i, step in enumerate(steps, 1):
+            pdf.multi_cell(0, 10, f"{i}. {step}")
 
     elif avg_sentiment < 0.7:
+        print("here 5")
         pdf.multi_cell(0, 10, "Your mood appears balanced, and maintaining a structured self-care routine will help sustain your well-being. Here's a set of habits to reinforce emotional stability and boost happiness:")
 
-        pdf.multi_cell(0, 10, "1Morning Gratitude Exercise: Upon waking, list three things you're grateful for. Practicing gratitude increases dopamine and serotonin levels, improving emotional resilience.")
-        
-        pdf.multi_cell(0, 10, "2.Light Exercise (15 minutes of yoga/stretching): Engaging in physical movement helps release endorphins and reduces stress hormones like cortisol.")
-        
-        pdf.multi_cell(0, 10, "3.Mindful Breaks: Take short breaks throughout your day. Have a warm cup of tea or coffee without distractions. Being present in small moments reduces mental fatigue.")
-        
-        pdf.multi_cell(0, 10, "4.Bedtime Wind-Down: Read for 10 minutes before sleep instead of using screens. This promotes melatonin production and enhances sleep quality.")
-        
-        pdf.multi_cell(0, 10, "5.Creative Expression: Engage in a hobby such as painting, music, or crafting. Creativity provides a sense of accomplishment and joy.")
+        steps = [
+            "Morning Gratitude Exercise: Upon waking, list three things you're grateful for. Practicing gratitude increases dopamine and serotonin levels, improving emotional resilience.",
+            "Light Exercise (15 minutes of yoga/stretching): Engaging in physical movement helps release endorphins and reduces stress hormones like cortisol.",
+            "Mindful Breaks: Take short breaks throughout your day. Have a warm cup of tea or coffee without distractions. Being present in small moments reduces mental fatigue.",
+            "Bedtime Wind-Down: Read for 10 minutes before sleep instead of using screens. This promotes melatonin production and enhances sleep quality.",
+            "Creative Expression: Engage in a hobby such as painting, music, or crafting. Creativity provides a sense of accomplishment and joy."
+        ]
+        for i, step in enumerate(steps, 1):
+            pdf.multi_cell(0, 10, f"{i}. {step}")
 
     else:
+        print("here 8")
         pdf.multi_cell(0, 10, "You are experiencing a period of positive emotions and high energy. Maintain this momentum with habits that reinforce positivity and personal growth:")
 
-        pdf.multi_cell(0, 10, "1.Daily Physical Activity (20 minutes minimum): Exercise is proven to enhance cognitive function, improve mood, and increase energy levels.")
-        
-        pdf.multi_cell(0, 10, "2.Social Engagement: Plan an outing with friends or family. Social interactions strengthen emotional bonds and reduce stress.")
-        
-        pdf.multi_cell(0, 10, "3.Personal Growth Challenge: Set a new goal for yourself—whether it's learning a skill, taking an online course, or working towards a passion project.")
-        
-        pdf.multi_cell(0, 10, "4.Sleep Hygiene: Maintain a regular sleep schedule and aim for 7-8 hours of quality sleep to support cognitive function and emotional balance.")
+        steps = [
+            "Daily Physical Activity (20 minutes minimum): Exercise is proven to enhance cognitive function, improve mood, and increase energy levels.",
+            "Social Engagement: Plan an outing with friends or family. Social interactions strengthen emotional bonds and reduce stress.",
+            "Personal Growth Challenge: Set a new goal for yourself—whether it's learning a skill, taking an online course, or working towards a passion project.",
+            "Sleep Hygiene: Maintain a regular sleep schedule and aim for 7-8 hours of quality sleep to support cognitive function and emotional balance."
+        ]
+        for i, step in enumerate(steps, 1):
+            pdf.multi_cell(0, 10, f"{i}. {step}")
 
+    print("here 9")
     pdf.ln(10)
     pdf.cell(200, 10, "Stay positive, be kind to yourself, and take care!", ln=True, align='C')
 
-
     pdf_output = BytesIO()
-    pdf_output.write(pdf.output(dest="S").encode("latin1"))
+    print("here 10")
+    pdf_output.write(pdf.output(dest="S").encode("latin-1"))
     pdf_output.seek(0)
 
     msg = Message("Your Personalized Self-Care Plan", sender="mitrahelpline123@gmail.com", recipients=[email])
@@ -192,6 +200,9 @@ def voice_chat():
         # Transcribe directly
         message = transcribe_audio_from_mic()
         print(f"[Voice Input] Transcribed: {message}")
+        response = llm.invoke(f"convert this text to english: {message} and only give the translated one")
+        message = response.content
+        print(f'New Message is {message}')
     else:
         message = data["message"]
         print(message)

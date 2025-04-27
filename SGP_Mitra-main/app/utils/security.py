@@ -81,58 +81,30 @@ def generate_llm_response_sentiment(user_message, chatbot_preference, username):
     sentiment_score = (compound_score + 1) / 2
 
     # Check if the message is to generate a plan
-    # if "generate" in user_message.lower() or "plan" in user_message.lower():
-    #     user = users_collection.find_one({"username": username})
-    #     if not user:
-    #         return "User not found.", sentiment_score
+    if "generate" in user_message.lower() and "plan" in user_message.lower():
+        user = users_collection.find_one({"username": username})
+        if not user:
+            return "Sorry you have to register first to generate a self-care plan", 0.5
 
-    #     user_id = user.get("user_id")
-    #     if not user_id:
-    #         return "User ID not found.", sentiment_score
+        user_id = user.get("user_id")
+        if not user_id:
+            return "Sorry you have to register first to generate a self-care plan", 0.5
 
-    #     response = requests.post(
-    #         "http://127.0.0.1:5000/api/v1/api/generate_selfcare_pdf",
-    #         json={"user_id": user_id}
-    #     )
+        response = requests.post(
+            "http://127.0.0.1:5000/api/v1/api/generate_selfcare_pdf",
+            json={"user_id": user_id}
+        )
 
-        # if response.status_code == 200:
-        #     return "Your self-care plan is being generated and will be emailed to you.", sentiment_score
-        # else:
-        #     return "Error generating self-care plan.", sentiment_score
+        if response.status_code == 200:
+            return "Your self-care plan is being generated and will be emailed to you.", sentiment_score
+        else:
+            return "Error generating self-care plan.", sentiment_score
 
 
     
     # print("Maybe first/second time")
     display_name = username if username else "user"
     chatbot_preference = chatbot_preference if chatbot_preference else "Mild_support"
-
-    # if display_name == "user":
-    #     # embeddings1 = model.encode(user_message, convert_to_tensor=True)
-    #     # embeddings2 = model.encode(trigger_phrases, convert_to_tensor=True)
-    #     # cosine_scores = util.cos_sim(embeddings1, embeddings2)
-
-    #     if cosine_scores.max() > 0.5:  # adjust threshold as needed
-    #         return "Sorry, you have to register first to generate a plan.", 0.5
-        
-    # elif display_name != "user":
-    #     embeddings1 = model.encode(user_message, convert_to_tensor=True)
-    #     embeddings2 = model.encode(trigger_phrases, convert_to_tensor=True)
-    #     cosine_scores = util.cos_sim(embeddings1, embeddings2)
-
-    #     if cosine_scores.max() > 0.5:  # adjust threshold as needed
-    #         print("Similarity matched for generating plan")
-    #         user = users_collection.find_one({"username": username})
-    #         user_id = user.get("user_id")
-    #         response = requests.post(
-    #         "http://127.0.0.1:5000/api/v1/api/generate_selfcare_pdf",
-    #         json={"user_id": user_id}
-    #         )
-    #         if response.status_code == 200:
-    #             return "Your self-care plan is being generated and will be emailed to you.", 0.5
-    #         else:
-    #             return "Error generating self-care plan.", 0.5
-        
-    #     print("Similarity did not match for generating plan")
 
 
 
@@ -253,7 +225,11 @@ def transcribe_audio_from_mic():
     os.remove("temp.wav")
     return result['text']
 
+def generate_prompt_for_music_generation(user_prompt):
+     
+     response = llm.invoke(f"Extend the following prompt for music generation, providing only the new, more detailed version: '{user_prompt}'")
 
+     return response.content
 
 
 

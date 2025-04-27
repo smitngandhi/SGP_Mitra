@@ -23,7 +23,7 @@
     height: 100%;
     color: #333;
     text-align: center;
-    background-color: rgb(232, 207, 249);;
+    background-color: rgb(232, 207, 249);
     border-radius: 15px 15px 0 0;
     overflow-y: auto;
 }
@@ -112,6 +112,9 @@
 
 .user-message {
     align-self: flex-end;
+    font-size: 1.05rem;
+    margin-top: 5px;
+    margin-bottom: 10px;
     background-color: #6a3ea1;
     color: white;
     border-bottom-right-radius: 5px;

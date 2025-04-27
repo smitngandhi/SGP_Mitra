@@ -11,8 +11,8 @@ import voice from "../assets/voice.png";
 import recording from "../assets/recording.png";
 import send from "../assets/send.png";
 import sendhover from "../assets/sendhover.png";
-
-
+import sendSound from "../assets/sendmsg.mp3";  
+import receiveSound from "../assets/receivemsg.mp3"; 
 
 
 const Chatbotnew = () => {
@@ -49,28 +49,31 @@ const Chatbotnew = () => {
 
     const handleMouseEntersend = () => {
         setIsSending(true);
-      };
+    };
     
-      const handleMouseLeavesend = () => {
+    const handleMouseLeavesend = () => {
         setIsSending(false);
-      };
+    };
 
-      const handleSendClick = (e) => {
+    const playSound = (sound) => {
+        const audio = new Audio(sound);
+        audio.play();
+    };
+
+    const handleSendClick = (e) => {
         handleSubmit(e);
         setMessageSent(true);
     
         setTimeout(() => {
           setMessageSent(false);
         }, 500); // remove send animation after 0.5s (matches CSS sendPulse)
-      };
+    };
 
-    // Auto-scroll only when new messages are added and user isn't manually scrolling
     useEffect(() => {
         if (messages.length > 0 && !isUserScrolling) {
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
         
-        // Remove 'isNew' flag after animation completes
         const timer = setTimeout(() => {
             setMessages(messages.map(msg => ({...msg, isNew: false})));
         }, 1000);
@@ -78,31 +81,24 @@ const Chatbotnew = () => {
         return () => clearTimeout(timer);
     }, [messages, isUserScrolling]);
 
-    // Detect when user is manually scrolling
     const handleScroll = () => {
         if (!messagesContainerRef.current) return;
         
         const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
         const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 20;
         
-        // If not at bottom, user is manually scrolling
         setIsUserScrolling(!isAtBottom);
         
-        // If user scrolls back to bottom, reset scrolling state
         if (isAtBottom) {
             setIsUserScrolling(false);
         }
     };
 
-    // Handle fetching response from API
     const fetchChatbotResponse = async (message) => {
         const accessToken = cookies.access_token || null;
-        console.log(accessToken)
-        // Set loading state to show typing indicator
         setIsLoading(true);
         
         try {
-            // API call
             const response = await fetch("http://127.0.0.1:5000/api/v1/api/chat", {
                 method: "POST",
                 headers: {
@@ -115,11 +111,8 @@ const Chatbotnew = () => {
             });
 
             const data = await response.json();
-            // console.log(data)
-            // Short delay to show typing animation
             setTimeout(() => {
                 if (response.ok) {
-                    // Add bot response to chat with isNew flag for animation
                     setMessages(prev => {
                         const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
                         return [...updatedPrev, { 
@@ -129,16 +122,15 @@ const Chatbotnew = () => {
                         }];
                     });
                     
-                    // Reset user scrolling when a new message is added
                     setIsUserScrolling(false);
                     
-                    // Update mood meter if sentiment score is provided
                     if (data.sentiment_score !== undefined) {
                         setSentiment(data.sentiment_score);
                     }
+
+                    // Play sound for chatbot response
+
                 } else {
-                    // Handle error response
-                    console.error("API Error:", data.msg || "No response from API.");
                     setMessages(prev => {
                         const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
                         return [...updatedPrev, { 
@@ -150,8 +142,9 @@ const Chatbotnew = () => {
                     setIsUserScrolling(false);
                 }
                 setIsLoading(false);
-            }, 1000); // 1 second delay for typing animation
-            
+            }, 500);
+            playSound(receiveSound);
+
         } catch (error) {
             console.error("Error fetching response:", error);
             setTimeout(() => {
@@ -165,14 +158,13 @@ const Chatbotnew = () => {
                 });
                 setIsUserScrolling(false);
                 setIsLoading(false);
-            }, 1000);
+            }, 500);
+            playSound(receiveSound);
         }
     };
 
     const handleSubmit = () => {
         if (inputText.trim() === "") return;
-        
-        // Add user message to chat with isNew flag for animation
         setMessages(prev => {
             const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
             return [...updatedPrev, { 
@@ -181,20 +173,12 @@ const Chatbotnew = () => {
                 isNew: true 
             }];
         });
-        
-        // Animation for send button
         setMessageSent(true);
         setTimeout(() => setMessageSent(false), 500);
-        
         setInputText("");
-        
-        // Set chat as started, which removes welcome screen
         setChatStarted(true);
-        
-        // Reset user scrolling when sending a new message
         setIsUserScrolling(false);
-        
-        // Get response from chatbot API
+        playSound(sendSound);        
         fetchChatbotResponse(inputText);
     };
 
@@ -209,7 +193,6 @@ const Chatbotnew = () => {
     };
 
     const handleQuickQuestion = (question) => {
-        // Add the suggestion as a user message with isNew flag
         setMessages(prev => {
             const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
             return [...updatedPrev, { 
@@ -218,28 +201,21 @@ const Chatbotnew = () => {
                 isNew: true 
             }];
         });
-        
-        // Animation for send button
+
         setMessageSent(true);
         setTimeout(() => setMessageSent(false), 500);
         
-        // Clear input field
+        playSound(sendSound)
         setInputText("");
         
-        // Set chat as started, which removes welcome screen
         setChatStarted(true);
         
-        // Reset user scrolling when asking a quick question
         setIsUserScrolling(false);
         
-        // Get response from chatbot API
         fetchChatbotResponse(question);
     };
 
-    // Handle voice chat response
     const handleVoiceResponse = (reply) => {
-        console.log(reply)
-        // Add a placeholder user message for voice input
         setMessages(prev => {
             const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
             return [...updatedPrev, { 
@@ -254,13 +230,10 @@ const Chatbotnew = () => {
         
         setInputText("");
         
-        // Set chat as started, which removes welcome screen
         setChatStarted(true);
         
-        // Reset user scrolling when sending a new message
         setIsUserScrolling(false);
-        
-        // Add the AI response from voice chat
+
         setMessages(prev => {
             const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
             return [...updatedPrev, { 
@@ -269,13 +242,10 @@ const Chatbotnew = () => {
                 isNew: true 
             }];
         });
-        
-        // Reset user scrolling when a new message is added
+
         setIsUserScrolling(false);
         
-
         setSentiment(reply.sentiment_score);
-
     };
 
     return (
@@ -324,7 +294,6 @@ const Chatbotnew = () => {
                             </div>
                         ))}
                         
-                        {/* Typing indicator when loading */}
                         {isLoading && (
                             <div className="message bot-message typing-indicator">
                                 <span></span>
@@ -333,7 +302,6 @@ const Chatbotnew = () => {
                             </div>
                         )}
                         
-                        {/* Invisible element for scrolling to bottom */}
                         <div ref={messagesEndRef} />
                     </div>
                 )}
@@ -362,22 +330,20 @@ const Chatbotnew = () => {
 
                     <button className="voice-button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={() => {
                         console.log("Voice button CLicked")
-                        setIsVoiceModalOpen(true)}}>
+                        setIsVoiceModalOpen(true)}} >
                     <img 
                         src={isRecording ? recording : voice} 
                         alt="voice" 
                         className="voice-icon"
                     />
-                     </button>
+                    </button>
 
-                    {/* Mood Meter */}
                     <div className="mood-meter">
                         <MoodDetector sentiment={sentiment} />
                     </div>
                 </div>
             </div>
             
-            {/* Voice Assistant Modal */}
             <VoiceAssistantModal 
                 isOpen={isVoiceModalOpen}
                 onClose={() => setIsVoiceModalOpen(false)}
