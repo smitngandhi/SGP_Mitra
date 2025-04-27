@@ -6,7 +6,6 @@ import requests
 from app.models import *
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from app.utils import *
-from sentence_transformers import SentenceTransformer, util
 import uuid
 import numpy as np
 import whisper
@@ -354,5 +353,3 @@ def transcribe_audio_from_mic():
 
 
     # print(f'Printing......{conversation_buf.memory.buffer}')
-    
-

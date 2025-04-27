@@ -265,66 +265,66 @@ def handle_emotion_detection():
     response.headers["Content-Type"] = "application/json"
     return response
 
-# import os
-# import torch
-# import torchaudio
-# from flask import Flask, request, jsonify, send_from_directory
-# from transformers import AutoProcessor, MusicgenForConditionalGeneration
+import os
+import torch
+import torchaudio
+from flask import Flask, request, jsonify, send_from_directory
+from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 
-# OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_github_updated\\app\\static\\generated_music"
-# os.makedirs(OUTPUT_DIR, exist_ok=True)
+OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_Dhruvil_Branch\\app\\static\\generated_music"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-# # Load MusicGen model and processor
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-# model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
-# processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+# Load MusicGen model and processor
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
+processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
-# @user_routes.route("generate_music", methods=["POST"])
-# def generate_music():
-#     data = request.get_json()
-#     prompt = data.get("prompt", "")
+@user_routes.route("generate_music", methods=["POST"])
+def generate_music():
+    data = request.get_json()
+    prompt = data.get("prompt", "")
 
-#     print(f'Prompt: {prompt}')
+    print(f'Prompt: {prompt}')
 
-#     if not prompt:
-#         return jsonify({"error": "No prompt provided"}), 400
+    if not prompt:
+        return jsonify({"error": "No prompt provided"}), 400
 
-#     try:
-#         # Process text input
-#         inputs = processor(text=[prompt], return_tensors="pt").to(device)
+    try:
+        # Process text input
+        inputs = processor(text=[prompt], return_tensors="pt").to(device)
 
-#         # Generate AI music
-#         print("Generating")
-#         music_waveform = model_musicgen.generate(**inputs, max_new_tokens=500)
-#         print("Before")
+        # Generate AI music
+        print("Generating")
+        music_waveform = model_musicgen.generate(**inputs, max_new_tokens=500)
+        print("Before")
 
-#         print(music_waveform.shape)
+        print(music_waveform.shape)
 
-#         # print("Converting to 2D")
-#         # Convert waveform to 2D (mono)
-#         music_waveform = music_waveform.squeeze(0).cpu()
+        # print("Converting to 2D")
+        # Convert waveform to 2D (mono)
+        music_waveform = music_waveform.squeeze(0).cpu()
 
-#         print("After")
+        print("After")
 
-#         print(music_waveform.shape)
-
-
-#         # Define output file path
-#         print("Getting folder output")
-#         output_path = os.path.join(OUTPUT_DIR, "generated_music.wav")
-
-#         print(f'Output Path {output_path}')
-
-#         # Save generated music
-#         print("Saving")
-#         torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\SGP_Mitra_system\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
-
-#         # Return audio URL
+        print(music_waveform.shape)
 
 
-#         return jsonify({"audio_url": f"http://127.0.0.1:5000/static/generated_music/generated_music.wav"})
+        # Define output file path
+        print("Getting folder output")
+        output_path = os.path.join(OUTPUT_DIR, "generated_music.wav")
 
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
+        print(f'Output Path {output_path}')
+
+        # Save generated music
+        print("Saving")
+        torchaudio.save('output.wav', music_waveform, 24000)
+        print("here")
+        # Return audio URL
+
+
+        return jsonify({"audio_url": f"http://127.0.0.1:5000/static/generated_music/generated_music.wav"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

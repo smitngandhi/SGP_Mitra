@@ -26,7 +26,7 @@
 }
 
 /* Flexbox layout for aligning all cards in a row */
-.team-flex {
+.team-flex-one {
     display: flex;
     justify-content: center;
     gap: 60px; /* Increased space between cards */
@@ -36,7 +36,7 @@
 }
 
 /* Flip card container */
-.team-card {
+.team-card-one {
     width: 320px;
     height: 460px; /* Increased height for better readability */
     perspective: 1000px;
@@ -51,7 +51,7 @@
     transition: transform 0.6s ease;
 }
 
-.team-card:hover .card-inner {
+.team-card-one:hover .card-inner {
     transform: rotateY(180deg);
 }
 

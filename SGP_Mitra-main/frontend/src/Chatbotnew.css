@@ -12,6 +12,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+
 /* Welcome screen */
 .welcome-screen {
     display: flex;
@@ -24,7 +25,7 @@
     text-align: center;
     background-color: rgb(232, 207, 249);;
     border-radius: 15px 15px 0 0;
-    /* overflow-y: auto; */
+    overflow-y: auto;
 }
 
 /* Messages display area */
@@ -68,9 +69,8 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    height: 45px;
-    width: 45px;
-    padding: 0.4rem;
+    height: 35px;
+    width: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,9 +78,9 @@
 
 .send-button :hover, .voice-button :hover {
     transition: all;
-    transition-duration: 0.2s;
+    transition-duration: 1s;
     transition-timing-function: ease-in-out;
-    transform: scale(1.2);
+    /* transform: scale(1.2); */
 }
 
 /* Voice button */
@@ -88,9 +88,8 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
-    height: 40px;
-    width: 40px;
-    padding: 0.4rem;
+    height: 35px;
+    width: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -299,5 +298,3 @@
         width: 15%;
     }
 }
-
-

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
+import Navbar from "../components/Navbar"
 import "../MusicAnimations.css"; // We'll create this file for custom animations
+import vinyl from "../assets/vinyl.png"
+import vinylrecord from "../assets/vinyl-record.png"
 
 const Music_Generation = () => {
   const [tracks, setTracks] = useState([]);
@@ -53,41 +56,22 @@ const Music_Generation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white p-6 overflow-hidden relative">
-      {/* Background music notes animation */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <div 
-            key={i} 
-            className={`floating-note note-${i % 4 + 1}`} 
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${10 + Math.random() * 20}s`
-            }}
-          />
-        ))}
-      </div>
-      
-      <div className={`transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-        <h1 className="text-4xl font-bold mb-8 text-center animate-pulse">
-          🎵 Melodic AI <span className="text-yellow-300">Music Generator</span> 🎵
-        </h1>
-        
-        <div className="flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto">
+    <>      
+    <Navbar/>
+    <div className="bg-white text-white p-5 overflow-hidden relative">    
+        <div className="flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto" style={{height: '79vh'}}>
           {/* Left Section - Emotion Based */}
-          <div className="w-full lg:w-1/2 bg-black/30 backdrop-blur-md rounded-2xl p-6 shadow-2xl transform transition-all duration-500 hover:scale-102 hover:shadow-glow">
-            <h2 className="text-2xl font-bold mb-6 text-center text-gradient-gold">
-              Emotion-Based Recommendations
+          <div className="group w-full lg:w-1/2 bg-[#d7c6e6] backdrop-blur-md rounded-2xl p-6 transform transition-all duration-500 hover:scale-102 hover:bg-[#7a3fa9]">
+          <h2 className="text-2xl p-6 font-bold mb-6 text-center text-[#1e1e3f] transition-colors duration-500 group-hover:text-white">
+            Emotion-Based Recommendations
             </h2>
             
             <div className="flex justify-center mb-6">
               <button
                 onClick={fetchRecommendedTracks}
                 disabled={loading}
-                className="bg-gradient-to-r from-yellow-400 to-amber-500 text-black px-6 py-3 rounded-full text-lg font-semibold hover:from-yellow-300 hover:to-amber-400 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1 shadow-xl relative overflow-hidden btn-pulse"
-              >
+                // className="bg-[#7a3fa9] text-white px-6 py-3 rounded-full text-lg font-semibold group-hover:bg-[#d7c6e6] group-hover:text-black transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1 shadow-xl relative overflow-hidden transition-all duration-300 hover:w-4/5"
+                className="bg-[#7a3fa9] text-white px-6 py-3 rounded-full text-lg font-semibold group-hover:bg-[#d7c6e6] group-hover:text-black transform hover:-translate-y-1 shadow-xl relative overflow-hidden w-4/5 hover:w-full transition-all duration-300 ease-in-out"              >
                 {loading ? (
                   <>
                     <span className="animate-spin inline-block mr-2">⏳</span> 
@@ -130,29 +114,30 @@ const Music_Generation = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-center text-gray-300 py-10">
-                  <div className="text-5xl mb-4 animate-bounce">🎧</div>
-                  <p>Click the button above to detect your emotion and get personalized music recommendations</p>
+                <div className="text-center text-gray-300 py-7">
+                  <div className="text-5xl mb-4 animate-bounce">
+                    <img className="mx-auto block animate-spin" src={vinyl}style={{height:'90px'}}/>
+                  </div>
+                  <p className="group-hover:text-white transition-colors duration-500 py-5">Click the button above to detect your emotion and get personalized music recommendations</p>
                 </div>
               )}
             </div>
           </div>
           
           {/* Right Section - Text to Music */}
-          <div className="w-full lg:w-1/2 bg-black/30 backdrop-blur-md rounded-2xl p-6 shadow-2xl transform transition-all duration-500 hover:scale-102 hover:shadow-glow">
-            <h2 className="text-2xl font-bold mb-6 text-center text-gradient-blue">
+          <div className="group w-full lg:w-1/2 bg-[#d7c6e6] backdrop-blur-md rounded-2xl p-6 transform transition-all duration-500 hover:scale-102 hover:bg-[#7a3fa9]">
+            <h2 className="text-2xl font-bold p-6 mb-6 text-center text-[#1e1e3f] transition-colors duration-500 group-hover:text-white">
               Text-to-Music Generation
             </h2>
             
             <div className="relative mb-6">
-              <textarea
-                className="w-full p-4 bg-white/10 border border-purple-300/50 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 backdrop-blur-sm placeholder-purple-200/70"
-                rows="4"
-                placeholder="Describe your perfect song (e.g., 'A relaxing piano melody with gentle rain sounds')"
-                value={musicPrompt}
-                onChange={(e) => setMusicPrompt(e.target.value)}
-              ></textarea>
-              
+            <textarea
+            className="w-full p-4 bg-white/10 border border-purple-300/50 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300 backdrop-blur-sm group-hover:text-white group-hover:placeholder-white"
+            rows="4"
+            placeholder="Describe your perfect song (e.g., 'A relaxing piano melody with gentle rain sounds')"
+            value={musicPrompt}
+            onChange={(e) => setMusicPrompt(e.target.value)}
+            ></textarea>            
               <div className="absolute bottom-3 right-3 text-gray-400 text-sm">
                 {musicPrompt.length} characters
               </div>
@@ -162,7 +147,7 @@ const Music_Generation = () => {
               <button
                 onClick={generateMusic}
                 disabled={musicLoading || !musicPrompt.trim()}
-                className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-full text-lg font-semibold hover:from-purple-400 hover:to-blue-400 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1 shadow-xl relative overflow-hidden btn-ripple"
+                className="bg-[#7a3fa9] text-white px-6 py-3 rounded-full text-lg font-semibold group-hover:bg-[#d7c6e6] group-hover:text-black transform hover:-translate-y-1 shadow-xl relative overflow-hidden w-4/5 hover:w-full transition-all duration-300 ease-in-out"
               >
                 {musicLoading ? (
                   <>
@@ -208,15 +193,14 @@ const Music_Generation = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-48 text-center text-gray-300">
-                <div className="text-5xl mb-4 animate-float">🎹</div>
-                <p>Enter a description above and generate your custom music</p>
+              <div className="flex flex-col items-center justify-center text-center text-gray-300">
+                <p className="transition-all duration-500 group-hover:text-white" style={{paddingTop:'15px'}}>Enter a description above and generate your custom music</p>
               </div>
             )}
           </div>
         </div>
-      </div>
     </div>
+    </>
   );
 };
 

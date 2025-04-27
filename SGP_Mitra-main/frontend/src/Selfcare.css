@@ -178,7 +178,7 @@
   .progress-left {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
   }
   
   /* Plan Progress Container */
@@ -220,10 +220,11 @@
   
   /* Task Progress Container */
   .task-progress-container {
-    background-color: #fff;
+    background-color: #ede3f2;
     border-radius: 16px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 20px 20px 9px 20px;
+    margin-bottom: 20px;
   }
   
   .task-item {
@@ -542,3 +543,139 @@
   .submit-button:hover {
     background: #7a3fa9;
   }
+
+  /* Add these styles to your Selfcare.css file */
+
+/* Team container styling */
+.team-container {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  /* margin-top: 20px; */
+  width: 100%;
+}
+
+.team-header {
+  /* margin-bottom: 15px; */
+}
+
+.team-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.team-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Flexbox layout for aligning all cards */
+.team-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 100%;
+}
+
+/* Flip card container */
+.team-card {
+  width: 100%;
+  height: 220px;
+  perspective: 1000px;
+}
+
+/* Card flipping effect */
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.team-card:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Front and Back Styling */
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Front side (only name) */
+.card-front {
+  background: linear-gradient(to right, #e5d6ec, #ebb3ff);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 20px;
+}
+
+/* Back side (full details) */
+.card-back {
+  background: linear-gradient(to right, #f0f0fc, #fff6e0);
+  padding: 20px;
+  transform: rotateY(180deg);
+}
+
+/* Text Styles in cards */
+.card-back h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.card-back h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #6b6b6b;
+  margin-bottom: 10px;
+}
+
+.card-back p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+
+.contact-email {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a4a8a;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+.contact-email:hover {
+  color: #6f63cc;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .team-flex {
+    gap: 20px;
+  }
+  
+  .team-card {
+    height: 200px;
+  }
+}

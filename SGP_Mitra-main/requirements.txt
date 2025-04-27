@@ -47,3 +47,5 @@ sounddevice
 openai-whisper
 edge-tts
 pydub
+torchaudio
+torchvision

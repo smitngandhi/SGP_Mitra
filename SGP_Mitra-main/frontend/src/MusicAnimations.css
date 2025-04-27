@@ -2,232 +2,232 @@
 
 /* Floating music notes */
 .floating-note {
-    position: absolute;
+  position: absolute;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+  animation: float linear infinite;
+}
+
+.note-1::before { content: "♪"; font-size: 3rem; }
+.note-2::before { content: "♫"; font-size: 2.5rem; }
+.note-3::before { content: "🎵"; font-size: 2rem; }
+.note-4::before { content: "🎶"; font-size: 3.5rem; }
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
     opacity: 0.2;
-    pointer-events: none;
-    z-index: 0;
-    animation: float linear infinite;
   }
-  
-  .note-1::before { content: "♪"; font-size: 3rem; }
-  .note-2::before { content: "♫"; font-size: 2.5rem; }
-  .note-3::before { content: "🎵"; font-size: 2rem; }
-  .note-4::before { content: "🎶"; font-size: 3.5rem; }
-  
-  @keyframes float {
-    0% {
-      transform: translateY(0) rotate(0deg);
-      opacity: 0;
-    }
-    10% {
-      opacity: 0.2;
-    }
-    90% {
-      opacity: 0.2;
-    }
-    100% {
-      transform: translateY(-100vh) rotate(360deg);
-      opacity: 0;
-    }
+  90% {
+    opacity: 0.2;
   }
-  
-  /* Track card animations */
-  .track-card {
-    animation: slideIn 0.5s ease forwards;
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
     opacity: 0;
-    transform: translateY(20px);
   }
-  
-  @keyframes slideIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+}
+
+/* Track card animations */
+.track-card {
+  animation: slideIn 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  /* Button pulse effect */
-  .btn-pulse {
-    position: relative;
-  }
-  
-  .btn-pulse::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 9999px;
+}
+
+/* Button pulse effect */
+.btn-pulse {
+  position: relative;
+}
+
+.btn-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 0 rgba(255, 213, 79, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
     box-shadow: 0 0 0 0 rgba(255, 213, 79, 0.7);
-    animation: pulse 2s infinite;
   }
-  
-  @keyframes pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(255, 213, 79, 0.7);
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(255, 213, 79, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(255, 213, 79, 0);
-    }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 213, 79, 0);
   }
-  
-  /* Button ripple effect */
-  .btn-ripple {
-    position: relative;
-    overflow: hidden;
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 213, 79, 0);
   }
-  
-  .btn-ripple::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 9999px;
-    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+}
+
+/* Button ripple effect */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+  transform: scale(0);
+  opacity: 0;
+  animation: ripple 2s infinite;
+}
+
+@keyframes ripple {
+  0% {
     transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
     opacity: 0;
-    animation: ripple 2s infinite;
   }
-  
-  @keyframes ripple {
-    0% {
-      transform: scale(0);
-      opacity: 0.5;
-    }
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
+}
+
+/* Animations for elements */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Custom scrollbar */
+.tracklist-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tracklist-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.tracklist-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.tracklist-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Audio visualizer */
+.audio-visualizer {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.audio-visualizer::before {
+  content: "";
+  height: 40px;
+  display: flex;
+  gap: 2px;
+}
+
+.audio-visualizer.active::before {
+  content: "";
+  display: flex;
+  gap: 2px;
+  background: linear-gradient(to bottom, #9333ea, #3b82f6);
+  mask: repeating-linear-gradient(
+    to right,
+    #000 0px,
+    #000 2px,
+    #0000 3px,
+    #0000 6px
+  );
+  mask-composite: destination-in;
+  -webkit-mask-composite: destination-in;
+  mask-size: cover;
+  width: 100%;
+  height: 100%;
+  animation: visualizer 0.8s linear infinite;
+}
+
+@keyframes visualizer {
+  0% {
+    mask-size: 6px 30%, 6px 40%, 6px 60%, 6px 80%, 6px 40%, 6px 60%, 6px 50%, 6px 60%, 6px 70%, 6px 20%, 6px 30%, 6px 40%, 6px 90%, 6px 30%, 6px 50%, 6px 40%;
   }
-  
-  /* Animations for elements */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  50% {
+    mask-size: 6px 40%, 6px 60%, 6px 80%, 6px 40%, 6px 60%, 6px 50%, 6px 60%, 6px 70%, 6px 30%, 6px 30%, 6px 40%, 6px 90%, 6px 30%, 6px 50%, 6px 40%, 6px 70%;
   }
-  
-  .animate-fadeIn {
-    animation: fadeIn 0.8s ease forwards;
+  100% {
+    mask-size: 6px 70%, 6px 50%, 6px 40%, 6px 50%, 6px 30%, 6px 80%, 6px 60%, 6px 30%, 6px 40%, 6px 60%, 6px 50%, 6px 60%, 6px 30%, 6px 40%, 6px 60%, 6px 30%;
   }
-  
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-10deg); }
-    75% { transform: rotate(10deg); }
-  }
-  
-  .animate-wiggle {
-    animation: wiggle 1s ease infinite;
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  /* Custom scrollbar */
-  .tracklist-scroll::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .tracklist-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-  }
-  
-  .tracklist-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-  }
-  
-  .tracklist-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-  }
-  
-  /* Audio visualizer */
-  .audio-visualizer {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-  }
-  
-  .audio-visualizer::before {
-    content: "";
-    height: 40px;
-    display: flex;
-    gap: 2px;
-  }
-  
-  .audio-visualizer.active::before {
-    content: "";
-    display: flex;
-    gap: 2px;
-    background: linear-gradient(to bottom, #9333ea, #3b82f6);
-    mask: repeating-linear-gradient(
-      to right,
-      #000 0px,
-      #000 2px,
-      #0000 3px,
-      #0000 6px
-    );
-    mask-composite: destination-in;
-    -webkit-mask-composite: destination-in;
-    mask-size: cover;
-    width: 100%;
-    height: 100%;
-    animation: visualizer 0.8s linear infinite;
-  }
-  
-  @keyframes visualizer {
-    0% {
-      mask-size: 6px 30%, 6px 40%, 6px 60%, 6px 80%, 6px 40%, 6px 60%, 6px 50%, 6px 60%, 6px 70%, 6px 20%, 6px 30%, 6px 40%, 6px 90%, 6px 30%, 6px 50%, 6px 40%;
-    }
-    50% {
-      mask-size: 6px 40%, 6px 60%, 6px 80%, 6px 40%, 6px 60%, 6px 50%, 6px 60%, 6px 70%, 6px 30%, 6px 30%, 6px 40%, 6px 90%, 6px 30%, 6px 50%, 6px 40%, 6px 70%;
-    }
-    100% {
-      mask-size: 6px 70%, 6px 50%, 6px 40%, 6px 50%, 6px 30%, 6px 80%, 6px 60%, 6px 30%, 6px 40%, 6px 60%, 6px 50%, 6px 60%, 6px 30%, 6px 40%, 6px 60%, 6px 30%;
-    }
-  }
-  
-  /* Custom audio player */
-  .custom-audio-player {
-    border-radius: 50px;
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  .custom-audio-player::-webkit-media-controls-panel {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .custom-audio-player::-webkit-media-controls-play-button {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-  }
-  
-  /* Gradient text */
-  .text-gradient-gold {
-    background: linear-gradient(to right, #f59e0b, #fbbf24);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .text-gradient-blue {
-    background: linear-gradient(to right, #60a5fa, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  /* Card hover effects */
-  .hover\:scale-102:hover {
-    transform: scale(1.02);
-  }
-  
-  .hover\:shadow-glow:hover {
-    box-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
-  }
+}
+
+/* Custom audio player */
+.custom-audio-player {
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.custom-audio-player::-webkit-media-controls-panel {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-audio-player::-webkit-media-controls-play-button {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+/* Gradient text */
+.text-gradient-gold {
+  background: linear-gradient(to right, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-blue {
+  background: linear-gradient(to right, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Card hover effects */
+.hover\:scale-102:hover {
+  transform: scale(1.02);
+}
+
+.hover\:shadow-glow:hover {
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+}

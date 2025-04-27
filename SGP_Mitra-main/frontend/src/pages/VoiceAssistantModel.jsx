@@ -204,7 +204,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
           <button
             style={styles.doneBtn}
             onClick={() => {
-              if (responseText) onClose();
+              onClose();
             }}
           >
             Done

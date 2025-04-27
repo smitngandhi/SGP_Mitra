@@ -2,13 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import MoodDetector from "../components/MoodDetector";
 import "../Chatbotnew.css";
-import send from "../assets/up-arrow.png";
-import voice from "../assets/radio.png";
 import robotImage from "../assets/robotnew.png"; 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useCookies } from 'react-cookie';
 import VoiceAssistantModal from "./VoiceAssistantModel";
+import voice from "../assets/voice.png";
+import recording from "../assets/recording.png";
+import send from "../assets/send.png";
+import sendhover from "../assets/sendhover.png";
 
 
 
@@ -34,6 +36,33 @@ const Chatbotnew = () => {
         "Quick mood boost ideas",
         "Mindfulness exercises"
     ];
+
+    const [isRecording, setIsRecording] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+    const handleMouseEnter = () => {
+      setIsRecording(true);
+    };
+  
+    const handleMouseLeave = () => {
+      setIsRecording(false);
+    };
+
+    const handleMouseEntersend = () => {
+        setIsSending(true);
+      };
+    
+      const handleMouseLeavesend = () => {
+        setIsSending(false);
+      };
+
+      const handleSendClick = (e) => {
+        handleSubmit(e);
+        setMessageSent(true);
+    
+        setTimeout(() => {
+          setMessageSent(false);
+        }, 500); // remove send animation after 0.5s (matches CSS sendPulse)
+      };
 
     // Auto-scroll only when new messages are added and user isn't manually scrolling
     useEffect(() => {
@@ -319,19 +348,27 @@ const Chatbotnew = () => {
                         placeholder="Type your message here..."
                     />
                     <button 
-                        className={`send-button ${messageSent ? 'send-animation' : ''}`} 
-                        onClick={handleSubmit}
-                    >
-                        <img src={send} alt="send" />
+                            className={`send-button ${messageSent ? "send-animation" : ""}`} 
+                            onMouseEnter={handleMouseEntersend}
+                            onMouseLeave={handleMouseLeavesend}
+                            onClick={handleSendClick}
+                            >
+                            <img 
+                                src={isSending ? sendhover : send} 
+                                alt="send" 
+                                className="send-icon" 
+                            />
                     </button>
-                    <button 
-                        className="voice-button"
-                        onClick={() => {
+
+                    <button className="voice-button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={() => {
                         console.log("Voice button CLicked")
-                        setIsVoiceModalOpen(true)}}
-                    >
-                        <img src={voice} alt="voice" />
-                    </button>
+                        setIsVoiceModalOpen(true)}}>
+                    <img 
+                        src={isRecording ? recording : voice} 
+                        alt="voice" 
+                        className="voice-icon"
+                    />
+                     </button>
 
                     {/* Mood Meter */}
                     <div className="mood-meter">

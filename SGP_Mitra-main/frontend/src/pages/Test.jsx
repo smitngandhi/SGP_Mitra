@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import '../Test.css';
 import { useCookies } from "react-cookie";
 import { useEffect } from 'react';
-import illustration from "../assets/Illustration.jpg.jpeg";
 import Navbar from "../components/Navbar"
 
 const optionColors = {

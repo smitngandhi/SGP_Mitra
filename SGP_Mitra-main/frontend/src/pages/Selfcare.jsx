@@ -4,14 +4,7 @@ import { useCookies } from 'react-cookie';
 import '../Selfcare.css';
 import music from '../assets/relax_music.mp3';
 import Navbar from '../components/Navbar';
-import personheart from '../assets/personheart.svg';
-import person from '../assets/person.svg';
-import house from '../assets/house.svg';
-import chat from '../assets/chat.svg';
-
-import test from "../assets/pencil-fill.svg";
-import question from "../assets/question-circle.svg";
-
+import { wellnessQuotes } from '../wellnessQuotes';
 
 // Simple MeditationIcon placeholder
 const MeditationIcon = () => (
@@ -26,33 +19,34 @@ const SelfCare = () => {
   const [username, setUsername] = useState("User"); // Default value
   const [cookies] = useCookies(["access_token"]); // Access cookies
 
-      useEffect(() => {
-        const fetchUsername = async () => {
-          try {
-            const response = await fetch("http://127.0.0.1:5000/api/v1/get-username", {
-              method: "POST", // Use POST to send JSON data
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ access_token: cookies.access_token }), // Send cookie in JSON format
-              credentials: "include", // Ensure cookies are sent with the request
-            });
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/v1/get-username", {
+          method: "POST", // Use POST to send JSON data
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ access_token: cookies.access_token }), // Send cookie in JSON format
+          credentials: "include", // Ensure cookies are sent with the request
+        });
 
-            if (!response.ok) {
-              throw new Error("Failed to fetch username");
-            }
-
-            const data = await response.json();
-            setUsername(data.username || "User"); // Fallback if no username
-          } catch (error) {
-            console.error("Error fetching username:", error);
-          }
-        };
-
-        if (cookies.access_token) {
-          fetchUsername();
+        if (!response.ok) {
+          throw new Error("Failed to fetch username");
         }
-      }, [cookies.access_token]);
+
+        const data = await response.json();
+        setUsername(data.username || "User"); // Fallback if no username
+      } catch (error) {
+        console.error("Error fetching username:", error);
+      }
+    };
+
+    if (cookies.access_token) {
+      fetchUsername();
+    }
+  }, [cookies.access_token]);
+  
   // Popup states
   const [showJournal, setShowJournal] = useState(false);
   const [showRelaxationPopup, setShowRelaxationPopup] = useState(false);
@@ -98,13 +92,6 @@ const SelfCare = () => {
     },
     {
       id: 3,
-      title: 'Nature Exposure',
-      link: '#',
-      completed: false,
-      progress: 0,
-    },
-    {
-      id: 4,
       title: 'Relaxation Sound',
       link: '#',
       completed: false,
@@ -137,34 +124,7 @@ const SelfCare = () => {
     return defaultSteps;
   });
 
-  // Load calendar data from localStorage on mount
-  const [calendarData, setCalendarData] = useState(() => {
-    const savedCalendarData = localStorage.getItem('mindfulnessCalendar');
-    if (savedCalendarData) {
-      // Parse the saved data and ensure date objects are properly reconstructed
-      const parsedData = JSON.parse(savedCalendarData, (key, value) => {
-        if (key === 'date') {
-          return new Date(value);
-        }
-        return value;
-      });
-      return parsedData;
-    }
-    
-    // Default calendar if nothing in localStorage
-    const today = new Date();
-    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-
-    const daysArray = Array(daysInMonth)
-      .fill()
-      .map((_, i) => {
-        const date = new Date(today.getFullYear(), today.getMonth(), i + 1);
-        const isBeforeToday = date < new Date(today.setHours(0, 0, 0, 0));
-        const randomCompleted = isBeforeToday && Math.random() < 0.3;
-        return { date, completed: randomCompleted };
-      });
-    return daysArray;
-  });
+  
 
   // Save steps to localStorage whenever they change
   useEffect(() => {
@@ -176,11 +136,6 @@ const SelfCare = () => {
     completionHistory[todayKey] = steps;
     localStorage.setItem('mindfulness_completion_history', JSON.stringify(completionHistory));
   }, [steps]);
-
-  // Save calendar data to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('mindfulnessCalendar', JSON.stringify(calendarData));
-  }, [calendarData]);
 
   // Handle audio player effects
   useEffect(() => {
@@ -209,58 +164,6 @@ const SelfCare = () => {
   // Current streak state
   const [currentStreak, setCurrentStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
-
-  // Calculate streaks from calendar data
-  useEffect(() => {
-    let streak = 0;
-    const today = new Date().setHours(0, 0, 0, 0);
-    for (let i = calendarData.length - 1; i >= 0; i--) {
-      const day = calendarData[i];
-      if (day.completed) {
-        streak++;
-      } else if (day.date.getTime() < today) {
-        break;
-      }
-    }
-    setCurrentStreak(streak);
-
-    let maxStreak = 0;
-    let currentMaxStreak = 0;
-    for (let i = 0; i < calendarData.length; i++) {
-      if (calendarData[i].completed) {
-        currentMaxStreak++;
-        maxStreak = Math.max(maxStreak, currentMaxStreak);
-      } else {
-        currentMaxStreak = 0;
-      }
-    }
-    setLongestStreak(maxStreak);
-  }, [calendarData]);
-
-  // Check if all tasks are completed for today - only mark once per day
-  useEffect(() => {
-    const allTasksCompleted = steps.every(step => step.completed);
-    if (allTasksCompleted) {
-      // Check if we already marked today as completed
-      const todayString = new Date().toDateString();
-      const lastCompletedDay = localStorage.getItem('lastCompletedDay');
-      
-      if (lastCompletedDay !== todayString) {
-        setCalendarData(prev => {
-          const newCalendar = [...prev];
-          const todayIndex = newCalendar.findIndex(
-            day => day.date.toDateString() === todayString
-          );
-          if (todayIndex !== -1 && !newCalendar[todayIndex].completed) {
-            newCalendar[todayIndex].completed = true;
-            // Store that we've completed today
-            localStorage.setItem('lastCompletedDay', todayString);
-          }
-          return newCalendar;
-        });
-      }
-    }
-  }, [steps]);
 
   // Toggle completion of a step - Check if already completed for today
   const toggleStep = index => {
@@ -378,15 +281,6 @@ const SelfCare = () => {
     return steps[index].completed;
   };
 
-  // Sidebar navigation items
-  const navItems = [
-    { icon: chat, label: 'MindChat', path: '/chatbot'},
-    { icon: test, label: 'Self Test ', path: '/test'},
-    { icon: personheart, label: 'SelfCare Plans', path: '/selfcare'},
-    { icon: question, label: 'FAQs', path: '/faqs'},
-    { icon: person, label: 'Profile', path: '/profile'},    
-    { icon: house, label: 'Home', path: '/home'},
-  ];
 
   return (
     <>
@@ -480,24 +374,11 @@ const SelfCare = () => {
 
         {/* Track the Progress */}
         <section className="progress-tracking">
-          <h2>Track the Progress</h2>
-          <p>Track your task achievements and plan progresses here</p>
+          {/* <h2>Track the Progress</h2>
+          <p>Track your task achievements and plan progresses here</p> */}
           <div className="progress-grid">
             {/* LEFT COLUMN: Plan & Task Progress */}
             <div className="progress-left">
-              <div className="streak-container">
-                <h3 className="progress-title">Your Mindfulness Streaks</h3>
-                <div className="streak-info">
-                  <div className="streak-card">
-                    <div className="streak-value">{currentStreak}</div>
-                    <div className="streak-label">Current Streak</div>
-                  </div>
-                  <div className="streak-card">
-                    <div className="streak-value">{longestStreak}</div>
-                    <div className="streak-label">Longest Streak</div>
-                  </div>
-                </div>
-              </div>
               <div className="plan-progress-container">
                 <h3 className="progress-title">Plan Progress</h3>
                 <div className="progress-bar">
@@ -521,37 +402,34 @@ const SelfCare = () => {
                 ))}
               </div>
             </div>
-            {/* RIGHT COLUMN: Calendar */}
+            {/* RIGHT COLUMN: Wellness Quote Cards (replacing Team Cards) */}
             <div className="progress-right">
-              <div className="calendar-container">
-                <div className="calendar-header">
-                  <h3 className="calendar-title">Mindfulness Streak</h3>
+              <div className="team-container">
+                <div className="team-header">
+                  <h3 className="team-title">Wellness Wisdom</h3>
                 </div>
-                <p className="calendar-subtitle">
-                  {calendarData.filter(day => day.completed).length} days completed this month
+                <p className="team-subtitle">
+                  Inspirational quotes to guide your wellness journey
                 </p>
-                <div className="calendar-grid">
-                  {calendarData.slice(-28).map((day, index) => (
-                    <div
-                      key={index}
-                      className={`calendar-day ${day.completed ? '' : ''} ${
-                        day.date.toDateString() === new Date().toDateString() ? 'today' : ''
-                      }`}
-                    >
-                      <div className="calendar-date">{day.date.getDate()}</div>
-                      {day.completed && <div className="calendar-status">✓</div>}
-                    </div>
-                  ))}
-                </div>
-                <div className="calendar-legend">
-                  <div className="legend-item">
-                    <div className="legend-color completed-day"></div>
-                    <span>Completed</span>
-                  </div>
-                  <div className="legend-item">
-                    <div className="legend-color today"></div>
-                    <span>Today</span>
-                  </div>
+                <div className="team-flex">
+                {[...wellnessQuotes]
+                      .sort(() => 0.5 - Math.random()) // Shuffle the array
+                      .slice(0, 1) // Take the first 3 quotes
+                      .map((quote, index) => (
+                        <div key={index} className="team-card">
+                          <div className="card-inner">
+                            {/* Front Side - Only Quote */}
+                            <div className="card-front">
+                              <h2>{quote.frontQuote}</h2>
+                            </div>
+                            {/* Back Side - Why Follow This */}
+                            <div className="card-back">
+                              <h2>{quote.frontQuote}</h2>
+                              <p>{quote.backExplanation}</p>
+                            </div>
+                          </div>
+                        </div>
+                    ))}
                 </div>
               </div>
             </div>
