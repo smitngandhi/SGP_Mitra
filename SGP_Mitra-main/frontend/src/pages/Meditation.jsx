@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import '../meditation.css';
 import medi from '../assets/medi.mp4'
 import { useNavigate } from 'react-router-dom';
 
@@ -38,4 +37,4 @@ function Meditation() {
   );
 }
 
-export default Meditation;
+export default Meditation;

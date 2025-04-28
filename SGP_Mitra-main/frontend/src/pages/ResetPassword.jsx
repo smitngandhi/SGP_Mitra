@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -47,8 +47,9 @@ const ResetPassword = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-md w-full p-8">
+    <Navbar/>
+    <div className="flex items-center justify-center"  style={{ padding: '89px', backgroundColor: '#bb88e8'}}>
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden p-8 "style={{ width: '571px' }}>
           <h2 className="text-2xl font-semibold text-gray-800 text-center">Reset Password</h2>
           <p className="text-gray-600 text-center mt-2">Enter your new password below</p>
 
@@ -78,12 +79,16 @@ const ResetPassword = () => {
             </div>
 
             {/* Submit Button */}
+            <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full bg-[#8A7FDB] text-white font-semibold rounded-lg py-3 mt-4"
+              className="bg-[#ad75de] text-white font-semibold w-3/5 rounded-lg py-3 mt-4
+               transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md
+               active:scale-95 hover:w-full flex justify-center"
             >
               Reset Password
             </button>
+            </div>
           </form>
 
           {/* Success or Error Message */}
@@ -95,15 +100,13 @@ const ResetPassword = () => {
             Remembered your password?
             <Link 
                                       to="/login" 
-                                      className="text-[#8A7FDB] font-semibold 
-                                                 transition-colors duration-300 hover:text-[#6f63cc] ml-1"
+                                      className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1"
                                     >
                                       Log In
                                     </Link>
           </p>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

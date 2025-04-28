@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import personheart from '../assets/personheart.svg'
-import person from '../assets/person.svg'
-import house from '../assets/house.svg'
-import chat from '../assets/chat.svg'
-import Navbar from '../components/Navbar'
-import test from "../assets/pencil-fill.svg"
-import question from "../assets/question-circle.svg"
+import Navbar from '../components/Navbar';
 import axios from 'axios';
-import user_profile from "../assets/user_profile.png"
-import { useNavigate } from 'react-router-dom';
-import profileimg from '../assets/profile.jpg'
-import "../Profile.css"
+import profileimg from '../assets/profile.jpg';
+import "../Profile.css";
 function Profile() {
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     full_name: '',
@@ -132,15 +123,6 @@ function Profile() {
       }
     }
   };
-  const navItems = [
-      { icon: chat, label: 'MindChat', path: '/chatbot'},
-          { icon: test, label: 'Self Test ', path: '/test'},
-          { icon: personheart, label: 'SelfCare Plans', path: '/selfcare'},
-          { icon: question, label: 'FAQs', path: '/faqs'},
-          { icon: person, label: 'Profile', path: '/profile'},    
-          { icon: house, label: 'Home', path: '/home'},
-    ];
-  
   return (
     <>
     <Navbar/>
@@ -274,7 +256,6 @@ function Profile() {
         </div>
       </div>
     </div>
-    
     </>
   );
 }

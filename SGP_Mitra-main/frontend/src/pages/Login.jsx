@@ -84,9 +84,9 @@ const Login = () => {
         </div>
         <div className="w-full md:w-1/2 p-10">
           <h2 className="text-3xl font-medium text-gray-600">
-            Welcome Back, <span className="text-4xl font-bold text-[#8A7FDB]">Mitra</span>
+            Welcome Back, <span className="text-4xl font-bold text-[#965ec7]">Mitra</span>
           </h2>
-          <h2 className="text-lg font-bold text-[#8A7FDB]">Let's dive in.</h2>
+          <h2 className="text-lg font-bold text-[#965ec7]">Let's dive in.</h2>
           <div className="mt-6">
             <label className="block text-gray-700 font-medium">Email</label>
             <div className="flex items-center border rounded-lg mt-1 px-3 py-2 bg-gray-100 focus-within:border-[#8A7FDB] focus-within:shadow-md">
@@ -122,12 +122,13 @@ const Login = () => {
               <input type="checkbox" className="mr-2 transform scale-125" />
               <span className="text-sm text-gray-600">Remember me</span>
             </label>
-            <Link to="/forgot_password" className="text-sm text-[#5C49E0] font-semibold hover:text-[#8A7FDB]">
+            <Link to="/forgot_password" className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1">
               Forgot Password?
             </Link>
           </div>
           <button 
-            className="w-full bg-[#8A7FDB] text-white font-semibold rounded-lg py-3 mt-4 hover:bg-[#6f63cc] hover:shadow-md active:scale-95"
+            className="w-full bg-[#ad75de] text-white font-semibold rounded-lg py-3 mt-4
+                      transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md"
             onClick={handleSubmit}
             disabled={loading}
           >
@@ -142,7 +143,7 @@ const Login = () => {
           <GoogleButton text="Sign in with Google" />
           <p className="text-center mt-4 text-gray-600">
             Don't have an account?
-            <Link to="/register" className="text-[#8A7FDB] font-semibold hover:text-[#6f63cc] ml-1">
+            <Link to="/register" className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1">
               Register
             </Link>
           </p>

@@ -7,8 +7,6 @@ import chat from '../assets/chat.svg'
 
 import test from "../assets/pencil-fill.svg"
 import question from "../assets/question-circle.svg"
-import axios from 'axios';
-import user_profile from "../assets/user_profile.png"
 import { useNavigate } from 'react-router-dom';
 
 function Plan() {

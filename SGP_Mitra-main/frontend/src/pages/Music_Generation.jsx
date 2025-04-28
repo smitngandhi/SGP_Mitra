@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar"
 import "../MusicAnimations.css"; // We'll create this file for custom animations
 import vinyl from "../assets/vinyl.png"
-import vinylrecord from "../assets/vinyl-record.png"
+// import vinylrecord from "../assets/vinyl-record.png"
 
 const Music_Generation = () => {
   const [tracks, setTracks] = useState([]);
@@ -17,9 +17,13 @@ const Music_Generation = () => {
     setIsVisible(true);
   }, []);
 
+
+  
+
   // Function to fetch recommended tracks from the backend
   const fetchRecommendedTracks = async () => {
     setLoading(true);
+
     try {
       const response = await fetch("http://127.0.0.1:5000/api/v1/detect_emotion");
       const data = await response.json();
@@ -28,6 +32,7 @@ const Music_Generation = () => {
     } catch (error) {
       console.error("Error fetching recommended tracks:", error);
     }
+
     setLoading(false);
   };
 

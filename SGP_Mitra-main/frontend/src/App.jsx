@@ -45,7 +45,6 @@ const App = () => {
             <Route path="/music_generation" element={<MUSIC_GENERATION />} />
             <Route path="/voice_assistant" element={<VoiceAssistantModel  />} />
           </Routes>
-          {/* <Footer /> */}
         </>
       )}
     </>

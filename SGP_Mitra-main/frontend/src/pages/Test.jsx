@@ -137,7 +137,7 @@ function Test() {
       if (response.ok) {
         alert(`Questionnaire submitted! Total Score: ${totalScore}`);
       } else {
-        alert(`Error: ${result.message}`);
+        alert(`You have to register first`);
       }
     } catch (error) {
       console.error("Error submitting score:", error);

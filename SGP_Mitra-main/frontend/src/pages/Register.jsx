@@ -68,9 +68,9 @@ const Register = () => {
         {/* Right Section - Registration Form */}
         <div className="w-full md:w-1/2 p-10">
           <h2 className="text-3xl font-medium text-gray-600">
-            New here, <span className="text-4xl font-bold text-[#8A7FDB]">Mitra</span>?
+            New here, <span className="text-4xl font-bold text-[#965ec7]">Mitra</span>?
           </h2>
-          <h2 className="text-lg font-bold text-[#8A7FDB]">Let's begin.</h2>
+          <h2 className="text-lg font-bold text-[#965ec7]">Let's begin.</h2>
 
           {/* Full Name */}
           <div className="mt-6">
@@ -135,8 +135,8 @@ const Register = () => {
 
           {/* Register Button */}
           <button 
-            className="w-full bg-[#8A7FDB] text-white font-semibold rounded-lg py-3 mt-4
-                      transition-all duration-300 hover:bg-[#6f63cc] hover:shadow-md"
+            className="w-full bg-[#ad75de] text-white font-semibold rounded-lg py-3 mt-4
+                      transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md"
             onClick={handleSubmit}
             disabled={loading}
           >
@@ -158,7 +158,7 @@ const Register = () => {
             Already have an account?
             <Link 
               to="/login" 
-              className="text-[#8A7FDB] font-semibold transition-colors duration-300 hover:text-[#6f63cc] ml-1"
+              className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1"
             >
               Log In
             </Link>

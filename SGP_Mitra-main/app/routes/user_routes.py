@@ -20,6 +20,58 @@ from flask import Flask, jsonify, request
 import ast
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+import os
+import torch
+import torchaudio
+from flask import Flask, request, jsonify, send_from_directory
+from transformers import AutoProcessor, MusicgenForConditionalGeneration
+
+model = Sequential()
+model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
+model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Flatten())
+model.add(Dense(1024, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(7, activation='softmax'))
+
+
+
+OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_Dhruvil_Branch\\app\\static\\generated_music"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+
+# Load MusicGen model and processor
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
+processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+
+# Load the model weights
+model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\model.h5'
+try:
+    model.load_weights(model_path)
+    print("Weights loaded successfully!")
+except Exception as e:
+    print(f"Error loading weights: {e}")
+
+# Load pre-trained emotion model
+
+# Haar Cascade for face detection
+CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\haarcascade_frontalface_default.xml"
+face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
+
+# Emotion labels
+emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
+
+# Load music dataset
+df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\spotify_dataset.csv")
+
+df = df.dropna()
 
 
 
@@ -157,53 +209,9 @@ def update_profile():
 
 
 
-
-
-
-
-
-
-
-
-model = Sequential()
-model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
-model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
-model.add(Flatten())
-model.add(Dense(1024, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(7, activation='softmax'))
-
-# Load the model weights
-model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\model.h5'
-try:
-    model.load_weights(model_path)
-    print("Weights loaded successfully!")
-except Exception as e:
-    print(f"Error loading weights: {e}")
-
-# Load pre-trained emotion model
-
-# Haar Cascade for face detection
-CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\haarcascade_frontalface_default.xml"
-face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
-
-# Emotion labels
-emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
-
-# Load music dataset
-df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\spotify_dataset.csv")
-
-df = df.dropna()
-
-
 def detect_emotions():
-    """Captures webcam video, detects face, and classifies emotions."""
+
+
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         return {"error": "Could not open webcam."}
@@ -211,7 +219,7 @@ def detect_emotions():
     detected_emotions = []
     count = 0
 
-    while count < 20:
+    while count < 15:
         ret, frame = cap.read()
         if not ret:
             break
@@ -265,21 +273,6 @@ def handle_emotion_detection():
     response.headers["Content-Type"] = "application/json"
     return response
 
-import os
-import torch
-import torchaudio
-from flask import Flask, request, jsonify, send_from_directory
-from transformers import AutoProcessor, MusicgenForConditionalGeneration
-
-
-OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_Dhruvil_Branch\\app\\static\\generated_music"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-
-# Load MusicGen model and processor
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
-processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
 @user_routes.route("generate_music", methods=["POST"])
 def generate_music():
@@ -324,6 +317,9 @@ def generate_music():
         # Save generated music
         print("Saving")
         torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
+        title = generate_music_title(prompt)
+        print(f'New title of music {title}')
+        torchaudio.save(f'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\music_samples\\{title}.wav', music_waveform, 24000)
         print("here")
         # Return audio URL
 

@@ -161,17 +161,27 @@ def generate_llm_response_sentiment(user_message, chatbot_preference, username):
                                 Remember that {display_name} is seeking both emotional connection and practical guidance. Balance warm support with actionable advice, always respecting {display_name}'s autonomy and unique perspective. Your goal is to help {display_name} feel heard, supported, and empowered to take positive steps forward.
                                 While providing mental health support, remain mindful of your limitations and encourage professional help when appropriate, while continuing to be a consistent, compassionate presence for {display_name}.Keep your answers as short as possible
                                 
-                                Current User Input:
-                                {user_message}
+                                
+                                The user's chatbot preference is {chatbot_preference}.
+                                Based on this preference:
 
-                                His/Her chatbot preference:
-                                {chatbot_preference}
+                                If it is High-Support, the user is experiencing higher stress levels.
+
+                                If it is Mild-Support, the user is under moderate stress.
+
+                                If it is Minimal-Support, the user is experiencing little to no stress.
+
+                                Please communicate accordingly. and don't include the {chatbot_preference} in responses unless and until it is asked"
+
 
                                 Previous LLM generated outputs:
                                 {Previous_outputs}
 
                                 Previous inputed prompts:
                                 {Previous_Prompts}
+
+                                "Current user input: {user_message}.
+                                Treat this input as  the highest priority. Respond primarily based on this message before considering any other context.
 
                                 Response based on the above information""") 
 
@@ -228,6 +238,12 @@ def transcribe_audio_from_mic():
 def generate_prompt_for_music_generation(user_prompt):
      
      response = llm.invoke(f"Extend the following prompt for music generation, providing only the new, more detailed version: '{user_prompt}'")
+
+     return response.content
+
+def generate_music_title(user_prompt):
+     
+     response = llm.invoke(f'Generate an attractive and attention grabbing small title for the prompt in one word without any quotation or punctuation:- {user_prompt}')
 
      return response.content
 
