@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email_or_username, setEmail_or_Username] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -18,7 +18,7 @@ const ForgotPassword = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email_or_username }),
       });
 
       const data = await response.json();
@@ -52,8 +52,8 @@ const ForgotPassword = () => {
                 type="email"
                 placeholder="example@gmail.com"
                 className="w-full border rounded-lg px-3 py-2 mt-1 bg-gray-100 focus:outline-none"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={email_or_username}
+                onChange={(e) => setEmail_or_Username(e.target.value)}
                 required
               />
             </div>

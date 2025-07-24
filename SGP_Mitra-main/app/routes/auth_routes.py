@@ -19,8 +19,10 @@ import random
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # Allow HTTP for local development
 
-client_id = '116911782936-rbs2fo9mnu82trsgk29afhih35ibr9mt.apps.googleusercontent.com'
-client_secret = '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'
+# client_id = '116911782936-rbs2fo9mnu82trsgk29afhih35ibr9mt.apps.googleusercontent.com'
+# client_secret = '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'
+client_id = '90562559323-tnfqmgiapdanrjs22b04i2pli0etftg8.apps.googleusercontent.com' # Client ID from Google console center
+client_secret = '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' # Client password from Google COnsole 
 authorization_base_url = 'https://accounts.google.com/o/oauth2/auth'
 token_url = 'https://accounts.google.com/o/oauth2/token'
 redirect_uri = 'http://127.0.0.1:5000/api/v1/callback'
@@ -39,12 +41,14 @@ def register():
     
     if not is_valid_email(user["email"]):
         return jsonify({"msg": "Invalid email format"}), 400
+    
+    if users_collection.find_one({"email": user["email"]}):
+        return jsonify({"msg": "Email already registered"}), 409
 
     if not is_strong_password(user["password"]):
         return jsonify({"msg": "Password must be at least 8 characters long, include a number, an uppercase letter, and a special character"}), 400
 
-    if users_collection.find_one({"email": user["email"]}):
-        return jsonify({"msg": "Email already registered"}), 409
+    
     
     hashed_password = generate_hash_password(user["password"])
 
@@ -122,45 +126,49 @@ def login():
 # Forgot Password
 @auth_routes.route("/forgot-password", methods=["POST"])
 def forgot_password():
+
+    # Get the user data
     data = request.get_json()
 
-    
-    field="email"
-    user = users_collection.find_one({"email": data["email"]})
+    # Find the user based on email or username
+    user = users_collection.find_one({
+        "$or": [
+            {"email": data["email_or_username"]},
+            {"username": data["email_or_username"]}
+        ]
+    })
 
-    if not user:
-        user = users_collection.find_one({"username": data["email"]})
-        field="username"
-
+    # Return if not a valid username/Email
     if not user:
         return jsonify({"msg": "Not a valid Email/Username"}), 404
 
 
+    # Generate a random reset token
     reset_token = secrets.token_urlsafe(32)
+
+    # Hash the token
     hashed_reset_token = generate_hash_token(reset_token)
+
+    # Set the expiration time (here 10 minutes)
     expiration_time = datetime.now(timezone.utc) + timedelta(minutes=10) 
     
-    if(field=="email"):
-        users_collection.update_one(
-        {"email": data["email"]},
-        {"$set": {"reset_token": hashed_reset_token, "reset_token_expiry": expiration_time}}
-    )
 
-        send_reset_email(data["email"], reset_token)
-        return jsonify({"msg": f"Password reset email sent to {data['email']}"}), 200
+    # Update the server with the hashed token and expiration token
+    users_collection.update_one(
+    {
+        {"email": user["email"]},
+    },
+    {
+        "$set": {
+            "reset_token": hashed_reset_token,
+            "reset_token_expiry": expiration_time
+        }
+    }
+)
 
-    if(field=="username"):
-
-    
-        users_collection.update_one(
-            {"username": data["email"]},
-            {"$set": {"reset_token": hashed_reset_token, "reset_token_expiry": expiration_time}}
-        )
-
-        user = users_collection.find_one({"username": data["email"]})
-
-        send_reset_email(user["email"], reset_token)
-        return jsonify({"msg": f"Password reset email sent to {user['email']}"}), 200
+    # Send the reset link to our mail for resetting password
+    send_reset_email(user['email'] , reset_token)
+    return jsonify({"msg": f"Password reset email sent to {user['email']}"}), 200
 
 
 @auth_routes.route("/reset-password/<token>", methods=["POST"])
@@ -169,18 +177,24 @@ def reset_password(token):
 
     hashed_token = generate_hash_token(token)
 
-
+    # Get the new passwords from the user
     data = request.get_json()
+
+    # Check if the token is expired or not
     user = users_collection.find_one({"reset_token": hashed_token})
 
+
+    # If expired then sends a message
     if not user:
         return jsonify({"msg": "Invalid or expired token"}), 400
 
+    # Fetches the expiry time of time
     if "reset_token_expiry" in user:
         expiry = user["reset_token_expiry"]
         if expiry.tzinfo is None:
             expiry = expiry.replace(tzinfo=timezone.utc)
 
+    # If the expiry time exceeds then Sends a message 
     if datetime.now(timezone.utc) > expiry:
         return jsonify({"msg": "Token expired"}), 400
 
@@ -188,6 +202,7 @@ def reset_password(token):
     if(is_strong_password(data["new_password"])):
         hashed_password = generate_hash_password(data["new_password"])
 
+        # Unsets the reset_token and expiry upon successfull change og passwords
         users_collection.update_one(
         {"email": user["email"]},
         {"$set": {"password": hashed_password}, "$unset": {"reset_token": "", "reset_token_expiry": ""}}
@@ -280,6 +295,34 @@ def callback():
 
 
     return response
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

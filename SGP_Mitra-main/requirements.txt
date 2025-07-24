@@ -50,3 +50,5 @@ pydub
 torchaudio
 torchvision
 soundfile
+langchain_openai
+openpyxl
