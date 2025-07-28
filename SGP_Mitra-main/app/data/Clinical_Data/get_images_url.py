@@ -9,8 +9,8 @@ load_dotenv()
 
 # === Configuration ===
 PEXELS_API_KEY = os.getenv('PEXELS_API_KEY') # Replace this with your actual API key
-INPUT_FILE = "Final_DS.xlsx"
-OUTPUT_FILE = "Custom_Clinical_DS.xlsx"
+INPUT_FILE = "Scenario_with_search_items.xlsx"
+OUTPUT_FILE = "Final_DS_2.xlsx"
 DELAY_BETWEEN_REQUESTS = 1  # seconds to avoid rate limit
 
 # === Load Excel File ===

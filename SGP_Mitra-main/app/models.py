@@ -31,13 +31,18 @@ chats_collection = db["chats"]
 # Initialize Together.AI-powered LLM
 
 llm = ChatOpenAI(
-    model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+    model="lgai/exaone-3-5-32b-instruct",
     openai_api_key=os.getenv('TOGETHER_API_KEY'),
     openai_api_base="https://api.together.xyz/v1",
     temperature = 0.001
 )
 
-
+recommendation_llm = ChatOpenAI(
+    model="lgai/exaone-3-5-32b-instruct",
+    openai_api_key=os.getenv('TOGETHER_API_KEY'),
+    openai_api_base="https://api.together.xyz/v1",
+    temperature = 0.001
+)
 
 
 # conversation_buf = ConversationChain(

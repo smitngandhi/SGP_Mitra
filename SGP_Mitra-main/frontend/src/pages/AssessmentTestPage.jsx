@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Send, BarChart3 } from 'lucide-react';
-
+import { ChevronLeft, ChevronRight, Send, BarChart3, Brain, TrendingUp, Heart, Target, Home } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar } from 'recharts';
+import Mitra from "../assets/Mitra Logo.png"
 const AssessmentTestPage = () => {
   const [cards, setCards] = useState([]);
   const [assessmentTypes, setAssessmentTypes] = useState([]);
@@ -11,6 +12,12 @@ const AssessmentTestPage = () => {
   const [results, setResults] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState(null);
+  const [aiInsights, setAiInsights] = useState(null);
+  const [loadingInsights, setLoadingInsights] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Mock Mitra logo (using a placeholder since we can't import the actual file)
+  // const Mitra = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiMzQjgyRjYiLz4KPHRleHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiPk08L3RleHQ+Cjwvc3ZnPg==";
 
   useEffect(() => {
     fetchAssessments();
@@ -25,7 +32,6 @@ const AssessmentTestPage = () => {
         throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
       }
       
-      // Check if response is JSON
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
@@ -48,7 +54,6 @@ const AssessmentTestPage = () => {
       setCards(data.cards);
       setAssessmentTypes(data.assessmentTypes || []);
       
-      // Initialize responses with default values for all cards
       const initialResponses = {};
       data.cards.forEach(card => {
         const defaultValue = Math.floor((card.minScore + card.maxScore) / 2);
@@ -61,6 +66,99 @@ const AssessmentTestPage = () => {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAIInsights = async (resultsData) => {
+    setLoadingInsights(true);
+    try {
+      // Prepare normalized scores for backend
+      const Scores = {};
+      Object.entries(resultsData).forEach(([assessmentType, data]) => {
+        Scores[assessmentType] = data.totalScore;
+      });
+
+      // Fetch all insights in parallel
+      const [
+        personalInsightResponse,
+        strengthInsightResponse,
+        growthInsightResponse,
+        recommendationsResponse
+      ] = await Promise.all([
+        fetch('http://localhost:5000/api/v1/get-personal-insight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scores: Scores })
+        }),
+        fetch('http://localhost:5000/api/v1/get-strength-insight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scores: Scores })
+        }),
+        fetch('http://localhost:5000/api/v1/get-growth-insight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scores: Scores })
+        }),
+        fetch('http://localhost:5000/api/v1/get-recommendations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scores: Scores })
+        })
+      ]);
+
+      // Process responses
+      const insights = {
+        mainInsight: null,
+        strengthsInsight: null,
+        improvementInsight: null,
+        recommendations: []
+      };
+
+      // Handle personal insight
+      if (personalInsightResponse.ok) {
+        const personalData = await personalInsightResponse.json();
+        insights.mainInsight = personalData.insight;
+      } else {
+        insights.mainInsight = "Unable to generate personal insight at this time.";
+      }
+
+      // Handle strength insight
+      if (strengthInsightResponse.ok) {
+        const strengthData = await strengthInsightResponse.json();
+        insights.strengthsInsight = strengthData.insight;
+      } else {
+        insights.strengthsInsight = "Unable to generate strength insight at this time.";
+      }
+
+      // Handle growth insight
+      if (growthInsightResponse.ok) {
+        const growthData = await growthInsightResponse.json();
+        insights.improvementInsight = growthData.insight;
+      } else {
+        insights.improvementInsight = "Unable to generate growth insight at this time.";
+      }
+
+      // Handle recommendations
+      if (recommendationsResponse.ok) {
+        const recommendationsData = await recommendationsResponse.json();
+        insights.recommendations = recommendationsData.recommendations || [];
+      } else {
+        insights.recommendations = ["Unable to generate recommendations at this time."];
+      }
+
+      setAiInsights(insights);
+
+    } catch (error) {
+      console.error('Error fetching AI insights:', error);
+      setAiInsights({
+        mainInsight: "Error generating insights. Please try again later.",
+        strengthsInsight: "Error generating strength insights. Please try again later.",
+        improvementInsight: "Error generating growth insights. Please try again later.",
+        recommendations: ["Error generating recommendations. Please try again later."]
+      });
+    } finally {
+      setLoadingInsights(false);
     }
   };
 
@@ -82,7 +180,6 @@ const AssessmentTestPage = () => {
     const totalCards = cards.length;
     if (totalCards === 0) return 0;
     
-    // Count cards that have responses (all cards should have responses after initialization)
     const respondedCards = Object.keys(responses).filter(cardId => 
       responses[cardId] !== undefined && responses[cardId] !== null
     ).length;
@@ -95,7 +192,6 @@ const AssessmentTestPage = () => {
   const isComplete = () => {
     if (cards.length === 0) return false;
     
-    // Check if all cards have responses
     const complete = cards.every(card => 
       responses[card.id] !== undefined && responses[card.id] !== null
     );
@@ -133,6 +229,9 @@ const AssessmentTestPage = () => {
       setResults(calculateData.assessmentResults);
       setShowResults(true);
 
+      // Fetch AI insights
+      await fetchAIInsights(calculateData.assessmentResults);
+
       // Submit to backend
       const submitResponse = await fetch('http://localhost:5000/api/v1/submit-assessment', {
         method: 'POST',
@@ -158,7 +257,6 @@ const AssessmentTestPage = () => {
     }
   };
 
-  // Mock data for development/testing
   const createMockData = () => {
     const mockCards = [
       {
@@ -187,19 +285,83 @@ const AssessmentTestPage = () => {
         imageUrl: "https://images.unsplash.com/photo-1544967882-6abce0767465?w=400",
         minScore: 1,
         maxScore: 7
+      },
+      {
+        id: 4,
+        searchItem: "Team Sports",
+        scenario: "Your friends invite you to join a team sport. How do you respond?",
+        assessmentType: "Social",
+        imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+        minScore: 1,
+        maxScore: 7
+      },
+      {
+        id: 5,
+        searchItem: "Learning New Skill",
+        scenario: "You have the opportunity to learn something completely new. How eager are you?",
+        assessmentType: "Growth",
+        imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400",
+        minScore: 1,
+        maxScore: 7
       }
     ];
 
     setCards(mockCards);
-    setAssessmentTypes(["Excitement", "Adventure", "Culture"]);
+    setAssessmentTypes(["Excitement", "Adventure", "Culture", "Social", "Growth"]);
     
-    // Initialize responses
     const initialResponses = {};
     mockCards.forEach(card => {
       initialResponses[card.id] = Math.floor((card.minScore + card.maxScore) / 2);
     });
     setResponses(initialResponses);
     setLoading(false);
+  };
+
+  // Prepare chart data
+  const prepareChartData = () => {
+    if (!results) return { barData: [], radarData: [], lineData: [] };
+    
+    const barData = Object.entries(results).map(([type, data]) => ({
+      name: type,
+      score: data.normalized ,
+      percentage: data.percentage
+    }));
+
+    const radarData = Object.entries(results).map(([type, data]) => ({
+      subject: type,
+      score: data.normalized,
+      fullMark: 5
+    }));
+
+    const lineData = Object.entries(results).map(([type, data], index) => ({
+      category: type,
+      score: data.normalized * 100,
+      trend: data.normalized * 100 + (Math.random() - 0.5) * 10 // Mock trend data
+    }));
+
+    return { barData, radarData, lineData };
+  };
+
+  // Smooth navigation with animation
+  const handleContinue = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentCard(currentCard + 1);
+      setIsAnimating(false);
+    }, 300);
+  };
+
+  const handlePrevious = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setCurrentCard(currentCard - 1);
+      setIsAnimating(false);
+    }, 300);
+  };
+
+  // Navigate to home
+  const goToHome = () => {
+    window.location.href = 'http://localhost:3000/';
   };
 
   if (loading) {
@@ -225,62 +387,201 @@ const AssessmentTestPage = () => {
   }
 
   if (showResults && results) {
+    const { barData, radarData, lineData } = prepareChartData();
+    
     return (
-      <div className="min-h-screen bg-gray-100 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-center mb-8">
-              <BarChart3 className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Assessment Complete</h1>
-              <p className="text-gray-600">Thank you for completing the assessment</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+          <div className="flex items-center justify-center mb-6">
+            <img 
+              src={Mitra} 
+              alt="Mitra Logo" 
+              className="w-40 h-40 rounded-full object-cover shadow-lg" 
+            />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            Your Mental Wellness Profile
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Discover insights about your emotional patterns and get personalized recommendations for mental strength
+          </p>
+        </div>
+
+          {/* AI Insights Section */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-4">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">AI-Powered Insights</h2>
+            </div>
+            
+            {loadingInsights ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-4"></div>
+                <p className="text-gray-600">Generating personalized insights...</p>
+              </div>
+            ) : aiInsights ? (
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+                  <div className="flex items-center mb-3">
+                    <TrendingUp className="w-5 h-5 text-blue-600 mr-2" />
+                    <h3 className="text-lg font-semibold text-gray-800">Overall Assessment</h3>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed">{aiInsights.mainInsight}</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
+                    <div className="flex items-center mb-3">
+                      <Heart className="w-5 h-5 text-green-600 mr-2" />
+                      <h3 className="text-lg font-semibold text-gray-800">Your Strengths</h3>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">{aiInsights.strengthsInsight}</p>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6">
+                    <div className="flex items-center mb-3">
+                      <Target className="w-5 h-5 text-orange-600 mr-2" />
+                      <h3 className="text-lg font-semibold text-gray-800">Growth Opportunities</h3>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">{aiInsights.improvementInsight}</p>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Personalized Recommendations</h3>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {aiInsights.recommendations.map((rec, index) => (
+                      <div key={index} className="flex items-start">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                        <p className="text-gray-700 text-sm">{rec}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-600">Unable to generate insights at this time.</p>
+            )}
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid lg:grid-cols-2 gap-8 mb-8">
+            {/* Bar Chart */}
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                <BarChart3 className="w-6 h-6 text-blue-600 mr-2" />
+                Score Overview
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis />
+                  <YAxis />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Bar dataKey="score" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            {/* Radar Chart */}
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-6">Wellness Radar</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <RadarChart data={radarData}>
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="subject" />
+                  <PolarRadiusAxis angle={30} domain={[0, 5]} />
+                  <Radar
+                    name="Score"
+                    dataKey="score"
+                    stroke="#8B5CF6"
+                    fill="#8B5CF6"
+                    fillOpacity={0.3}
+                    strokeWidth={2}
+                  />
+                  <Tooltip />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Detailed Results */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+            <h3 className="text-2xl font-bold text-gray-800 mb-8">Detailed Results</h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Object.entries(results).map(([assessmentType, data]) => (
-                <div key={assessmentType} className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4">{assessmentType}</h3>
+                <div key={assessmentType} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <h4 className="text-xl font-semibold text-gray-800 mb-4">{assessmentType}</h4>
                   <div className="space-y-3">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-600">Score:</span>
-                      <span className="font-semibold text-blue-600">
+                      <span className="font-bold text-blue-600 text-lg">
                         {data.totalScore} / {data.maxPossibleScore}
                       </span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Percentage:</span>
+                      <span className="font-bold text-purple-600">{data.percentage}%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-600">Questions:</span>
                       <span className="font-semibold">{data.questionCount}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-gray-600">Average:</span>
                       <span className="font-semibold text-green-600">{data.averageScore}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Percentage:</span>
-                      <span className="font-semibold text-purple-600">{data.percentage}%</span>
+                    
+                    {/* Progress bar for this category */}
+                    <div className="mt-4">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${data.percentage}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+          </div>
 
-            <div className="mt-8 text-center">
-              <button
-                onClick={() => {
-                  setShowResults(false);
-                  setResults(null);
-                  setCurrentCard(0);
-                  // Reinitialize responses
-                  const initialResponses = {};
-                  cards.forEach(card => {
-                    initialResponses[card.id] = Math.floor((card.minScore + card.maxScore) / 2);
-                  });
-                  setResponses(initialResponses);
-                }}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
-              >
-                Start New Assessment
-              </button>
-            </div>
+          {/* Action Buttons */}
+          <div className="text-center flex gap-4 justify-center">
+            <button
+              onClick={goToHome}
+              className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center"
+            >
+              <Home className="w-5 h-5 mr-2" />
+              Home
+            </button>
+            <button
+              onClick={() => {
+                setShowResults(false);
+                setResults(null);
+                setAiInsights(null);
+                setCurrentCard(0);
+                const initialResponses = {};
+                cards.forEach(card => {
+                  initialResponses[card.id] = Math.floor((card.minScore + card.maxScore) / 2);
+                });
+                setResponses(initialResponses);
+              }}
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Take New Assessment
+            </button>
           </div>
         </div>
       </div>
@@ -309,7 +610,7 @@ const AssessmentTestPage = () => {
   const complete = isComplete();
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen bg-gray-100 py-4">
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="mb-6">
@@ -331,8 +632,8 @@ const AssessmentTestPage = () => {
           </div>
         </div>
 
-        {/* Card */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden relative">
+        {/* Card with Animation */}
+        <div className={`bg-white rounded-xl shadow-lg overflow-hidden relative transition-all duration-300 transform ${isAnimating ? 'scale-95 opacity-70' : 'scale-100 opacity-100'}`}>
           {/* Card Number Badge */}
           <div className="absolute top-4 right-4 z-10">
             <span className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm font-medium">
@@ -340,8 +641,8 @@ const AssessmentTestPage = () => {
             </span>
           </div>
 
-          {/* Image Container */}
-          <div className="relative h-80 bg-gray-900 overflow-hidden">
+          {/* Image Container - Reduced height */}
+          <div className="relative h-48 bg-gray-900 overflow-hidden">
             {currentCardData.imageUrl ? (
               <img
                 src={currentCardData.imageUrl}
@@ -366,17 +667,17 @@ const AssessmentTestPage = () => {
             </div>
 
             {/* Overlay with text */}
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-6">
-              <h1 className="text-white text-3xl font-bold mb-2">
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-4">
+              <h1 className="text-white text-2xl font-bold mb-2">
                 {currentCardData.searchItem}
               </h1>
             </div>
           </div>
 
-          {/* Card Content */}
-          <div className="p-6">
+          {/* Card Content - Reduced padding */}
+          <div className="p-5">
             {/* Question */}
-            <div className="mb-6">
+            <div className="mb-5">
               <h2 className="text-lg font-medium text-gray-800 mb-2">
                 {currentCardData.scenario}
               </h2>
@@ -386,8 +687,8 @@ const AssessmentTestPage = () => {
             </div>
 
             {/* Slider Section */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-medium text-teal-600">
                   Stay in bed
                 </span>
@@ -437,8 +738,9 @@ const AssessmentTestPage = () => {
                 </button>
               ) : (
                 <button
-                  onClick={() => setCurrentCard(currentCard + 1)}
-                  className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200"
+                  onClick={handleContinue}
+                  disabled={isAnimating}
+                  className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
                 >
                   Continue
                 </button>
@@ -451,8 +753,9 @@ const AssessmentTestPage = () => {
         {currentCard > 0 && (
           <div className="mt-4 flex justify-center">
             <button
-              onClick={() => setCurrentCard(currentCard - 1)}
-              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+              onClick={handlePrevious}
+              disabled={isAnimating}
+              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-50"
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
               Previous

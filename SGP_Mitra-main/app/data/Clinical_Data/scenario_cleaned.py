@@ -13,7 +13,7 @@ if 'Scenario' not in df.columns:
 def remove_think_tags(text):
     if pd.isna(text):
         return text
-    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).replace('**', '').strip()
 
 # Apply cleaning to each row
 df['Scenario'] = df['Scenario'].apply(remove_think_tags)

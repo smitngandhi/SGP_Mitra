@@ -9,14 +9,14 @@ import pandas as pd
 
 # Defining LLM
 scenario_llm = ChatOpenAI(
-    model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+    model="lgai/exaone-3-5-32b-instruct",
     openai_api_key=os.getenv('TOGETHER_API_KEY'),
     openai_api_base="https://api.together.xyz/v1",
     temperature = 0.001
 )
 
 # Load the Excel file
-df = pd.read_excel('app/data/Clinical_Data/Clinical Exam Half Dataset.xlsx')
+df = pd.read_excel('Clinical Exam Half Dataset.xlsx')
 
 # Validate required columns
 if 'AssessmentQuestion' not in df.columns or 'Scenario' not in df.columns:
@@ -25,29 +25,33 @@ if 'AssessmentQuestion' not in df.columns or 'Scenario' not in df.columns:
 # Function to turn question into scenario using LLM
 def convert_to_scenario(question):
     prompt = f"""
-    You are a creative and witty scenario writer for a mental wellness app.
+    You are a witty and creative scenario writer for a mental wellness app.
 
-    Convert the following assessment question into a fun, engaging real-life scenario where the user imagines themselves in that moment and chooses how they would respond — not how often it happens.
+    Your task is to turn the following mental health assessment question into a short, engaging real-life scenario that helps users reflect on their **energy or motivation** in a specific moment.
 
-    Guidelines:
-    - Use a light, slightly humorous, and relatable tone.
-    - Make the situation realistic and short (1-2 sentences).
-    - Avoid using phrases like "how often" or "do you feel."
-    - Instead, describe a situation and let the user imagine what they would do.
-    - Make sure the scenario still captures the psychological essence of the original question.
-    - The response should be suitable for a scale (e.g., 0-4 or 0-5) representing **how strongly or in what way** the user would react.
+    🎯 Purpose:
+    The scenario should reveal how much drive or enthusiasm the user would feel — from **0 (stay in bed, no energy)** to **4 or 5 (jump up excited, full of energy)** — using a slider-based response.
 
-    Example:
-    Clinical Question: “I had trouble concentrating.”
-    Answer: "You're reading the same meme caption for the fifth time because your brain just wandered off to a parallel universe. What's your next move?"
+    📝 Guidelines:
+    - Use a light, relatable, and slightly humorous tone.
+    - Describe a real-world situation in **1–2 sentences**.
+    - Avoid clinical phrases like “how often” or “do you feel.”
+    - Do not ask follow-up questions like “what do you do next?”
+    - Instead, **drop the user into the moment** and let them gauge their drive to act.
+    - The scenario should clearly allow for a range of motivation responses from low to high.
+    - Make scenario where you user has a slider in which he/she has to choose whether to stay in bed or jump up excited on the scale where minimum  represent fully stay in bed and maximum represents fully jump up
+
+    ✅ Example:
+    Clinical Question: “I found it hard to get started with tasks.”
+    Scenario: “Your phone alarm blares with your to-do list: laundry, emails, and finally that one fun thing you actually like. You stare at the ceiling.”
 
     Now, convert the following question into such a scenario:
 
-    And strictly only include just the scnearion nothing else
-
     Question: {question}
-    
+
+    Only return the scenario — nothing else.
     """
+
     return scenario_llm.invoke(prompt).content.strip()
 
 # Apply LLM to each row and populate the Scenario column
@@ -62,5 +66,5 @@ for index, row in df.iterrows():
         print(f"❌ Error at row {index}: {e}")
 
 # Save the updated Excel file
-df.to_excel('app/data/Scenario_added.xlsx', index=False)
+df.to_excel('Scenario_added.xlsx', index=False)
 print("🎉 Done! Saved as 'updated_questions.xlsx'")

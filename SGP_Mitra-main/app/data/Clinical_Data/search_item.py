@@ -8,7 +8,7 @@ load_dotenv()
 
 # Define LLM for generating search keywords
 search_llm = ChatOpenAI(
-    model="deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free",
+    model="lgai/exaone-3-5-32b-instruct",
     openai_api_key=os.getenv('TOGETHER_API_KEY'),
     openai_api_base="https://api.together.xyz/v1",
     temperature=0.2
