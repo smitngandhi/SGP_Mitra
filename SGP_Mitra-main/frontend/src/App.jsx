@@ -18,6 +18,7 @@ import VideoIntro from "./components/VideoIntro";
 import Chatbotnew from "./pages/Chatbotnew";
 import VoiceAssistantModel from "./pages/VoiceAssistantModel";
 import AssessmentTestPage from "./pages/AssessmentTestPage";
+import Emergencypage from "./pages/emergency";
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
 
@@ -46,6 +47,7 @@ const App = () => {
             <Route path="/music_generation" element={<MUSIC_GENERATION />} />
             <Route path="/voice_assistant" element={<VoiceAssistantModel  />} />
             <Route path="/assessment" element={<AssessmentTestPage  />} />
+            <Route path="/emergency" element={<Emergencypage  />} />
           </Routes>
         </>
       )}

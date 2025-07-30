@@ -42,36 +42,36 @@ model.add(Dense(7, activation='softmax'))
 
 
 
-OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_Dhruvil_Branch\\app\\static\\generated_music"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+# OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_Dhruvil_Branch\\app\\static\\generated_music"
+# os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-# Load MusicGen model and processor
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
-processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+# # Load MusicGen model and processor
+# device = "cuda" if torch.cuda.is_available() else "cpu"
+# model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
+# processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
-# Load the model weights
-model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\model.h5'
-try:
-    model.load_weights(model_path)
-    print("Weights loaded successfully!")
-except Exception as e:
-    print(f"Error loading weights: {e}")
+# # Load the model weights
+# model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\model.h5'
+# try:
+#     model.load_weights(model_path)
+#     print("Weights loaded successfully!")
+# except Exception as e:
+#     print(f"Error loading weights: {e}")
 
-# Load pre-trained emotion model
+# # Load pre-trained emotion model
 
-# Haar Cascade for face detection
-CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\haarcascade_frontalface_default.xml"
-face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
+# # Haar Cascade for face detection
+# CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\haarcascade_frontalface_default.xml"
+# face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
 
-# Emotion labels
-emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
+# # Emotion labels
+# emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
 
-# Load music dataset
-df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\spotify_dataset.csv")
+# # Load music dataset
+# df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\spotify_dataset.csv")
 
-df = df.dropna()
+# df = df.dropna()
 
 
 
@@ -209,122 +209,122 @@ def update_profile():
 
 
 
-def detect_emotions():
+# def detect_emotions():
 
 
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        return {"error": "Could not open webcam."}
+#     cap = cv2.VideoCapture(0)
+#     if not cap.isOpened():
+#         return {"error": "Could not open webcam."}
 
-    detected_emotions = []
-    count = 0
+#     detected_emotions = []
+#     count = 0
 
-    while count < 15:
-        ret, frame = cap.read()
-        if not ret:
-            break
+#     while count < 15:
+#         ret, frame = cap.read()
+#         if not ret:
+#             break
 
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
+#         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#         faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
 
-        for (x, y, w, h) in faces:
-            roi_gray = gray[y:y + h, x:x + w]
-            roi_gray_resized = cv2.resize(roi_gray, (48, 48))
-            cropped_img = np.expand_dims(np.expand_dims(roi_gray_resized, -1), 0)
+#         for (x, y, w, h) in faces:
+#             roi_gray = gray[y:y + h, x:x + w]
+#             roi_gray_resized = cv2.resize(roi_gray, (48, 48))
+#             cropped_img = np.expand_dims(np.expand_dims(roi_gray_resized, -1), 0)
 
-            # Predict emotion
-            prediction = model.predict(cropped_img)
-            max_index = int(np.argmax(prediction))
-            detected_emotions.append(emotion_dict[max_index])
+#             # Predict emotion
+#             prediction = model.predict(cropped_img)
+#             max_index = int(np.argmax(prediction))
+#             detected_emotions.append(emotion_dict[max_index])
 
-        count += 1
+#         count += 1
 
-        # Stop capturing when 's' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('s'):
-            break
+#         # Stop capturing when 's' is pressed
+#         if cv2.waitKey(1) & 0xFF == ord('s'):
+#             break
 
-    cap.release()
-    cv2.destroyAllWindows()
+#     cap.release()
+#     cv2.destroyAllWindows()
 
-    return list(set(detected_emotions))
+#     return list(set(detected_emotions))
 
-def recommend_music(emotions):
-    """Filters music dataset based on detected emotions."""
-    recommended_songs = df[df["seeds"].apply(lambda x: any(e in x for e in emotions))]
-    recommended_songs["spotify_id"] = recommended_songs["lastfm_url"].apply(lambda x: x.split("/")[-1])
-    return recommended_songs[["track", "artist", "spotify_id", "genre"]].to_dict(orient="records")
+# def recommend_music(emotions):
+#     """Filters music dataset based on detected emotions."""
+#     recommended_songs = df[df["seeds"].apply(lambda x: any(e in x for e in emotions))]
+#     recommended_songs["spotify_id"] = recommended_songs["lastfm_url"].apply(lambda x: x.split("/")[-1])
+#     return recommended_songs[["track", "artist", "spotify_id", "genre"]].to_dict(orient="records")
 
-@user_routes.route("/detect_emotion", methods=["GET"])
-def handle_emotion_detection():
-    emotions = detect_emotions()
-    if "error" in emotions:
-        return jsonify({"error": emotions["error"]})
+# @user_routes.route("/detect_emotion", methods=["GET"])
+# def handle_emotion_detection():
+#     emotions = detect_emotions()
+#     if "error" in emotions:
+#         return jsonify({"error": emotions["error"]})
     
-    print(f'Emotions detected {emotions}')
+#     print(f'Emotions detected {emotions}')
 
-    recommendations = recommend_music(emotions)
+#     recommendations = recommend_music(emotions)
 
     
-    # recommendations = recommendations.replace({np.nan: None})
-    print("after")
+#     # recommendations = recommendations.replace({np.nan: None})
+#     print("after")
     
 
-    response = jsonify({"detected_emotions": emotions, "recommendations": recommendations})
-    response.headers["Content-Type"] = "application/json"
-    return response
+#     response = jsonify({"detected_emotions": emotions, "recommendations": recommendations})
+#     response.headers["Content-Type"] = "application/json"
+#     return response
 
 
-@user_routes.route("generate_music", methods=["POST"])
-def generate_music():
-    data = request.get_json()
-    prompt = data.get("prompt", "")
+# @user_routes.route("generate_music", methods=["POST"])
+# def generate_music():
+#     data = request.get_json()
+#     prompt = data.get("prompt", "")
 
-    print(f'Prompt: {prompt}')
-
-
-    if not prompt:
-        return jsonify({"error": "No prompt provided"}), 400
-
-    try:
-        # Process text input
-        prompt = generate_prompt_for_music_generation(prompt)
-
-        print(f"New prompt: {prompt}" )
-        inputs = processor(text=[prompt], return_tensors="pt").to(device)
-
-        # Generate AI music
-        print("Generating")
-        music_waveform = model_musicgen.generate(**inputs, max_new_tokens=500)
-        print("Before")
-
-        print(music_waveform.shape)
-
-        # print("Converting to 2D")
-        # Convert waveform to 2D (mono)
-        music_waveform = music_waveform.squeeze(0).cpu()
-
-        print("After")
-
-        print(music_waveform.shape)
+#     print(f'Prompt: {prompt}')
 
 
-        # Define output file path
-        print("Getting folder output")
-        output_path = os.path.join(OUTPUT_DIR, "generated_music.wav")
+#     if not prompt:
+#         return jsonify({"error": "No prompt provided"}), 400
 
-        print(f'Output Path {output_path}')
+#     try:
+#         # Process text input
+#         prompt = generate_prompt_for_music_generation(prompt)
 
-        # Save generated music
-        print("Saving")
-        torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
-        title = generate_music_title(prompt)
-        print(f'New title of music {title}')
-        torchaudio.save(f'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\music_samples\\{title}.wav', music_waveform, 24000)
-        print("here")
-        # Return audio URL
+#         print(f"New prompt: {prompt}" )
+#         inputs = processor(text=[prompt], return_tensors="pt").to(device)
+
+#         # Generate AI music
+#         print("Generating")
+#         music_waveform = model_musicgen.generate(**inputs, max_new_tokens=500)
+#         print("Before")
+
+#         print(music_waveform.shape)
+
+#         # print("Converting to 2D")
+#         # Convert waveform to 2D (mono)
+#         music_waveform = music_waveform.squeeze(0).cpu()
+
+#         print("After")
+
+#         print(music_waveform.shape)
 
 
-        return jsonify({"audio_url": f"http://127.0.0.1:5000/static/generated_music/generated_music.wav"})
+#         # Define output file path
+#         print("Getting folder output")
+#         output_path = os.path.join(OUTPUT_DIR, "generated_music.wav")
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#         print(f'Output Path {output_path}')
+
+#         # Save generated music
+#         print("Saving")
+#         torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
+#         title = generate_music_title(prompt)
+#         print(f'New title of music {title}')
+#         torchaudio.save(f'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\music_samples\\{title}.wav', music_waveform, 24000)
+#         print("here")
+#         # Return audio URL
+
+
+#         return jsonify({"audio_url": f"http://127.0.0.1:5000/static/generated_music/generated_music.wav"})
+
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
