@@ -237,7 +237,7 @@ def transcribe_audio_from_mic():
 
 def generate_prompt_for_music_generation(user_prompt):
      
-     response = llm.invoke(f"Extend the following prompt for music generation, providing only the new, more detailed version: '{user_prompt}'")
+     response = llm.invoke(f"Extend the following prompt for music generation, providing only the new, more detailed version: '{user_prompt}'. Also include only the reframe prompt with more detailed on music and don't include the lyrics")
 
      return response.content
 

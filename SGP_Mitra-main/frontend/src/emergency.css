@@ -1,0 +1,271 @@
+/* General styles */
+body {
+  background: #faf8ff;
+  font-family: 'Inter', Arial, sans-serif;
+  color: #2d2d2d;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 2rem 2rem 1rem 2rem;
+  background: #fff;
+  border-bottom: 1px solid #ececec;
+  gap: 2rem;
+}
+
+.back-button {
+  color: #7c3aed;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-right: 1.5rem;
+  transition: color 0.2s;
+}
+.back-button:hover {
+  color: #5b21b6;
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.subtitle {
+  margin: 0.2rem 0 0 0;
+  color: #7c3aed;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.crisis-alert {
+  background: #fff2f2;
+  border: 1.5px solid #ff9e9e;
+  border-radius: 1.2rem;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  
+  box-shadow: 0 2px 8px 0 rgba(124,58,237,0.04);
+}
+
+.crisis-alert h2 {
+  color: #ea1a1a;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.crisis-alert .call-button {
+  background: #ea1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.7rem 2.2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px 0 rgba(124,58,237,0.08);
+  transition: background 0.2s;
+}
+.crisis-alert .call-button:hover {
+  background: #f2a8a8;
+}
+
+.grid {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.left-section, .right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px 0 rgba(124,58,237,0.06);
+  padding: 1.5rem 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #7c3aed;
+  display: flex;
+  /* align-items: center; */
+  gap: 0.5rem;
+}
+.card h2{
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 550;
+  color: #7c3aed;
+  display: flex;
+  /* align-items: center; */
+  gap: 0.5rem;
+}
+.contact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #f3f0ff;
+}
+
+.contact:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.contact h3 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1.1rem;
+  color: #2d2d2d;
+}
+
+.contact span {
+  font-size: 0.95rem;
+  color: #a1a1aa;
+}
+
+.contact button {
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(124,58,237,0.08);
+}
+.contact button:hover {
+  background: #5b21b6;
+}
+
+.doctor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f3f0ff;
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.2rem;
+  gap: 1.5rem;
+}
+
+.doctor:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.doctor h3 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1.1rem;
+  color: #2d2d2d;
+}
+
+.doctor p {
+  margin: 0;
+  color: #6d28d9;
+  font-size: 0.98rem;
+}
+
+.doctor > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.doctor span {
+  font-size: 0.95rem;
+  color: #a1a1aa;
+  margin-right: 0.7rem;
+}
+
+.doctor button {
+  background: #fff;
+  color: #7c3aed;
+  border: 1.5px solid #7c3aed;
+  border-radius: 1.5rem;
+  padding: 0.4rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.doctor button:hover {
+  background: #7c3aed;
+  color: #fff;
+}
+
+.strategies {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.strategy {
+  background: #f5f3ff;
+  border-radius: 1rem;
+  padding: 1rem 1.2rem;
+  flex: 1 1 220px;
+  min-width: 200px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px 0 rgba(124,58,237,0.04);
+}
+
+.strategy h3 {
+  margin: 0 0 0.4rem 0;
+  color: #7c3aed;
+  font-size: 1.05rem;
+}
+
+.strategy p {
+  margin: 0;
+  color: #444;
+  font-size: 0.98rem;
+}
+
+/* Location Services */
+.card p {
+  margin: 0.5rem 0 0 0;
+}
+
+.card .disabled {
+  color: #ef4444;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .container {
+    padding: 0 0.5rem;
+  }
+}

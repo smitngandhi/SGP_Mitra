@@ -287,7 +287,7 @@ def generate_music():
 
     try:
         # Process text input
-        prompt = generate_prompt_for_music_generation(prompt)
+        # prompt = generate_prompt_for_music_generation(prompt)
 
         print(f"New prompt: {prompt}" )
         inputs = processor(text=[prompt], return_tensors="pt").to(device)
