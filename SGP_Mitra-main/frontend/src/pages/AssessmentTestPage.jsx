@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Send, BarChart3, Brain, TrendingUp, Heart, Target, Home } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar } from 'recharts';
-import Mitra from "../assets/Mitra Logo.png"
-
-
+import Mitra from '../assets/Mitra Logo.png'
 
 const AssessmentTestPage = () => {
   const [cards, setCards] = useState([]);
+  const [touchedCards, setTouchedCards] = useState({});
   const [assessmentTypes, setAssessmentTypes] = useState([]);
   const [currentCard, setCurrentCard] = useState(0);
   const [responses, setResponses] = useState({});
@@ -18,9 +17,8 @@ const AssessmentTestPage = () => {
   const [aiInsights, setAiInsights] = useState(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-  // Mock Mitra logo (using a placeholder since we can't import the actual file)
-  // const Mitra = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiMzQjgyRjYiLz4KPHRleHQgeD0iNTAiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiPk08L3RleHQ+Cjwvc3ZnPg==";
 
   useEffect(() => {
     fetchAssessments();
@@ -59,8 +57,7 @@ const AssessmentTestPage = () => {
       
       const initialResponses = {};
       data.cards.forEach(card => {
-        const defaultValue = Math.floor((card.minScore + card.maxScore) / 2);
-        initialResponses[card.id] = defaultValue;
+        initialResponses[card.id] = null;
       });
       setResponses(initialResponses);
       
@@ -175,6 +172,11 @@ const AssessmentTestPage = () => {
         [cardId]: numericValue
       };
       console.log('Updated responses:', updated);
+
+      setTouchedCards(prev => ({
+        ...prev,
+        [cardId]: true
+      }));
       return updated;
     });
   };
@@ -277,7 +279,7 @@ const AssessmentTestPage = () => {
         scenario: "You see a challenging mountain trail ahead. How motivated are you?",
         assessmentType: "Adventure",
         imageUrl: "https://images.unsplash.com/photo-1464822759844-d150d4e2b2e8?w=400",
-        minScore: 1,
+        minScore: 0,
         maxScore: 7
       },
       {
@@ -286,7 +288,7 @@ const AssessmentTestPage = () => {
         scenario: "You discover a new art exhibition opening today. How interested are you?",
         assessmentType: "Culture",
         imageUrl: "https://images.unsplash.com/photo-1544967882-6abce0767465?w=400",
-        minScore: 1,
+        minScore: 0,
         maxScore: 7
       },
       {
@@ -295,7 +297,7 @@ const AssessmentTestPage = () => {
         scenario: "Your friends invite you to join a team sport. How do you respond?",
         assessmentType: "Social",
         imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-        minScore: 1,
+        minScore: 0,
         maxScore: 7
       },
       {
@@ -304,7 +306,7 @@ const AssessmentTestPage = () => {
         scenario: "You have the opportunity to learn something completely new. How eager are you?",
         assessmentType: "Growth",
         imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400",
-        minScore: 1,
+        minScore: 0,
         maxScore: 7
       }
     ];
@@ -347,11 +349,20 @@ const AssessmentTestPage = () => {
 
   // Smooth navigation with animation
   const handleContinue = () => {
+    const currentCardId = cards[currentCard]?.id;
+    if (!touchedCards[currentCardId]) {
+      alert("Please adjust the slider before continuing.");
+      return;
+    }
+
+    const progress = calculateProgress();
+    setProgress(progress);
     setIsAnimating(true);
     setTimeout(() => {
       setCurrentCard(currentCard + 1);
       setIsAnimating(false);
     }, 300);
+    
   };
 
   const handlePrevious = () => {
@@ -393,163 +404,191 @@ const AssessmentTestPage = () => {
     const { barData, radarData, lineData } = prepareChartData();
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12">
+        <div className="max-w-7xl mx-auto px-6">
           {/* Header Section */}
-          <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
-            <img 
-              src={Mitra} 
-              alt="Mitra Logo" 
-              className="w-40 h-40 rounded-full object-cover shadow-lg" 
-            />
+          <div className="text-center mb-16 border-b-4 border-gradient-to-r from-blue-500 to-purple-600 pb-8">
+            <div className="flex items-center justify-center mb-8">
+              <img 
+                src={Mitra} 
+                alt="Mitra Logo" 
+                className="w-32 h-32 rounded-full object-cover shadow-2xl border-4 border-white" 
+              />
+            </div>
+            <h1 className="text-5xl font-bold text-gray-800 mb-6 tracking-tight">
+              Your Mental Wellness Profile
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Discover insights about your emotional patterns and get personalized recommendations for mental strength
+            </p>
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Your Mental Wellness Profile
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Discover insights about your emotional patterns and get personalized recommendations for mental strength
-          </p>
-        </div>
 
           {/* AI Insights Section */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-4">
-                <Brain className="w-6 h-6 text-white" />
+          <div className="bg-white rounded-3xl shadow-2xl p-10 mb-12 border-2 border-gray-200 hover:border-purple-300 transition-all duration-300">
+            <div className="flex items-center mb-8 pb-4 border-b-2 border-gray-100">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-6 shadow-lg">
+                <Brain className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">AI-Powered Insights</h2>
+              <h2 className="text-3xl font-bold text-gray-800">AI-Powered Insights</h2>
             </div>
             
             {loadingInsights ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto mb-4"></div>
-                <p className="text-gray-600">Generating personalized insights...</p>
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-6"></div>
+                <p className="text-gray-600 text-lg">Generating personalized insights...</p>
               </div>
             ) : aiInsights ? (
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
-                  <div className="flex items-center mb-3">
-                    <TrendingUp className="w-5 h-5 text-blue-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-gray-800">Overall Assessment</h3>
+              <div className="space-y-8">
+                {/* Overall Assessment */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border-l-6 border-blue-500 shadow-lg">
+                  <div className="flex items-center mb-4">
+                    <TrendingUp className="w-6 h-6 text-blue-600 mr-3" />
+                    <h3 className="text-2xl font-semibold text-gray-800">Overall Assessment</h3>
                   </div>
-                  <p className="text-gray-700 leading-relaxed">{aiInsights.mainInsight}</p>
+                  <p className="text-gray-700 leading-relaxed text-lg">{aiInsights.mainInsight}</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
-                    <div className="flex items-center mb-3">
-                      <Heart className="w-5 h-5 text-green-600 mr-2" />
-                      <h3 className="text-lg font-semibold text-gray-800">Your Strengths</h3>
+                {/* Strengths and Growth in Grid */}
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 border-l-6 border-green-500 shadow-lg">
+                    <div className="flex items-center mb-4">
+                      <Heart className="w-6 h-6 text-green-600 mr-3" />
+                      <h3 className="text-2xl font-semibold text-gray-800">Your Strengths</h3>
                     </div>
-                    <p className="text-gray-700 leading-relaxed">{aiInsights.strengthsInsight}</p>
+                    <p className="text-gray-700 leading-relaxed text-lg">{aiInsights.strengthsInsight}</p>
                   </div>
 
-                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6">
-                    <div className="flex items-center mb-3">
-                      <Target className="w-5 h-5 text-orange-600 mr-2" />
-                      <h3 className="text-lg font-semibold text-gray-800">Growth Opportunities</h3>
+                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-8 border-l-6 border-orange-500 shadow-lg">
+                    <div className="flex items-center mb-4">
+                      <Target className="w-6 h-6 text-orange-600 mr-3" />
+                      <h3 className="text-2xl font-semibold text-gray-800">Growth Opportunities</h3>
                     </div>
-                    <p className="text-gray-700 leading-relaxed">{aiInsights.improvementInsight}</p>
+                    <p className="text-gray-700 leading-relaxed text-lg">{aiInsights.improvementInsight}</p>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Personalized Recommendations</h3>
-                  <div className="grid md:grid-cols-2 gap-3">
+                {/* Recommendations */}
+                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl p-8 border-l-6 border-purple-500 shadow-lg">
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-6">Personalized Recommendations</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
                     {aiInsights.recommendations.map((rec, index) => (
-                      <div key={index} className="flex items-start">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                        <p className="text-gray-700 text-sm">{rec}</p>
+                      <div key={index} className="flex items-start bg-white rounded-xl p-4 shadow-md border border-purple-100">
+                        <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
+                        <p className="text-gray-700 text-base leading-relaxed">{rec}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-600">Unable to generate insights at this time.</p>
+              <p className="text-gray-600 text-lg">Unable to generate insights at this time.</p>
             )}
           </div>
 
-          {/* Charts Section */}
-          <div className="grid lg:grid-cols-2 gap-8 mb-8">
+          {/* Charts Section - Enhanced */}
+          <div className="grid lg:grid-cols-2 gap-10 mb-12">
             {/* Bar Chart */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                <BarChart3 className="w-6 h-6 text-blue-600 mr-2" />
-                Score Overview
-              </h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={barData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis />
-                  <YAxis />
-                  <Tooltip 
-                    contentStyle={{
-                      backgroundColor: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Bar dataKey="score" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="w-1/2 bg-white rounded-3xl shadow-2xl p-10 border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
+              <div className="flex items-center mb-8 pb-4 border-b-2 border-gray-100">
+                <BarChart3 className="w-8 h-8 text-blue-600 mr-4" />
+                <h3 className="text-2xl font-bold text-gray-800">Score Overview</h3>
+              </div>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={barData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: '#f8fafc',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                      }}
+                    />
+                    <Bar dataKey="score" fill="#3B82F6" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
             {/* Radar Chart */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">Wellness Radar</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <RadarChart data={radarData}>
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="subject" />
-                  <PolarRadiusAxis angle={30} domain={[0, 5]} />
-                  <Radar
-                    name="Score"
-                    dataKey="score"
-                    stroke="#8B5CF6"
-                    fill="#8B5CF6"
-                    fillOpacity={0.3}
-                    strokeWidth={2}
-                  />
-                  <Tooltip />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="w-1/2 bg-white rounded-3xl shadow-2xl p-10 border-2 border-gray-200 hover:border-purple-300 transition-all duration-300">
+              <div className="flex items-center mb-8 pb-4 border-b-2 border-gray-100">
+                <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-4">
+                  <span className="text-white font-bold">R</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800">Wellness Radar</h3>
+              </div>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart data={radarData}>
+                    <PolarGrid stroke="#e5e7eb" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fontSize: 10 }} />
+                    <Radar
+                      name="Score"
+                      dataKey="score"
+                      stroke="#8B5CF6"
+                      fill="#8B5CF6"
+                      fillOpacity={0.3}
+                      strokeWidth={3}
+                    />
+                    <Tooltip />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
-          {/* Detailed Results */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
-            <h3 className="text-2xl font-bold text-gray-800 mb-8">Detailed Results</h3>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Detailed Results - Enhanced */}
+          <div className="bg-white rounded-3xl shadow-2xl p-10 mb-12 border-2 border-gray-200">
+            <div className="text-center mb-12 pb-6 border-b-2 border-gray-100">
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">Detailed Results</h3>
+              <p className="text-gray-600 text-lg">Comprehensive breakdown of your assessment scores</p>
+            </div>
+            
+            <div className="grid-cols-1 md:grid-cols-2">
               {Object.entries(results).map(([assessmentType, data]) => (
-                <div key={assessmentType} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 hover:shadow-lg transition-shadow">
-                  <h4 className="text-xl font-semibold text-gray-800 mb-4">{assessmentType}</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Score:</span>
-                      <span className="font-bold text-blue-600 text-lg">
+                <div key={assessmentType} className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border-2 border-gray-200 hover:border-blue-300">
+                  <div className="text-center mb-6">
+                    <h4 className="text-2xl font-bold text-gray-800 mb-2">{assessmentType}</h4>
+                    <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                      <span className="text-gray-600 font-medium">Score:</span>
+                      <span className="font-bold text-blue-600 text-xl">
                         {data.totalScore} / {data.maxPossibleScore}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Percentage:</span>
-                      <span className="font-bold text-purple-600">{data.percentage}%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Questions:</span>
-                      <span className="font-semibold">{data.questionCount}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Average:</span>
-                      <span className="font-semibold text-green-600">{data.averageScore}</span>
+                    
+                    <div className="flex justify-between items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                      <span className="text-gray-600 font-medium">Percentage:</span>
+                      <span className="font-bold text-purple-600 text-xl">{data.percentage}%</span>
                     </div>
                     
-                    {/* Progress bar for this category */}
-                    <div className="mt-4">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="flex justify-between items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                      <span className="text-gray-600 font-medium">Questions:</span>
+                      <span className="font-semibold text-gray-800 text-lg">{data.questionCount}</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100">
+                      <span className="text-gray-600 font-medium">Average:</span>
+                      <span className="font-semibold text-green-600 text-lg">{data.averageScore}</span>
+                    </div>
+                    
+                    {/* Enhanced Progress bar */}
+                    <div className="mt-6">
+                      <div className="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Progress</span>
+                        <span>{data.percentage}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
                         <div
-                          className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+                          className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-700 shadow-sm"
                           style={{ width: `${data.percentage}%` }}
                         ></div>
                       </div>
@@ -560,31 +599,33 @@ const AssessmentTestPage = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="text-center flex gap-4 justify-center">
-            <button
-              onClick={goToHome}
-              className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center"
-            >
-              <Home className="w-5 h-5 mr-2" />
-              Home
-            </button>
-            <button
-              onClick={() => {
-                setShowResults(false);
-                setResults(null);
-                setAiInsights(null);
-                setCurrentCard(0);
-                const initialResponses = {};
-                cards.forEach(card => {
-                  initialResponses[card.id] = Math.floor((card.minScore + card.maxScore) / 2);
-                });
-                setResponses(initialResponses);
-              }}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              Take New Assessment
-            </button>
+          {/* Action Buttons - Enhanced */}
+          <div className="text-center border-t-4 border-gradient-to-r from-blue-500 to-purple-600 pt-12">
+            <div className="flex gap-6 justify-center flex-wrap">
+              <button
+                onClick={goToHome}
+                className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-10 py-4 rounded-2xl font-semibold text-xl transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center transform hover:scale-105 border-2 border-green-400"
+              >
+                <Home className="w-6 h-6 mr-3" />
+                Return Home
+              </button>
+              <button
+                onClick={() => {
+                  setShowResults(false);
+                  setResults(null);
+                  setAiInsights(null);
+                  setCurrentCard(0);
+                  const initialResponses = {};
+                  cards.forEach(card => {
+                    initialResponses[card.id] = Math.floor((card.minScore + card.maxScore) / 2);
+                  });
+                  setResponses(initialResponses);
+                }}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-10 py-4 rounded-2xl font-semibold text-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-blue-400"
+              >
+                Take New Assessment
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -608,7 +649,7 @@ const AssessmentTestPage = () => {
   }
 
   const currentCardData = cards[currentCard];
-  const progress = calculateProgress();
+  // const progress = calculateProgress();
   const currentResponse = responses[currentCardData.id];
   const complete = isComplete();
 
@@ -713,11 +754,15 @@ const AssessmentTestPage = () => {
                   type="range"
                   min={currentCardData.minScore}
                   max={currentCardData.maxScore}
-                  value={currentResponse || Math.floor((currentCardData.minScore + currentCardData.maxScore) / 2)}
+                  value={currentResponse ?? Math.floor((currentCardData.minScore + currentCardData.maxScore) / 2)}
                   onChange={(e) => handleSliderChange(currentCardData.id, e.target.value)}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                   style={{
-                    background: `linear-gradient(to right, #1f2937 0%, #1f2937 ${((currentResponse || Math.floor((currentCardData.minScore + currentCardData.maxScore) / 2)) - currentCardData.minScore) / (currentCardData.maxScore - currentCardData.minScore) * 100}%, #e5e7eb ${((currentResponse || Math.floor((currentCardData.minScore + currentCardData.maxScore) / 2)) - currentCardData.minScore) / (currentCardData.maxScore - currentCardData.minScore) * 100}%, #e5e7eb 100%)`
+                    background: (() => {
+                      const safeValue = currentResponse ?? Math.floor((currentCardData.minScore + currentCardData.maxScore) / 2);
+                      const percent = ((safeValue - currentCardData.minScore) / (currentCardData.maxScore - currentCardData.minScore)) * 100;
+                      return `linear-gradient(to right, #1f2937 0%, #1f2937 ${percent}%, #e5e7eb ${percent}%, #e5e7eb 100%)`;
+                    })()
                   }}
                 />
                 <div className="flex justify-between text-sm text-gray-600 mt-2">
