@@ -88,12 +88,12 @@ def store_test_score():
 def load_assessment_data():
     """Load assessment data from Excel file"""
     try:
-        df = pd.read_excel('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\Clinical_Data\\Final_DS_2.xlsx')
+        df = pd.read_excel('app/data/Clinical_Data/Small_Final_16.xlsx')
         print(f"Successfully loaded Excel file with {len(df)} rows")
         print(f"Columns: {list(df.columns)}")
         return df
     except FileNotFoundError:
-        print("Error: Custom_Clinical_DS.xlsx file not found")
+        print("Error: Excel file not found")
         return pd.DataFrame()
     except Exception as e:
         print(f"Error loading data: {e}")
@@ -425,7 +425,7 @@ def get_recommendations():
         Respond only with a Python list of strings.
         """
 
-        response = recommendation_llm.invoke(prompt).content.strip()
+        response = llm.invoke(prompt).content.strip()
         response = re.sub(r"^- ", "", response, flags=re.MULTILINE)
         print(f'Response is: {response}')
         try:

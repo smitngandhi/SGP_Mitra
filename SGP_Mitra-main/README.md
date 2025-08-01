@@ -178,4 +178,15 @@ REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
 
 
 
-
+# Steps to run it in your pC
+1. git clone -b Smit <https....repo.git>
+2. go inside SGP_Mitra-main
+3. python -m venv venv
+4. venv\Scripts\activate
+5. pip install -r requirements.txt
+--- (Parallely open new terminal)
+6. cd frontend
+7. npm install
+8. npm start
+(in another terminal after installing python libraries)
+9. python run.py
