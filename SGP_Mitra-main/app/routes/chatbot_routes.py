@@ -54,7 +54,7 @@ def chat():
 
 
     print("here")
-    response_text  , sentiment_score = generate_llm_response_sentiment(message , None , None)
+    response_text, sentiment_score = generate_llm_response_sentiment(message , None , None)
     # user_id = request.cookies.get("user_id")  # Fetch user_id from cookies
 
     # if not user_id:

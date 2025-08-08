@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../emergency.css";
+import Navbar from "../components/Navbar";
 
 const EmergencyHelp = () => {
   const [locationStatus, setLocationStatus] = useState("loading");
@@ -73,15 +74,7 @@ const EmergencyHelp = () => {
   return (
     <div>
       {/* HEADER */}
-      <header className="header">
-        <a href="/" className="back-button">
-          &larr; Back
-        </a>
-        <div>
-          <h1 className="title">Emergency Help</h1>
-          <p className="subtitle">Immediate support when you need it most</p>
-        </div>
-      </header>
+      <Navbar/>
 
       {/* MAIN SECTION */}
       <main className="container">
