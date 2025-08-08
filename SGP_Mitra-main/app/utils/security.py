@@ -18,11 +18,14 @@ import asyncio
 from pydub import AudioSegment
 from pydub.playback import play
 import os
+from langchain.chains import ConversationChain
+from langchain.chains.conversation.memory import ConversationBufferMemory
+from app.models import llm
+import datetime
+user_memories = {}
 
 
 
-# Load once
-i = 0
 
 def is_valid_username(username):
     return bool(re.match(r"[A-Za-z]\w{4,}", username))
@@ -54,153 +57,140 @@ def generate_hash_token(token):
     return hashlib.sha256(token.encode()).hexdigest()
 
 def generate_llm_response_sentiment(user_message, chatbot_preference, username):
-    global i
-    analyzer = SentimentIntensityAnalyzer()
 
-    # print("Loading similarity model")
-    # model = SentenceTransformer('all-MiniLM-L6-v2')
-    # print("Loaded successfully")
-
-    trigger_phrases = [
-    "generate a plan",
-    "create a mental health plan",
-    "i need a wellness roadmap",
-    "can you make a therapy plan",
-    "build me a recovery routine"
-                    ]
-
+    global user_memories
+    print(f"[DEBUG] User memories: {user_memories}")
+    print(f"[DEBUG] Function called with user_message: '{user_message}', chatbot_preference: '{chatbot_preference}', username: '{username}'")
     
-
-    # if not name or not bot:
-    #     if "generate" in user_message.lower() or "plan" in user_message.lower():
-    #         return "Sorry, You have to register first to generate a plan.", 0.5
+    # Defining Analyzer
+    analyzer = SentimentIntensityAnalyzer()
+    print(f"[DEBUG] SentimentIntensityAnalyzer initialized")
 
     # Sentiment Analysis
     scores = analyzer.polarity_scores(user_message)
+    print(f"[DEBUG] Sentiment scores calculated: {scores}")
     compound_score = scores['compound']
+    print(f"[DEBUG] Compound score: {compound_score}")
     sentiment_score = (compound_score + 1) / 2
+    print(f"[DEBUG] Final sentiment score: {sentiment_score}")
 
     # Check if the message is to generate a plan
-    if "generate" in user_message.lower() and "plan" in user_message.lower():
-        user = users_collection.find_one({"username": username})
-        if not user:
-            return "Sorry you have to register first to generate a self-care plan", 0.5
+    # if "generate" in user_message.lower() and "plan" in user_message.lower():
+    #     user = users_collection.find_one({"username": username})
+    #     if not user:
+    #         return "Sorry you have to register first to generate a self-care plan", 0.5
 
-        user_id = user.get("user_id")
-        if not user_id:
-            return "Sorry you have to register first to generate a self-care plan", 0.5
+    #     user_id = user.get("user_id")
+    #     if not user_id:
+    #         return "Sorry you have to register first to generate a self-care plan", 0.5
 
-        response = requests.post(
-            "http://127.0.0.1:5000/api/v1/api/generate_selfcare_pdf",
-            json={"user_id": user_id}
-        )
+    #     response = requests.post(
+    #         "http://127.0.0.1:5000/api/v1/api/generate_selfcare_pdf",
+    #         json={"user_id": user_id}
+    #     )
 
-        if response.status_code == 200:
-            return "Your self-care plan is being generated and will be emailed to you.", sentiment_score
-        else:
-            return "Error generating self-care plan.", sentiment_score
+    #     if response.status_code == 200:
+    #         return "Your self-care plan is being generated and will be emailed to you.", sentiment_score
+    #     else:
+    #         return "Error generating self-care plan.", sentiment_score
 
-
-    
-    # print("Maybe first/second time")
     display_name = username if username else "user"
+    print(f"[DEBUG] Display name set to: '{display_name}'")
     chatbot_preference = chatbot_preference if chatbot_preference else "Mild_support"
+    print(f"[DEBUG] Chatbot preference set to: '{chatbot_preference}'")
 
+    # Agentic architecture with LangChain ConversationChain
+    
 
+    # Use username as session id for memory, fallback to stateless if not available
+    print(f"[DEBUG] Starting memory initialization for username: '{display_name}'")
+   
+    print(f"[DEBUG] Username provided, using persistent memory")
+        # Use a global or persistent memory dict for user sessions
+    
+    if display_name not in user_memories:
+        user_memories[display_name] = ConversationBufferMemory()
+        print(f"[DEBUG] Created new ConversationBufferMemory for username: '{display_name}'")
+        memory = user_memories[display_name]
+        print(f"[DEBUG] Retrieved existing memory for username: '{display_name}'")
+    else:
+        print(f"[DEBUG] Username called again")
+        memory = user_memories[display_name]
+        print(f"[DEBUG] Retrieved existing memory for username: '{display_name}'")
 
-    print(f'Searching with the username: {display_name}')
-    reranked_results = dense_index.search(
+    # Preload Pinecone history if memory is empty
+    print(f"[DEBUG] Checking if memory buffer is empty: {not memory.buffer}")
+    if username and not memory.buffer:
+        print(f"[DEBUG] Loading Pinecone history for username: '{username}'")
+        # Fetch all previous conversations for this user from Pinecone
+        pinecone_results = dense_index.search(
             namespace="example-namespace",
             query={
-                "top_k": 5,  
-                "inputs": {
-                    'text': user_message
-                },
-                "filter": {
-                    "username": username  
-                }
+                "top_k": 100,  # fetch up to 100 previous messages
+                "inputs": {"text": "history"},  # Use a non-empty string
+                "filter": {"username": username}
             },
-            rerank={
-                "model": "bge-reranker-v2-m3",
-                "top_n": 3,  
-                "rank_fields": ["chunk_text"]
-            },
-            fields = ["llm_output" , "chunk_text"]
+            fields=["chunk_text", "llm_output", "timestamp"]
         )
-
-    Previous_outputs = []
-    Previous_Prompts = []
-
-
-    for hit in reranked_results['result']['hits']:
-                Previous_outputs.append(hit['fields']['llm_output'])
-
-    for hit in reranked_results['result']['hits']:
-                Previous_Prompts.append(hit['fields']['chunk_text'])
-
-    # print(f'Previous outputs {Previous_outputs}')
-
-    # print(f'Previous prompts {Previous_Prompts}')
+        print(f"[DEBUG] Pinecone search completed, results: {len(pinecone_results.get('result', {}).get('hits', []))} hits")
+        hits = pinecone_results.get('result', {}).get('hits', [])
+        # Sort by timestamp (ISO format sorts lexicographically)
+        hits = sorted(
+            hits,
+            key=lambda x: x['fields'].get('timestamp', '')
+        ) if hits and 'fields' in hits[0] and 'timestamp' in hits[0]['fields'] else hits
+        print(f"[DEBUG] Sorted {len(hits)} hits by timestamp")
+        for hit in hits:
+            prompt = hit['fields'].get('chunk_text', '')
+            response = hit['fields'].get('llm_output', '')
+            if prompt and response:
+                memory.save_context({"input": prompt}, {"output": response})
+        print(f"[DEBUG] Loaded {len(hits)} conversation contexts into memory")
     
-    response = llm.invoke(f"""You are a {chatbot_preference} chatbot named Mitra, providing compassionate support to {display_name}. Your purpose is to create a safe, judgment-free environment where {display_name} can express their thoughts and feelings while receiving personalized guidance tailored to their unique situation.
-                                Your Approach:
+    # Compose system prompt
+    print(f"[DEBUG] Composing system prompt for {display_name} with {chatbot_preference} preference")
+    system_prompt = f"""You are a {chatbot_preference} chatbot named Mitra, providing compassionate support to {display_name}. Your purpose is to create a safe, judgment-free environment where {display_name} can express their thoughts and feelings while receiving personalized guidance tailored to their unique situation.\n\nYour Approach:\n- Deep Empathy: Listen attentively to {display_name}'s concerns, validating their experiences and emotions without judgment\n- Authentic Support: Respond with genuine care and understanding, acknowledging the challenges {display_name} is facing\n- Personalized Guidance: Offer practical suggestions that are relevant to {display_name}'s specific circumstances\n- Structured Communication: Provide clear, organized responses that {display_name} can easily follow and implement\n- Evidence-Based Resources: When appropriate, recommend specific books, techniques, or tools that might benefit {display_name}\n\nIn Your Responses:\n- Begin by acknowledging {display_name}'s feelings and experiences\n- Offer 1-2 practical coping strategies or techniques relevant to their situation\n- When helpful, suggest a specific resource (book, meditation practice, etc.) with a brief explanation of its benefits\n- Close with gentle encouragement and an open-ended question that invites further sharing\n\nRemember that {display_name} is seeking both emotional connection and practical guidance. Balance warm support with actionable advice, always respecting {display_name}'s autonomy and unique perspective. Your goal is to help {display_name} feel heard, supported, and empowered to take positive steps forward.\nWhile providing mental health support, remain mindful of your limitations and encourage professional help when appropriate, while continuing to be a consistent, compassionate presence for {display_name}. Keep your answers as short as possible.\nThe user's chatbot preference is {chatbot_preference}.\nIf it is High-Support, the user is experiencing higher stress levels.\nIf it is Mild-Support, the user is under moderate stress.\nIf it is Minimal-Support, the user is experiencing little to no stress.\nPlease communicate accordingly. Don't include the {chatbot_preference} in responses unless and until it is asked."""
+    print(f"[DEBUG] System prompt created, length: {len(system_prompt)} characters")
 
-                                Deep Empathy: Listen attentively to {display_name}'s concerns, validating their experiences and emotions without judgment
-                                Authentic Support: Respond with genuine care and understanding, acknowledging the challenges {display_name} is facing
-                                Personalized Guidance: Offer practical suggestions that are relevant to {display_name}'s specific circumstances
-                                Structured Communication: Provide clear, organized responses that {display_name} can easily follow and implement
-                                Evidence-Based Resources: When appropriate, recommend specific books, techniques, or tools that might benefit {display_name}
+    # Ensure system prompt is present in memory
+    print(f"[DEBUG] Checking if system prompt is already in memory")
+    if not any(isinstance(turn, dict) and turn.get('input') == 'system' for turn in getattr(memory, 'buffer', [])):
+        memory.save_context({"input": "system"}, {"output": system_prompt})
+        print(f"[DEBUG] System prompt saved to memory")
+    else:
+        print(f"[DEBUG] System prompt already exists in memory")
 
-                                In Your Responses:
+    print(f"[DEBUG] Creating ConversationChain agent with llm and memory")
+    agent = ConversationChain(llm=llm, memory=memory, verbose=True)
+    print(f"[DEBUG] Agent created successfully")
 
-                                Begin by acknowledging {display_name}'s feelings and experiences
-                                Offer 1-2 practical coping strategies or techniques relevant to their situation
-                                When helpful, suggest a specific resource (book, meditation practice, etc.) with a brief explanation of its benefits
-                                Close with gentle encouragement and an open-ended question that invites further sharing
+    # Get agentic response
+    print(f"[DEBUG] Invoking agent with user message: '{user_message}'")
+    response = agent.predict(input=user_message)
+    print(f"[DEBUG] Agent response received: {response}")
 
-                                Remember that {display_name} is seeking both emotional connection and practical guidance. Balance warm support with actionable advice, always respecting {display_name}'s autonomy and unique perspective. Your goal is to help {display_name} feel heard, supported, and empowered to take positive steps forward.
-                                While providing mental health support, remain mindful of your limitations and encourage professional help when appropriate, while continuing to be a consistent, compassionate presence for {display_name}.Keep your answers as short as possible
-                                
-                                
-                                The user's chatbot preference is {chatbot_preference}.
-                                Based on this preference:
-
-                                If it is High-Support, the user is experiencing higher stress levels.
-
-                                If it is Mild-Support, the user is under moderate stress.
-
-                                If it is Minimal-Support, the user is experiencing little to no stress.
-
-                                Please communicate accordingly. and don't include the {chatbot_preference} in responses unless and until it is asked"
-
-
-                                Previous LLM generated outputs:
-                                {Previous_outputs}
-
-                                Previous inputed prompts:
-                                {Previous_Prompts}
-
-                                "Current user input: {user_message}.
-                                Treat this input as  the highest priority. Respond primarily based on this message before considering any other context.
-
-                                Response based on the above information""") 
-
-    user_id = f"record{i}"
-    i = i+1 
-
-    record = [
+    # Only upsert if user_message is not empty or whitespace
+    print(f"[DEBUG] Checking if user_message is not empty: '{user_message.strip()}'")
+    if user_message.strip() and username:
+        print(f"[DEBUG] User message is not empty, preparing to upsert to Pinecone")
+        record = [
             {
-            "_id" : user_id,
-            "chunk_text" : user_message,
-            "llm_output": response.content,
-            "username": display_name
+                "_id": str(uuid.uuid4()),
+                "chunk_text": user_message,
+                "llm_output": response,
+                "username": display_name,
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                "text": user_message
             }
-            ]
+        ]
+        print(f"[DEBUG] Record prepared for upsert: {record}")
+        dense_index.upsert_records("example-namespace", record)
+        print(f"[DEBUG] Record upserted to Pinecone successfully")
+    else:
+        print(f"[DEBUG] User message is empty, skipping Pinecone upsert or username is not provided")
 
-        
-    dense_index.upsert_records("example-namespace", record)
-
-    return response.content, sentiment_score
+    print(f"[DEBUG] Returning response.content and sentiment_score: '{response}', {sentiment_score}")
+    return response, sentiment_score
 
 async def speak_and_play(text):
     communicate = edge_tts.Communicate(text=text, voice="en-IN-NeerjaNeural")

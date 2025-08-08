@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Send, BarChart3, Brain, TrendingUp, Heart, Target, Home } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar } from 'recharts';
 import Mitra from '../assets/Mitra Logo.png'
+import Navbar from '../components/Navbar';
 
 const AssessmentTestPage = () => {
   const [cards, setCards] = useState([]);
@@ -380,6 +381,8 @@ const AssessmentTestPage = () => {
 
   if (loading) {
     return (
+      <>
+      <Navbar />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -397,6 +400,7 @@ const AssessmentTestPage = () => {
           )}
         </div>
       </div>
+      </>
     );
   }
 
@@ -404,6 +408,8 @@ const AssessmentTestPage = () => {
     const { barData, radarData, lineData } = prepareChartData();
     
     return (
+      <>
+      <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12">
         <div className="max-w-7xl mx-auto px-6">
           {/* Header Section */}
@@ -468,17 +474,7 @@ const AssessmentTestPage = () => {
                 </div>
 
                 {/* Recommendations */}
-                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl p-8 border-l-6 border-purple-500 shadow-lg">
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-6">Personalized Recommendations</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {aiInsights.recommendations.map((rec, index) => (
-                      <div key={index} className="flex items-start bg-white rounded-xl p-4 shadow-md border border-purple-100">
-                        <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 mr-4 flex-shrink-0"></div>
-                        <p className="text-gray-700 text-base leading-relaxed">{rec}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                {/* Pending */}
               </div>
             ) : (
               <p className="text-gray-600 text-lg">Unable to generate insights at this time.</p>
@@ -582,17 +578,20 @@ const AssessmentTestPage = () => {
                     
                     {/* Enhanced Progress bar */}
                     <div className="mt-6">
-                      <div className="flex justify-between text-sm text-gray-600 mb-2">
-                        <span>Progress</span>
-                        <span>{data.percentage}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
-                        <div
-                          className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-700 shadow-sm"
-                          style={{ width: `${data.percentage}%` }}
-                        ></div>
-                      </div>
-                    </div>
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>Progress</span>
+                    <span>{data.percentage}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+                    <div
+                      className="h-3 rounded-full transition-all duration-700 shadow-sm"
+                      style={{ 
+                        width: `${data.percentage}%`,
+                        background: 'linear-gradient(to right, #e5d6ec, #ebb3ff)'
+                      }}
+                    ></div>
+                  </div>
+                </div>
                   </div>
                 </div>
               ))}
@@ -629,11 +628,14 @@ const AssessmentTestPage = () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   if (cards.length === 0) {
     return (
+      <>
+      <Navbar />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">No assessment cards available</p>
@@ -645,6 +647,7 @@ const AssessmentTestPage = () => {
           </button>
         </div>
       </div>
+      </>
     );
   }
 
@@ -654,6 +657,8 @@ const AssessmentTestPage = () => {
   const complete = isComplete();
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen bg-gray-100 py-4">
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
@@ -668,16 +673,20 @@ const AssessmentTestPage = () => {
           </div>
           
           {/* Progress Bar */}
+          {/* Progress Bar */}
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
-              className="bg-gradient-to-r from-teal-400 to-blue-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              className="h-2 rounded-full transition-all duration-300"
+              style={{ 
+                width: `${progress}%`,
+                background: 'linear-gradient(to right, #e5d6ec, #ebb3ff)'
+              }}
             ></div>
           </div>
         </div>
 
         {/* Card with Animation */}
-        <div className={`bg-white rounded-xl shadow-lg overflow-hidden relative transition-all duration-300 transform ${isAnimating ? 'scale-95 opacity-70' : 'scale-100 opacity-100'}`}>
+        <div className={`rounded-xl shadow-lg overflow-hidden relative transition-all duration-300 transform ${isAnimating ? 'scale-95 opacity-70' : 'scale-100 opacity-100'}`} style={{background: 'linear-gradient(to right, #e5d6ec, #ebb3ff)'}}>
           {/* Card Number Badge */}
           <div className="absolute top-4 right-4 z-10">
             <span className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm font-medium">
@@ -719,7 +728,8 @@ const AssessmentTestPage = () => {
           </div>
 
           {/* Card Content - Reduced padding */}
-          <div className="p-5">
+          {/* Card Content - Reduced padding */}
+          <div className="p-5" style={{background: 'linear-gradient(to right, #e5d6ec, #ebb3ff)'}}>
             {/* Question */}
             <div className="mb-5">
               <h2 className="text-lg font-medium text-gray-800 mb-2">
@@ -777,19 +787,31 @@ const AssessmentTestPage = () => {
             <div className="flex justify-center">
               {currentCard === cards.length - 1 ? (
                 <button
-                  onClick={submitAssessment}
-                  disabled={!complete || submitting}
-                  className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-white px-8 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center"
-                >
+                onClick={submitAssessment}
+                disabled={!complete || submitting}
+                className="text-white px-8 py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center"
+                style={{
+                  background: 'linear-gradient(to right, #be185d, #ec4899)',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                }}
+                onMouseEnter={(e) => !e.target.disabled && (e.target.style.background = 'linear-gradient(to right, #9d174d, #db2777)')}
+                onMouseLeave={(e) => !e.target.disabled && (e.target.style.background = 'linear-gradient(to right, #be185d, #ec4899)')}
+              >
                   <Send className="w-4 h-4 mr-2" />
                   {submitting ? 'Submitting...' : 'Submit Assessment'}
                 </button>
               ) : (
                 <button
-                  onClick={handleContinue}
-                  disabled={isAnimating}
-                  className="bg-gradient-to-r from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
-                >
+                onClick={handleContinue}
+                disabled={isAnimating}
+                className="text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
+                style={{
+                  background: 'linear-gradient(to right, #be185d, #ec4899)',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                }}
+                onMouseEnter={(e) => e.target.style.background = 'linear-gradient(to right, #9d174d, #db2777)'}
+                onMouseLeave={(e) => e.target.style.background = 'linear-gradient(to right, #be185d, #ec4899)'}
+              >
                   Continue
                 </button>
               )}
@@ -838,6 +860,7 @@ const AssessmentTestPage = () => {
         }
       `}</style>
     </div>
+    </>
   );
 };
 
