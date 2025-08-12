@@ -1,4 +1,4 @@
-from app import create_app
+
 from flask import make_response, redirect, request, jsonify, url_for
 from app.models import users_collection , chats_collection , recommendation_llm , llm
 from app.utils.mail import send_reset_email
@@ -14,6 +14,10 @@ import json
 import pandas as pd
 import ast
 import re
+from app.utils.logger_utils import get_logger
+
+logger = get_logger(__name__)
+
 
 @test_routes.route("/store_test_score", methods=["POST"])
 def store_test_score():
