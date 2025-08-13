@@ -1,4 +1,3 @@
-
 from flask import make_response, redirect, request, jsonify, url_for
 from app.models import users_collection 
 from app.utils.mail import send_reset_email

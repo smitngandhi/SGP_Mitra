@@ -9,6 +9,7 @@ from langchain.chains import ConversationChain
 import whisper
 from dotenv import load_dotenv
 from app.utils.logger_utils import get_logger
+from elevenlabs.client import ElevenLabs
 
 logger = get_logger(__name__)
 logger.debug("[DEBUG] Starting app initialization process in models.py")
@@ -60,7 +61,9 @@ whisper_model = whisper.load_model("base")
 logger.info("[INFO] Whisper model loaded successfully")
 
 
-
+elevenlabs = ElevenLabs(
+  api_key=os.getenv("ELEVENLABS_API_KEY")
+)
 
 
 

@@ -5,9 +5,7 @@ import secrets
 from app.routes import chatbot_routes
 from datetime import datetime , timedelta 
 from datetime import datetime, timedelta, timezone
-from app.utils.security import  *
-from authlib.integrations.flask_client import OAuth
-import certifi
+from app.utils.security import  decode_token, generate_llm_response_sentiment , transcribe_audio_from_mic
 import uuid
 from fpdf import FPDF
 from io import BytesIO
@@ -17,6 +15,9 @@ from flask import request, jsonify
 from datetime import datetime
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from app.utils.logger_utils import get_logger
+from app.models import elevenlabs
+from elevenlabs import play
+import base64
 
 
 logger = get_logger(__name__)
@@ -194,73 +195,137 @@ def generate_selfcare_pdf():
     return jsonify({"message": "Self-care plan sent successfully to email."})
 
 
-
 @chatbot_routes.route("/voice_chat", methods=["POST"])
 def voice_chat():
-    logger.debug("Received voice chat request")
-    data = request.get_json()
-    logger.debug(f"Voice chat data: {data}")
-    if data.get("from_mic"):
-        # Transcribe directly
-        message = transcribe_audio_from_mic()
-        logger.debug(f"Transcribed message from mic: {message}")
-        response = llm.invoke(f"convert this text to english: {message} and only give the translated one")
-        logger.debug(f"LLM response: {response.content}")
-        message = response.content
-        logger.debug(f"Final message after translation: {message}")
-    else:
-        message = data["message"]
-        logger.debug(f"Message from request: {message}")
+    logger.debug("Received /voice_chat request")
+    try:
+        # Check if audio file exists in request
+        if "audio" not in request.files:
+            logger.warning("No audio file found in request")
+            return jsonify({"error": "Audio file is required"}), 400
 
-    if "access_token" in data and data["access_token"]:
-        logger.debug("Access token found, processing authenticated user")
-        access_token = data["access_token"]
-        logger.debug(f"Access token found: {access_token}")
-        decoded_token = decode_token(access_token)
-        logger.debug(f"Decoded token: {decoded_token}")
-        email = decoded_token.get("sub")
-        logger.debug(f"Email from decoded token: {email}")
-        user = users_collection.find_one({"email": email})
-        logger.debug(f"User found: {user}")
+        audio_file = request.files["audio"]
+        logger.debug(f"Audio file received: {audio_file.filename}")
 
-        chatbot_preference = user["chatbot_preference"]
-        logger.debug(f"Chatbot preference: {chatbot_preference}")
-        username = user["username"]
-        logger.debug(f"Username: {username}")
-        logger.debug("Getting response from LLM for message. Calling generate_llm_response_sentiment")
-        response_text, sentiment_score = generate_llm_response_sentiment(message, chatbot_preference, username)
-        logger.debug(f"Response text: {response_text}")
-        # Play the audio response
-        asyncio.run(speak_and_play(response_text))
-        
 
-        chat_entry = {
-            "user_id": user["user_id"],
-            "user_message": message,
-            "bot_response": response_text,
-            "timestamp": datetime.now(timezone.utc),
-            "sentiment_score": sentiment_score
-        }
-        chats_collection.insert_one(chat_entry)
-        logger.debug("Chat entry inserted into database for authenticated user")
-        return jsonify({"reply": response_text, "sentiment_score": sentiment_score , "user_message": message})
+    
 
-    logger.debug("No access token found, processing unauthenticated user")
+        # Access token (optional)
+        access_token = request.form.get("access_token")
+        if not access_token or access_token.lower() == "null":
+            access_token = None
+        logger.debug(f"Access token received: {bool(access_token)}")
 
-    response_text, sentiment_score = generate_llm_response_sentiment(message, None, None)
-    logger.debug(f"Response text for unauthenticated user: {response_text}")
-    asyncio.run(speak_and_play(response_text))
+        # Read file into BytesIO for transcription
+        audio_data = BytesIO(audio_file.read())
+        logger.debug("Audio data loaded into memory for transcription")
 
-    user_id = str(uuid.uuid4())
-    chat_entry = {
-        "user_id": user_id,
-        "user_message": message,
-        "bot_response": response_text,
-        "timestamp": datetime.now(timezone.utc),
-        "sentiment_score": sentiment_score
-    }
+        # Transcription
+        try:
+            transcription = elevenlabs.speech_to_text.convert(
+                file=audio_data,
+                model_id="scribe_v1",
+                tag_audio_events=True,
+                diarize=True,
+            )
+            message = transcription.text.strip()
+            logger.debug(f"Transcription result: {message}")
+        except Exception as e:
+            logger.error(f"Error during transcription: {e}", exc_info=True)
+            return jsonify({"error": "Failed to transcribe audio"}), 500
 
-    chats_collection.insert_one(chat_entry)
-    logger.debug("Chat entry for unauthenticated user inserted into database")
+        # If authenticated
+        if access_token:
+            try:
+                decoded_token = decode_token(access_token)
+                email = decoded_token.get("sub")
+                logger.debug(f"Decoded token. Email: {email}")
 
-    return jsonify({"reply": response_text, "sentiment_score": sentiment_score , "user_message": message})
+                user = users_collection.find_one({"email": email})
+                if not user:
+                    logger.warning(f"No user found for email: {email}")
+                    return jsonify({"error": "User not found"}), 404
+
+                chatbot_preference = user.get("chatbot_preference")
+                username = user.get("username", "User")
+                logger.debug(f"Chatbot preference: {chatbot_preference}, Username: {username}")
+
+                # Generate response
+                response_text, sentiment_score = generate_llm_response_sentiment(
+                    message, chatbot_preference, username
+                )
+                logger.debug(f"Generated bot response: {response_text}")
+
+                # Convert response to speech
+                try:
+                    audio = elevenlabs.text_to_speech.convert(
+                        text=response_text,
+                        voice_id="JBFqnCBsd6RMkjVDRZzb",
+                        model_id="eleven_multilingual_v2",
+                        output_format="mp3_44100_128",
+                    )
+                    # play(audio)
+                    logger.debug("Converting to raw")
+                    audio_bytes = b"".join(audio)
+                    audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
+                except Exception as e:
+                    logger.error(f"Error generating TTS: {e}", exc_info=True)
+
+                # Store in DB
+                chat_entry = {
+                    "user_id": user["user_id"],
+                    "user_message": message,
+                    "bot_response": response_text,
+                    "timestamp": datetime.now(timezone.utc),
+                    "sentiment_score": sentiment_score
+                }
+                chats_collection.insert_one(chat_entry)
+                logger.debug("Chat entry inserted for authenticated user")
+
+                return jsonify({
+                    "reply": response_text,
+                    "sentiment_score": sentiment_score,
+                    "user_message": message,
+                    "audio": audio_base64
+                })
+
+            except Exception as e:
+                logger.error(f"Error processing authenticated request: {e}", exc_info=True)
+                return jsonify({"error": "Authentication or processing failed"}), 500
+
+        # If unauthenticated
+        else:
+            logger.debug("No access token. Processing as unauthenticated user")
+            response_text, sentiment_score = generate_llm_response_sentiment(message, None, None)
+            audio = elevenlabs.text_to_speech.convert(
+                        text=response_text,
+                        voice_id="JBFqnCBsd6RMkjVDRZzb",
+                        model_id="eleven_multilingual_v2",
+                        output_format="mp3_44100_128",
+                    )
+            # play(audio)
+            audio_bytes = b"".join(audio)
+            logger.debug("Converting to raw")
+            audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
+
+            user_id = str(uuid.uuid4())
+            chat_entry = {
+                "user_id": user_id,
+                "user_message": message,
+                "bot_response": response_text,
+                "timestamp": datetime.now(timezone.utc),
+                "sentiment_score": sentiment_score
+            }
+            chats_collection.insert_one(chat_entry)
+            logger.debug("Chat entry inserted for unauthenticated user")
+
+            return jsonify({
+                "reply": response_text,
+                "sentiment_score": sentiment_score,
+                "user_message": message,
+                "audio": audio_base64
+            })
+
+    except Exception as e:
+        logger.error(f"Unexpected error in /voice_chat: {e}", exc_info=True)
+        return jsonify({"error": "Internal server error"}), 500

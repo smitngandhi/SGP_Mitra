@@ -52,3 +52,4 @@ torchvision
 soundfile
 langchain_openai
 openpyxl
+elevenlabs

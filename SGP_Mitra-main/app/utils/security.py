@@ -170,7 +170,7 @@ def generate_llm_response_sentiment(user_message, chatbot_preference, username):
         logger.debug(f"[DEBUG] System prompt already exists in memory")
 
     logger.debug(f"[DEBUG] Creating ConversationChain agent with llm and memory")
-    agent = ConversationChain(llm=llm, memory=memory, verbose=True)
+    agent = ConversationChain(llm=llm, memory=memory, verbose=False)
     logger.debug(f"[DEBUG] Agent created successfully")
 
     # Get agentic response
@@ -206,7 +206,7 @@ async def speak_and_play(text):
     await communicate.save("output.mp3")
     audio = AudioSegment.from_file("output.mp3", format="mp3")
     play(audio)
-    os.remove("output.mp3")
+    # os.remove("output.mp3")
 
 def transcribe_audio_from_mic():
     recorded_chunks = []
