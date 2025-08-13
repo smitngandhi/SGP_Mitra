@@ -268,40 +268,6 @@ npm start
 | `GET` | `/api/v1/test/results` | Get assessment results | 
 | `GET` | `/api/v1/test/history` | Get assessment history | 
 
-###  **Emergency Endpoints**
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/api/v1/emergency/alert` | Trigger emergency alert | 
-| `GET` | `/api/v1/emergency/contacts` | Get emergency contacts | 
-| `POST` | `/api/v1/emergency/contacts` | Add emergency contact | 
-
-##  Testing
-
-###  **Backend Testing**
-```bash
-# Run unit tests
-python -m pytest tests/
-
-# Run specific test file
-python -m pytest tests/test_auth.py
-
-# Run with coverage
-python -m pytest --cov=app tests/
-```
-
-###  **Frontend Testing**
-```bash
-cd frontend
-
-# Run all tests
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run specific test file
-npm test -- --testPathPattern=Login.test.js
-```
 
 ##  Features Deep Dive
 
