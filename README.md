@@ -377,12 +377,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 *Built with  by Team SGP | Making Mental Health Support Accessible to Everyone*
 
-![Prachi Desai](https://github.com/Prachidesai2506)
-![Dhruvil Joshi](https://github.com/Dhruvil-Joshi)
-![Smit Gandhi](https://github.com/smitngandhi)
-
-
 </div>
+1. git clone -b Smit https://github.com/your-username/SGP_Mitra.git
+2. cd SGP_Mitra-main
 3. python -m venv venv
 4. venv\Scripts\activate
 5. pip install -r requirements.txt
