@@ -377,8 +377,10 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 *Built with  by Team SGP | Making Mental Health Support Accessible to Everyone*
 
-[![GitHub stars](https://img.shields.io/github/stars/your-username/SGP_Mitra?style=social)](https://github.com/your-username/SGP_Mitra/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/SGP_Mitra?style=social)](https://github.com/your-username/SGP_Mitra/network/members)
+![Prachi Desai](https://github.com/Prachidesai2506)
+![Dhruvil Joshi](https://github.com/Dhruvil-Joshi)
+![Smit Gandhi](https://github.com/smitngandhi)
+
 
 </div>
 3. python -m venv venv
