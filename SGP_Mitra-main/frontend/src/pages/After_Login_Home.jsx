@@ -10,7 +10,6 @@ import music from "../assets/music.svg"
 import heart from "../assets/heart.svg"
 import message from "../assets/message.svg"
 import test from "../assets/health.svg"
-
 const After_Login_Home = () => {
 
         const [cookies, setCookie] = useCookies(["access_token"]);
@@ -25,8 +24,6 @@ const After_Login_Home = () => {
                   path: "/",
                   maxAge : 360000
               });
-
-
               console.log("Access token stored in cookies!");
 
               // Remove the access_token from the URL

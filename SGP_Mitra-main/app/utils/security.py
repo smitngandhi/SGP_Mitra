@@ -3,6 +3,8 @@ from flask_jwt_extended import create_access_token, decode_token
 import re
 import hashlib
 import requests
+import tempfile
+
 from app.models import *
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from app.utils import *
@@ -193,7 +195,8 @@ def generate_llm_response_sentiment(user_message, chatbot_preference, username):
             "_id" : user_id,
             "chunk_text" : user_message,
             "llm_output": response.content,
-            "username": display_name
+            "username": display_name,
+            "text": user_message
             }
             ]
 
@@ -204,10 +207,13 @@ def generate_llm_response_sentiment(user_message, chatbot_preference, username):
 
 async def speak_and_play(text):
     communicate = edge_tts.Communicate(text=text, voice="en-IN-NeerjaNeural")
-    await communicate.save("output.mp3")
-    audio = AudioSegment.from_file("output.mp3", format="mp3")
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tf:
+        temp_path = tf.name
+    
+    await communicate.save(temp_path)
+    audio = AudioSegment.from_file(temp_path, format="mp3")
     play(audio)
-    os.remove("output.mp3")
+    os.remove(temp_path)
 
 def transcribe_audio_from_mic():
     recorded_chunks = []

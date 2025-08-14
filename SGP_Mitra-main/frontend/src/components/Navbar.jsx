@@ -44,11 +44,48 @@ const Navbar = () => {
     fetchUsername();
   }, [cookies.access_token]);
 
-  const handleLogout = () => {
-    removeCookie("access_token", { path: "/" });
-    setUsername(null);
-    navigate("/login");
+  const handleLogout = async () => {
+  window.isLoggingOut = true; // tell hook not to log this route change
+
+  const endTime = Date.now();
+  const startTime = window.pageStartTime || Date.now();
+  const timeSpent = ((endTime - startTime) / 1000).toFixed(2);
+
+  const data = {
+    page: window.location.pathname,
+    timeSpent: `${timeSpent} seconds`,
+    timestamp: new Date().toISOString(),
   };
+
+  const existing = JSON.parse(localStorage.getItem("pageTracking") || "[]");
+  existing.push(data);
+  localStorage.setItem("pageTracking", JSON.stringify(existing));
+  console.log(existing)
+  const accessToken = cookies.access_token || null
+  localStorage.removeItem("pageTracking");
+    try {
+    const response = await fetch("http://127.0.0.1:5000/api/v1/receive_list", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({ 
+        access_token: accessToken,
+        user_activity: existing })
+    });
+
+    const result =await response.json();
+    console.log("Server Response:", result);
+
+  } catch (error) {
+    console.error("Error sending list:", error);
+  }
+  removeCookie("access_token", { path: "/" });
+  setUsername(null);
+  navigate("/login");
+};
+
 
   const handleMitraClick = () => {
     if (cookies.access_token) {
@@ -75,6 +112,7 @@ const Navbar = () => {
       <Link to="/chat-bot" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">MindChat</Link>
       <Link to="/selfcare" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">SelfCare Plans</Link>
       <Link to="/music_generation" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">ZenBeats</Link>
+      <Link to="/emergency" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">Emergency</Link>
       <Link to="/faqs" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">FAQs</Link>
       <Link to="/contact_us" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">Contact Us</Link>
     </div>

@@ -1,6 +1,6 @@
 from app import create_app
 from flask import make_response, redirect, request, jsonify, url_for
-from app.models import users_collection , chats_collection
+from app.models import users_collection , chats_collection, tracking_collection
 from app.utils.mail import send_reset_email
 import secrets
 from app.routes import user_routes
@@ -25,6 +25,7 @@ import torch
 import torchaudio
 from flask import Flask, request, jsonify, send_from_directory
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
+from pymongo import MongoClient, ASCENDING, DESCENDING
 
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
@@ -42,7 +43,7 @@ model.add(Dense(7, activation='softmax'))
 
 
 
-OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_Dhruvil_Branch\\app\\static\\generated_music"
+OUTPUT_DIR = "app\\static\\generated_music"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
@@ -52,7 +53,7 @@ model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musi
 processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
 # Load the model weights
-model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\model.h5'
+model_path = 'app\\data\\model.h5'
 try:
     model.load_weights(model_path)
     print("Weights loaded successfully!")
@@ -62,14 +63,14 @@ except Exception as e:
 # Load pre-trained emotion model
 
 # Haar Cascade for face detection
-CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\haarcascade_frontalface_default.xml"
+CASCADE_PATH = "app\\data\\haarcascade_frontalface_default.xml"
 face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
 
 # Emotion labels
 emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
 
 # Load music dataset
-df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\spotify_dataset.csv")
+df = pd.read_csv("app\\data\\spotify_dataset.csv")
 
 df = df.dropna()
 
@@ -316,10 +317,10 @@ def generate_music():
 
         # Save generated music
         print("Saving")
-        torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
+        torchaudio.save('app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
         title = generate_music_title(prompt)
         print(f'New title of music {title}')
-        torchaudio.save(f'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\music_samples\\{title}.wav', music_waveform, 24000)
+        torchaudio.save(f'app\\music_samples\\{title}.wav', music_waveform, 24000)
         print("here")
         # Return audio URL
 
@@ -328,3 +329,53 @@ def generate_music():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@user_routes.route("/receive_list", methods=["POST"])
+def post_user_tracking():
+    data=request.get_json()
+    user_activity=data.get("user_activity",[])
+    access_token = data["access_token"]
+    decoded_token = decode_token(access_token)
+    email = decoded_token.get("sub")
+    # user = users_collection.find_one({"email": email})
+    # print(email,' ',user)
+    print("User Tracking recorded: ",user_activity)
+    user_doc = tracking_collection.find_one({"email": email})
+
+    if user_doc:
+        # If user exists, get last count
+        if user_doc["user_visits"]:
+            last_count = user_doc["user_visits"][-1]["count"]
+        else:
+            last_count = 0
+
+        new_count = last_count + 1
+
+        # Append new visit session
+        tracking_collection.update_one(
+            {"email": email},
+            {
+                "$push": {
+                    "user_visits": {
+                        "count": new_count,
+                        "visits": user_activity
+                    }
+                }
+            }
+        )
+
+    else:
+        # If user doesn't exist, create new document
+        tracking_collection.insert_one({
+            "email": email,
+            "user_visits": [
+                {
+                    "count": 1,
+                    "visits": user_activity
+                }
+            ]
+        })
+        new_count = 1
+
+    return jsonify({"message": f"Inserted session {new_count} for {email}"})

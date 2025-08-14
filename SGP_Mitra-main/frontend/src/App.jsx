@@ -19,9 +19,16 @@ import Chatbotnew from "./pages/Chatbotnew";
 import VoiceAssistantModel from "./pages/VoiceAssistantModel";
 import AssessmentTestPage from "./pages/AssessmentTestPage";
 import Emergencypage from "./pages/emergency";
+import usePageTracking from "./components/usePageTracking";
+import { useCookies } from "react-cookie";
+
+
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
+  const [cookies] = useCookies(["access_token"]);
+  const isLoggedIn = Boolean(cookies.access_token);
 
+  usePageTracking(isLoggedIn);
   return (
     <>
       {!introFinished ? (

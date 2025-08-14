@@ -63,7 +63,7 @@ const Music_Generation = () => {
   return (
     <>      
     <Navbar/>
-    <div className="bg-white text-white p-5 overflow-hidden relative">    
+    <div className="bg-[#faf8ff] text-white p-5 overflow-hidden relative">    
         <div className="flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto" style={{height: '79vh'}}>
           {/* Left Section - Emotion Based */}
           <div className="group w-full lg:w-1/2 bg-[#d7c6e6] backdrop-blur-md rounded-2xl p-6 transform transition-all duration-500 hover:scale-102 hover:bg-[#7a3fa9]">

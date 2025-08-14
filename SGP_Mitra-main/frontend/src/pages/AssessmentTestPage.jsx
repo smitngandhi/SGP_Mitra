@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Send, BarChart3, Brain, TrendingUp, Heart, Target, Home } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar } from 'recharts';
 import Mitra from '../assets/Mitra Logo.png'
-
+import Navbar from "../components/Navbar"
 const AssessmentTestPage = () => {
   const [cards, setCards] = useState([]);
   const [touchedCards, setTouchedCards] = useState({});
@@ -654,6 +654,9 @@ const AssessmentTestPage = () => {
   const complete = isComplete();
 
   return (
+    
+    <>
+    <Navbar/>
     <div className="min-h-screen bg-gray-100 py-4">
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
@@ -838,6 +841,7 @@ const AssessmentTestPage = () => {
         }
       `}</style>
     </div>
+    </>
   );
 };
 

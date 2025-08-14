@@ -113,7 +113,6 @@ def login():
         response.set_cookie("user_id", user_id, httponly=True, secure=False, samesite="None")
 
         print(response.headers)
-
         return response
     
     # Increment failed attempts if password is incorrect

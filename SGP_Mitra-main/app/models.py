@@ -21,11 +21,12 @@ SILENCE_DURATION = 1.5
 
 # Initialize MongoDB connection
 client = MongoClient(os.getenv("MONGO_URL"))
-db = client["mydatabase"]
+db = client["Mydatabase"]
 
 
 # Collections
 users_collection = db["users"]
+tracking_collection = db["tracking"]
 chats_collection = db["chats"]
 
 # Initialize Together.AI-powered LLM

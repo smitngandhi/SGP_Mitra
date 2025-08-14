@@ -18,6 +18,10 @@
     height: 100%;
   }
   
+  .main-outer-container{
+    background-color: #faf8ff;;
+  }
+
   .app-container {
     display: flex;
     height: 100%;

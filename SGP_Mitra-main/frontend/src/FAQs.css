@@ -2,7 +2,7 @@
 .faq-wrapper {
   display: flex;
   justify-content: center;
-  background-color: white;
+  background-color: #faf8ff;;
   align-items: center;
   padding:2.5%/* Ensures vertical centering */
 }
