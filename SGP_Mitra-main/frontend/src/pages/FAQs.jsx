@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "../FAQs.css";
-import Navbar from "../components/Navbar";
 
 const FAQs = () => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -19,7 +18,6 @@ const FAQs = () => {
 
   return (
     <div className="maindiv">
-    <Navbar/>
     <div className="faq-wrapper">
 
     <div className="faq-container">

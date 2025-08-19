@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import Navbar from "../components/Navbar";
 import MoodDetector from "../components/MoodDetector";
 import "../Chatbotnew.css";
 import robotImage from "../assets/robotnew.png"; 
@@ -250,7 +249,6 @@ const Chatbotnew = () => {
 
     return (
         <>
-            <Navbar />
             <div className="chat-container">
                 {!chatStarted ? (
                     <div className="welcome-screen">

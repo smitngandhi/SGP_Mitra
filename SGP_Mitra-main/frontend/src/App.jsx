@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import FAQS from "./pages/FAQs";
@@ -35,7 +36,7 @@ const App = () => {
         <VideoIntro onFinish={() => setIntroFinished(true)} />
       ) : (
         <>
-          {/* Optional: <Navbar /> */}
+         <Navbar />
           <Routes>
             <Route path="/" element={<AFTER_LOGIN_HOME/>} />
             <Route path="/home" element={<AFTER_LOGIN_HOME />} />

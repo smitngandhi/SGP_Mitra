@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -47,7 +46,6 @@ const ResetPassword = () => {
 
   return (
     <>
-    <Navbar/>
     <div className="flex items-center justify-center"  style={{ padding: '89px', backgroundColor: '#bb88e8'}}>
     <div className="bg-white shadow-lg rounded-lg overflow-hidden p-8 "style={{ width: '571px' }}>
           <h2 className="text-2xl font-semibold text-gray-800 text-center">Reset Password</h2>

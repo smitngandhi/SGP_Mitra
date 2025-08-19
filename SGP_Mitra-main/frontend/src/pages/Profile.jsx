@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import axios from 'axios';
 import profileimg from '../assets/profile.jpg';
 import "../Profile.css";
@@ -125,7 +124,6 @@ function Profile() {
   };
   return (
     <>
-    <Navbar/>
     <div>
       <div className='WelcomeDisplay'>
         <h1 >Welcome, {profileData.username}</h1>

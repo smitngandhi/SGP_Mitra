@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import GoogleButton from "../components/GoogleButton";
 import illustration from "../assets/Illustration.jpg.jpeg";
 import { useNavigate } from "react-router-dom"; 
-import Navbar from "../components/Navbar";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -53,7 +52,6 @@ const Register = () => {
 
   return (
     <>
-    <Navbar/>
     <div className="flex items-center justify-center min-h-screen bg-white">
       <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full flex">
         {/* Left Section - Illustration */}

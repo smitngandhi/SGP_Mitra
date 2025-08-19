@@ -41,9 +41,9 @@ const useLogout = () => {
     } catch (error) {
       console.error("Error sending list:", error);
     }
-
     removeCookie("access_token", { path: "/" });
     navigate("/login");
+    window.location.reload();
   };
 
   return handleLogout;

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar"
 import "../MusicAnimations.css"; // We'll create this file for custom animations
 import vinyl from "../assets/vinyl.png"
 // import vinylrecord from "../assets/vinyl-record.png"
@@ -62,7 +61,6 @@ const Music_Generation = () => {
 
   return (
     <>      
-    <Navbar/>
     <div className="bg-[#faf8ff] text-white p-5 overflow-hidden relative">    
         <div className="flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto" style={{height: '79vh'}}>
           {/* Left Section - Emotion Based */}

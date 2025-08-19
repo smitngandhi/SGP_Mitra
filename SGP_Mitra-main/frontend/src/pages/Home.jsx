@@ -1,4 +1,3 @@
-import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import User from '../assets/User.png'
 import image1 from '../assets/image1.jpg'
@@ -13,7 +12,7 @@ import test from "../assets/health.svg"
 
 const Home = () => {
 
-        const [cookies, setCookie , removeCookie] = useCookies(["access_token"]);
+        const [cookies, setCookie] = useCookies(["access_token"]);
 
 
         useEffect(() => {
@@ -31,19 +30,7 @@ const Home = () => {
         }
         }, [cookies.access_token, setCookie]);
 
-        useEffect(() => {
-        console.log("Checking for access token in cookies:", cookies.access_token);
-        if (cookies.access_token) {
-          console.log("Access token found in cookies:", cookies.access_token);
-          const timer = setTimeout(() => {
-            removeCookie("access_token", { path: "/" });
-            console.log("Access token removed after 10 seconds!");
-          }, 3600 * 1000);
-
-          return () => clearTimeout(timer); // cleanup if component unmounts
-        }
-      }, [cookies.access_token, removeCookie]);
-
+  
         // 6 Testimonials
         const testimonialsData = [
           {
@@ -103,7 +90,6 @@ const Home = () => {
   const navigate = useNavigate();
   return (
     <div className="navbar-val">
-    <Navbar/>
     <div className="app">
       {/* Main Content */}
       <main className="main-content">

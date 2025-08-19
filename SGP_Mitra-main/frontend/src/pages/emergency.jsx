@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../emergency.css";
-import Navbar from "../components/Navbar"
 
 const EmergencyHelp = () => {
   const [locationStatus, setLocationStatus] = useState("loading");
@@ -74,7 +73,6 @@ const EmergencyHelp = () => {
   return (
     <div className="main-outer-container">
       {/* HEADER */}
-      <Navbar/>
 
       {/* MAIN SECTION */}
       <main className="container">

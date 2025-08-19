@@ -24,27 +24,27 @@ const After_Login_Home = () => {
                   // console.log("Inside IF");
                   setCookie("access_token", accessTokenFromURL, { path: "/" });
                   console.log("Access token stored in cookies!");
-        
+                  localStorage.setItem("loginTime", Date.now());
                   // Remove token from URL
                   window.history.replaceState({}, document.title, window.location.pathname);
                 }
                 }, [cookies.access_token, setCookie]);
         
         
-                useEffect(() => {
-                // console.log("Checking for access token in cookies:", cookies.access_token);
-                if (cookies.access_token) {
-                  // console.log("Access token found in cookies:", cookies.access_token);
-                  const timer = setTimeout(() => {
-                    removeCookie("access_token", { path: "/" });
-                    alert("Your session has expired. Please log in again.");
-                    window.location.reload();
-                    // console.log("Access token removed after 10 seconds!");
-                  }, 3600 * 1000);
+              //   useEffect(() => {
+              //   // console.log("Checking for access token in cookies:", cookies.access_token);
+              //   if (cookies.access_token) {
+              //     // console.log("Access token found in cookies:", cookies.access_token);
+              //     const timer = setTimeout(() => {
+              //       removeCookie("access_token", { path: "/" });
+              //       alert("Your session has expired. Please log in again.");
+              //       window.location.reload();
+              //       // console.log("Access token removed after 10 seconds!");
+              //     }, 3600 * 1000);
         
-                  return () => clearTimeout(timer); // cleanup if component unmounts
-                }
-              }, [cookies.access_token, removeCookie]);
+              //     return () => clearTimeout(timer); // cleanup if component unmounts
+              //   }
+              // }, [cookies.access_token, removeCookie]);
        
 
         // 6 Testimonials
@@ -106,7 +106,6 @@ const After_Login_Home = () => {
   const navigate = useNavigate();
   return (
     <div className="navbar-val">
-    <Navbar/>
     <div className="app">
       {/* Main Content */}
       <main className="main-content">

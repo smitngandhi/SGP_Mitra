@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import '../Selfcare.css';
 import music from '../assets/relax_music.mp3';
-import Navbar from '../components/Navbar';
 import { wellnessQuotes } from '../wellnessQuotes';
 
 // Simple MeditationIcon placeholder
@@ -284,7 +283,6 @@ const SelfCare = () => {
 
   return (
     <>
-    <Navbar/>
     <div className="app-container">
       <div className="main-content">
         <section className="plan-section">

@@ -1,6 +1,5 @@
 import React from "react";
 import "../Contact_Us.css";
-import Navbar from "../components/Navbar"
 const teamMembers = [
   {
     name: "DHRUVIL JOSHI",
@@ -25,7 +24,6 @@ const teamMembers = [
 const ContactUs = () => {
   return (
     <div className="contact-navbar">
-      <Navbar/>
     <div className="contact-container">
       <div className="team-flex-one">
         {teamMembers.map((member, index) => (

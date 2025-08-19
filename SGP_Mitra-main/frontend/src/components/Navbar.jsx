@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import "./animate.css";
 import "../Navbar.css"
-import logo from '../assets/Mitra Logo.png'
 import Logoimg from '../assets/logotop.png'
 import useLogout  from "../components/useLogout"
 
@@ -44,49 +43,25 @@ const Navbar = () => {
 
     fetchUsername();
   }, [cookies.access_token]);
-
-//   const handleLogout = async () => {
-//   window.isLoggingOut = true; // tell hook not to log this route change
-
-//   const endTime = Date.now();
-//   const startTime = window.pageStartTime || Date.now();
-//   const timeSpent = ((endTime - startTime) / 1000).toFixed(2);
-
-//   const data = {
-//     page: window.location.pathname,
-//     timeSpent: `${timeSpent} seconds`,
-//     timestamp: new Date().toISOString(),
-//   };
-
-//   const existing = JSON.parse(localStorage.getItem("pageTracking") || "[]");
-//   existing.push(data);
-//   localStorage.setItem("pageTracking", JSON.stringify(existing));
-//   console.log(existing)
-//   const accessToken = cookies.access_token || null
-//   localStorage.removeItem("pageTracking");
-//     try {
-//     const response = await fetch("http://127.0.0.1:5000/api/v1/receive_list", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-
-//       body: JSON.stringify({ 
-//         access_token: accessToken,
-//         user_activity: existing })
-//     });
-
-//     const result =await response.json();
-//     console.log("Server Response:", result);
-
-//   } catch (error) {
-//     console.error("Error sending list:", error);
-//   }
-//   removeCookie("access_token", { path: "/" });
-//   setUsername(null);
-//   navigate("/login");
-// };
+  
   const handleLogout = useLogout(); // now reusable
+
+useEffect(() => {
+  const loginTime = localStorage.getItem("loginTime");
+  if (!loginTime) return;
+
+  const interval = setInterval(() => {
+    const now = Date.now();
+    if (now - loginTime > 3600 * 1000) {
+      alert("Session expired, please login again.");
+      localStorage.removeItem("loginTime");
+      clearInterval(interval);  // ✅ Stop further checks
+      handleLogout();
+    }
+  }, 1000); // check every second
+
+  return () => clearInterval(interval); // cleanup on unmount
+}, [handleLogout]);
 
 
   const handleMitraClick = () => {

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import GoogleButton from "../components/GoogleButton";
 import illustration from "../assets/Illustration.jpg.jpeg";
-import Navbar from "../components/Navbar";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,7 +36,6 @@ const Login = () => {
       if (response.ok) {
         setCookie("access_token", data.access_token, {
           path: "/",
-          maxAge: 3600, // 1 hour expiration
         });
 
         try {
@@ -72,7 +70,6 @@ const Login = () => {
 
   return (
     <>
-    <Navbar/>
     <div className="flex items-center justify-center min-h-screen bg-white">
       <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full flex">
         <div className="hidden md:flex w-1/2 items-center justify-center bg-white">
