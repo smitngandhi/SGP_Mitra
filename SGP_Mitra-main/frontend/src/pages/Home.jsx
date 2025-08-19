@@ -13,26 +13,36 @@ import test from "../assets/health.svg"
 
 const Home = () => {
 
-        const [cookies, setCookie] = useCookies(["access_token"]);
+        const [cookies, setCookie , removeCookie] = useCookies(["access_token"]);
+
 
         useEffect(() => {
-          const urlParams = new URLSearchParams(window.location.search);
-          const accessTokenFromURL = urlParams.get("access_token");
+         const urlParams = new URLSearchParams(window.location.search);
+        const accessTokenFromURL = urlParams.get("access_token");
 
-          if (accessTokenFromURL && !cookies.access_token) {
-              console.log("Inside")
-              setCookie("access_token", accessTokenFromURL, {
-                  path: "/",
-                  maxAge : 3600
-              });
+        // If token is in the URL and cookie isn't set yet
+        if (accessTokenFromURL && !cookies.access_token) {
+          console.log("Inside IF");
+          setCookie("access_token", accessTokenFromURL, { path: "/" });
+          console.log("Access token stored in cookies!");
 
-              console.log("Access token stored in cookies!");
-
-              // Remove the access_token from the URL
-              const newURL = window.location.pathname;
-              window.history.replaceState({}, document.title, newURL);
-          }
+          // Remove token from URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
         }, [cookies.access_token, setCookie]);
+
+        useEffect(() => {
+        console.log("Checking for access token in cookies:", cookies.access_token);
+        if (cookies.access_token) {
+          console.log("Access token found in cookies:", cookies.access_token);
+          const timer = setTimeout(() => {
+            removeCookie("access_token", { path: "/" });
+            console.log("Access token removed after 10 seconds!");
+          }, 3600 * 1000);
+
+          return () => clearTimeout(timer); // cleanup if component unmounts
+        }
+      }, [cookies.access_token, removeCookie]);
 
         // 6 Testimonials
         const testimonialsData = [

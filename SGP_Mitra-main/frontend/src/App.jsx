@@ -37,7 +37,7 @@ const App = () => {
         <>
           {/* Optional: <Navbar /> */}
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<AFTER_LOGIN_HOME/>} />
             <Route path="/home" element={<AFTER_LOGIN_HOME />} />
             <Route path="/login" element={<Login />} />
             <Route path="/chat-bot" element={<Chatbotnew />} />

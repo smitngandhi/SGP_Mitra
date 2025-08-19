@@ -21,7 +21,7 @@ SILENCE_DURATION = 1.5
 
 # Initialize MongoDB connection
 client = MongoClient(os.getenv("MONGO_URL"))
-db = client["Mydatabase"]
+db = client[os.getenv("MONGO_DB_NAME")]
 
 
 # Collections
