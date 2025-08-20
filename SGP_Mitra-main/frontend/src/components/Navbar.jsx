@@ -71,7 +71,7 @@ const Navbar = () => {
 
     {/* Right: Nav Links (Push to right with ml-auto) */}
     <div className="hidden md:flex items-center  space-x-5 ml-auto">
-      <Link to="/test" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">Know Your Mind</Link>
+      <Link to="/assessment" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">Know Your Mind</Link>
       <Link to="/chat-bot" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">MindChat</Link>
       <Link to="/selfcare" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">SelfCare Plans</Link>
       <Link to="/music_generation" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">ZenBeats</Link>

@@ -43,12 +43,13 @@ def create_app():
     from app.routes.user_routes import user_routes
     from app.routes.test_routes import test_routes
     from app.routes.chatbot_routes import chatbot_routes
-    from app.routes.emergency import emergency_routes
+    from app.routes.emergency_routes import emergency_routes
 
     app.register_blueprint(auth_routes, url_prefix="/api/v1")
     app.register_blueprint(user_routes, url_prefix="/api/v1")
     app.register_blueprint(test_routes, url_prefix="/api/v1")
     app.register_blueprint(chatbot_routes, url_prefix="/api/v1")
     app.register_blueprint(emergency_routes, url_prefix="/api/v1")
+
 
     return app
