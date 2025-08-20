@@ -51,7 +51,7 @@ model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musi
 processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
 # Load the model weights
-model_path = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\model.h5'
+model_path = 'app\\data\\model.h5'
 try:
     model.load_weights(model_path)
     print("Weights loaded successfully!")
@@ -61,14 +61,14 @@ except Exception as e:
 # Load pre-trained emotion model
 
 # Haar Cascade for face detection
-CASCADE_PATH = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\haarcascade_frontalface_default.xml"
+CASCADE_PATH = "app\\data\\haarcascade_frontalface_default.xml"
 face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
 
 # Emotion labels
 emotion_dict = {0: "angry", 1: "disgust", 2: "fear", 3: "happy", 4: "neutral", 5: "sad", 6: "surprise"}
 
 # Load music dataset
-df = pd.read_csv("C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\spotify_dataset.csv")
+df = pd.read_csv("app\\data\\spotify_dataset.csv")
 
 df = df.dropna()
 
@@ -315,10 +315,10 @@ def generate_music():
 
         # Save generated music
         print("Saving")
-        torchaudio.save('C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
+        torchaudio.save('app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
         title = generate_music_title(prompt)
         print(f'New title of music {title}')
-        torchaudio.save(f'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\music_samples\\{title}.wav', music_waveform, 24000)
+        torchaudio.save(f'app\\music_samples\\{title}.wav', music_waveform, 24000)
         print("here")
         # Return audio URL
 
