@@ -8,3 +8,69 @@
     width: 60px;
     margin-right: 20px;
 }
+
+/* Glassmorphism navbar */
+.glass-nav{
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    background: rgba(255,255,255,0.6);
+    box-shadow: 0 6px 30px rgba(0,0,0,0.06);
+    padding: 10px 16px;
+}
+
+/* Underline hover animation for nav links */
+.nav-link{
+    position: relative;
+    color: #475569;
+    transition: color 300ms ease;
+}
+.nav-link:hover{ color: #7a3fa9; }
+.nav-link::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0%;
+    height: 2px;
+    background: linear-gradient(90deg, #8A5DD6, #a0c4ff, #b2f7ef);
+    transition: width 300ms ease;
+    border-radius: 999px;
+}
+.nav-link:hover::after{ width: 100%; }
+
+/* Glow utilities reused by buttons */
+.hover\:shadow-glow:hover{
+    box-shadow: 0 8px 30px rgba(138,93,214,0.45), 0 0 0 1px rgba(138,93,214,0.15) inset;
+}
+
+/* Global button styles used across navbar and pages */
+.btn-primary{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #8A5DD6, #9d79e0);
+    color: #fff;
+    border-radius: 9999px;
+    box-shadow: 0 10px 30px rgba(138,93,214,0.35);
+    transition: transform 200ms ease, box-shadow 200ms ease, filter 200ms ease;
+}
+.btn-primary:hover{ transform: translateY(-1px) scale(1.02); box-shadow: 0 14px 40px rgba(138,93,214,0.45); filter: saturate(110%); }
+.btn-primary:active{ transform: translateY(0) scale(0.99); }
+
+.btn-secondary{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    color: #0f172a;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(148,163,184,0.4);
+    box-shadow: 0 8px 20px rgba(2,6,23,0.05);
+    backdrop-filter: blur(8px);
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.btn-secondary:hover{ transform: translateY(-1px); border-color: rgba(138,93,214,0.6); box-shadow: 0 12px 28px rgba(2,6,23,0.08); }
