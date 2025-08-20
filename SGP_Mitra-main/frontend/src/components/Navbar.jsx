@@ -2,16 +2,18 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import "./animate.css";
-import "../Navbar.css"
-import logo from '../assets/Mitra Logo.png'
-import Logoimg from '../assets/logotop.png'
+import "../Navbar.css";
+import Logoimg from "../assets/logotop.png";
+import useLogout from "../components/useLogout"; // ✅ Reusable logout hook
 
 const Navbar = () => {
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [cookies, setCookie, removeCookie] = useCookies(["access_token"]);
+  const [cookies] = useCookies(["access_token"]);
   const navigate = useNavigate();
+  const handleLogout = useLogout(); // ✅ Now modular & reusable
 
+  // ✅ Fetch Username from backend
   useEffect(() => {
     const fetchUsername = async () => {
       if (cookies.access_token) {
@@ -21,8 +23,6 @@ const Navbar = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ access_token: cookies.access_token }),
           });
-
-          
 
           const data = await response.json();
           if (response.ok) {
@@ -44,12 +44,25 @@ const Navbar = () => {
     fetchUsername();
   }, [cookies.access_token]);
 
-  const handleLogout = () => {
-    removeCookie("access_token", { path: "/" });
-    setUsername(null);
-    navigate("/login");
-  };
+  // ✅ Session auto-expiry (1 hour)
+  useEffect(() => {
+    const loginTime = localStorage.getItem("loginTime");
+    if (!loginTime) return;
 
+    const interval = setInterval(() => {
+      const now = Date.now();
+      if (now - loginTime > 3600 * 1000) {
+        alert("Session expired, please login again.");
+        localStorage.removeItem("loginTime");
+        clearInterval(interval);
+        handleLogout();
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [handleLogout]);
+
+  // ✅ Logo click navigation
   const handleMitraClick = () => {
     if (cookies.access_token) {
       navigate("/home");
@@ -65,44 +78,67 @@ const Navbar = () => {
           <div className="glass-nav mt-2 flex items-center w-full rounded-2xl">
             {/* Left: MITRA (Logo) */}
             <div onClick={handleMitraClick} className="cursor-pointer">
-              <div><img className="logotopnav" src={Logoimg}></img></div>
-              <div><h1 className="text-2xl font-bold text-indigo-600 animated-text">MITRA</h1></div>
+              <div>
+                <img className="logotopnav" src={Logoimg} alt="Mitra Logo" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-indigo-600 animated-text">
+                  MITRA
+                </h1>
+              </div>
             </div>
 
-            {/* Right: Nav Links (Push to right with ml-auto) */}
+            {/* Right: Nav Links */}
             <div className="hidden md:flex items-center space-x-6 ml-auto">
-              <Link to="/assessment" className="nav-link">Know Your Mind</Link>
-              <Link to="/chat-bot" className="nav-link">MindChat</Link>
-              <Link to="/selfcare" className="nav-link">SelfCare Plans</Link>
-              <Link to="/music_generation" className="nav-link">ZenBeats</Link>
-              <Link to="/faqs" className="nav-link">FAQs</Link>
-              <Link to="/contact_us" className="nav-link">Contact Us</Link>
+              <Link to="/assessment" className="nav-link">
+                Know Your Mind
+              </Link>
+              <Link to="/chat-bot" className="nav-link">
+                MindChat
+              </Link>
+              <Link to="/selfcare" className="nav-link">
+                SelfCare Plans
+              </Link>
+              <Link to="/music_generation" className="nav-link">
+                ZenBeats
+              </Link>
+              <Link to="/emergency" className="nav-link">
+                Emergency
+              </Link>
+              <Link to="/faqs" className="nav-link">
+                FAQs
+              </Link>
+              <Link to="/contact_us" className="nav-link">
+                Contact Us
+              </Link>
             </div>
 
-            {/* Rightmost: Authentication Buttons (Login/Register or Username + Logout) */}
+            {/* Rightmost: Authentication Buttons */}
             <div className="hidden md:flex items-center space-x-4 ml-6">
               {loading ? (
                 <p className="text-gray-600">Loading...</p>
               ) : username ? (
                 <div className="flex items-center space-x-4">
-                  <span className="text-[#7a3fa9] font-semibold"><Link to ="/profile">Hello, {username}</Link></span>
-                  <button 
+                  <span className="text-[#7a3fa9] font-semibold hidden md:block">
+                    <Link to="/profile">Hello, {username}</Link>
+                  </span>
+                  <button
                     onClick={handleLogout}
-                    className="px-4 py-2 rounded-full bg-[#8A5DD6] text-white transition-all duration-300 hover:shadow-glow hover:scale-[1.02]"
+                    className="px-4 py-2 rounded-full bg-[#8A5DD6] text-white transition-all duration-300 hover:shadow-glow hover:scale-[1.02] hover:bg-red-600"
                   >
                     Logout
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center space-x-3">
-                  <Link 
-                    to="/login" 
+                  <Link
+                    to="/login"
                     className="btn-secondary px-4 py-2"
                   >
                     Login
                   </Link>
-                  <Link 
-                    to="/register" 
+                  <Link
+                    to="/register"
                     className="btn-primary px-4 py-2"
                   >
                     Register
@@ -110,7 +146,6 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
           </div>
         </div>
       </nav>

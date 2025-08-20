@@ -394,7 +394,6 @@ const numberToPhrase = {
   if (loading) {
     return (
       <>
-      <Navbar />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -421,8 +420,7 @@ const numberToPhrase = {
     
     return (
       <>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-6">
           {/* Header Section */}
           <div className="text-center mb-16 border-b-4 border-gradient-to-r from-blue-500 to-purple-600 pb-8">

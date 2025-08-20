@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const ResetPassword = () => {
@@ -21,13 +20,14 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/v1/reset-password/${token}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ new_password: newPassword }),
-      });
+      const response = await fetch(
+        `http://127.0.0.1:5000/api/v1/reset-password/${token}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ new_password: newPassword }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -47,16 +47,21 @@ const ResetPassword = () => {
 
   return (
     <>
-    <Navbar/>
-    <div className="flex items-center justify-center"  style={{ padding: '89px', backgroundColor: '#bb88e8'}}>
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden p-8 "style={{ width: '571px' }}>
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Reset Password</h2>
-          <p className="text-gray-600 text-center mt-2">Enter your new password below</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#bb88e8] pt-24">
+        <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
+            Reset Password
+          </h2>
+          <p className="text-gray-600 text-center mt-2">
+            Enter your new password below
+          </p>
 
           {/* Password Inputs */}
           <form onSubmit={handleSubmit}>
             <div className="mt-6">
-              <label className="block text-gray-700 font-medium">New Password</label>
+              <label className="block text-gray-700 font-medium">
+                New Password
+              </label>
               <input
                 type="password"
                 placeholder="Enter new password"
@@ -67,7 +72,9 @@ const ResetPassword = () => {
               />
             </div>
             <div className="mt-4">
-              <label className="block text-gray-700 font-medium">Confirm Password</label>
+              <label className="block text-gray-700 font-medium">
+                Confirm Password
+              </label>
               <input
                 type="password"
                 placeholder="Confirm new password"
@@ -80,30 +87,32 @@ const ResetPassword = () => {
 
             {/* Submit Button */}
             <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-[#ad75de] text-white font-semibold w-3/5 rounded-lg py-3 mt-4
-               transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md
-               active:scale-95 hover:w-full flex justify-center"
-            >
-              Reset Password
-            </button>
+              <button
+                type="submit"
+                className="bg-[#ad75de] text-white font-semibold w-3/5 rounded-lg py-3 mt-4
+                transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md
+                active:scale-95 hover:w-full flex justify-center"
+              >
+                Reset Password
+              </button>
             </div>
           </form>
 
           {/* Success or Error Message */}
-          {message && <p className="text-green-500 text-center mt-2">{message}</p>}
+          {message && (
+            <p className="text-green-500 text-center mt-2">{message}</p>
+          )}
           {error && <p className="text-red-500 text-center mt-2">{error}</p>}
 
           {/* Back to Login */}
           <p className="text-center mt-4 text-gray-600">
             Remembered your password?
-            <Link 
-                                      to="/login" 
-                                      className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1"
-                                    >
-                                      Log In
-                                    </Link>
+            <Link
+              to="/login"
+              className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1"
+            >
+              Log In
+            </Link>
           </p>
         </div>
       </div>

@@ -207,7 +207,6 @@ const Home = () => {
     <div className="min-h-screen text-gray-900 relative">
       <div ref={bgRef} className="interactive-bg" />
       <div ref={spotRef} className="cursor-spot" />
-      <Navbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden pt-24 md:pt-28 pb-24" style={{marginTop: '96px'}}>

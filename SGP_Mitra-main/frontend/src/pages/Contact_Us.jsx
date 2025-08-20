@@ -24,8 +24,6 @@ const teamMembers = [
 
 const ContactUs = () => {
   return (
-    <div className="contact-navbar">
-      <Navbar/>
     <div className="contact-container">
       <div className="team-flex-one">
         {teamMembers.map((member, index) => (
@@ -48,7 +46,6 @@ const ContactUs = () => {
           </div>
         ))}
       </div>
-    </div>
     </div>
   );
 };

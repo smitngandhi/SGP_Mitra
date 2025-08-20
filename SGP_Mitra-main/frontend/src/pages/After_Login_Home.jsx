@@ -18,12 +18,9 @@ const Home = () => {
 
           if (accessTokenFromURL && !cookies.access_token) {
               console.log("Inside")
-              setCookie("access_token", accessTokenFromURL, {
-                  path: "/",
-                  maxAge : 3600
-              });
-
+              setCookie("access_token", accessTokenFromURL, { path: "/" });
               console.log("Access token stored in cookies!");
+              localStorage.setItem("loginTime", Date.now());
 
               // Remove the access_token from the URL
               const newURL = window.location.pathname;
@@ -207,7 +204,6 @@ const Home = () => {
     <div className="min-h-screen text-gray-900 relative">
       <div ref={bgRef} className="interactive-bg" />
       <div ref={spotRef} className="cursor-spot" />
-      <Navbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden pt-24 md:pt-28 pb-24" style={{marginTop: '96px'}}>

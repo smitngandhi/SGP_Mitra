@@ -284,7 +284,6 @@ const SelfCare = () => {
 
   return (
     <>
-    <Navbar/>
     <div className="app-container">
       <div className="main-content">
         <section className="plan-section">

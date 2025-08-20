@@ -53,20 +53,19 @@ const Register = () => {
 
   return (
     <>
-    <Navbar/>
-    <div className="flex items-center justify-center min-h-screen bg-white">
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full flex">
-        {/* Left Section - Illustration */}
-        <div className="hidden md:flex w-1/2 items-center justify-center bg-white">
-          <img 
-            src={illustration} 
-            alt="Login Illustration" 
-            className="w-3/4 transition-transform duration-500 hover:scale-105"
-          />
-        </div>
-        
-        {/* Right Section - Registration Form */}
-        <div className="w-full md:w-1/2 p-10">
+    <div className="flex items-center justify-center min-h-screen bg-white pt-24">
+  <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full flex">
+    {/* Left Section - Illustration */}
+    <div className="hidden md:flex w-1/2 items-center justify-center bg-white">
+      <img 
+        src={illustration} 
+        alt="Login Illustration" 
+        className="w-3/4 transition-transform duration-500 hover:scale-105"
+      />
+    </div>
+    
+    {/* Right Section - Registration Form */}
+    <div className="w-full md:w-1/2 p-10">
           <h2 className="text-3xl font-medium text-gray-600">
             New here, <span className="text-4xl font-bold text-[#965ec7]">Mitra</span>?
           </h2>

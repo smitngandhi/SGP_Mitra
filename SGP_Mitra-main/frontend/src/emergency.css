@@ -45,8 +45,9 @@ body {
 .container {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 0 2rem;
+  padding: 100px 2rem 2rem; /* ⬅️ Added 100px top padding */
 }
+
 
 .crisis-alert {
   background: #fff2f2;

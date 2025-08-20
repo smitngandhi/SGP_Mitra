@@ -149,7 +149,6 @@ function Test() {
 
   return (
     <div className='main'>
-      <Navbar/>
       <div className="app">
         {/* New instruction div added here */}
         <div className="quiz-instructions">

@@ -36,6 +36,8 @@ users_collection = db[os.getenv("USERS_COLLECTION")]
 logger.info(f"[INFO] Users collection initialized: {os.getenv('USERS_COLLECTION')}")
 chats_collection = db[os.getenv("CHATS_COLLECTION")]
 logger.info(f"[INFO] Chats collection initialized: {os.getenv('CHATS_COLLECTION')}")
+tracking_collection = db[os.getenv("TRACKING_COLLECTION")]
+logger.info("[INFO] Tracking collection initialized: tracking")
 
 # Initialize Together.AI-powered LLM
 

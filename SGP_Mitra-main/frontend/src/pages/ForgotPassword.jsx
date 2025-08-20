@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const ForgotPassword = () => {
@@ -15,9 +14,7 @@ const ForgotPassword = () => {
     try {
       const response = await fetch("http://127.0.0.1:5000/api/v1/forgot-password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email_or_username }),
       });
 
@@ -39,11 +36,15 @@ const ForgotPassword = () => {
 
   return (
     <>
-    <Navbar/>
-      <div className="flex items-center justify-center"  style={{padding: '149px', backgroundColor: '#bb88e8'}}>
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden p-8" style={{ width: '50%'}}>
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Forgot Password</h2>
-          <p className="text-gray-600 text-center mt-2">Enter your email/username to reset your password</p>
+      <div className="min-h-screen w-full flex items-center justify-center"
+           style={{ backgroundColor: "#bb88e8", paddingTop: "120px" }}>
+        <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-lg">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
+            Forgot Password
+          </h2>
+          <p className="text-gray-600 text-center mt-2">
+            Enter your email/username to reset your password
+          </p>
 
           {/* Email Input */}
           <form onSubmit={handleSubmit}>
@@ -60,15 +61,15 @@ const ForgotPassword = () => {
 
             {/* Submit Button */}
             <div className="flex justify-center">
-  <button
-    type="submit"
-    className="bg-[#ad75de] text-white font-semibold w-3/5 rounded-lg py-3 mt-4
-               transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md
-               active:scale-95 hover:w-full flex justify-center"
-  >
-    Send Reset Link
-  </button>
-</div>
+              <button
+                type="submit"
+                className="bg-[#ad75de] text-white font-semibold w-3/5 rounded-lg py-3 mt-4
+                           transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md
+                           active:scale-95 hover:w-full flex justify-center"
+              >
+                Send Reset Link
+              </button>
+            </div>
           </form>
 
           {/* Success or Error Message */}
@@ -78,7 +79,12 @@ const ForgotPassword = () => {
           {/* Back to Login */}
           <p className="text-center mt-4 text-gray-600">
             Remembered your password?
-            <Link to="/login" className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1"> Log In </Link>
+            <Link
+              to="/login"
+              className="text-[#965ec7] font-semibold transition-colors duration-300 hover:text-[#7a3fa9] ml-1"
+            >
+              Log In
+            </Link>
           </p>
         </div>
       </div>

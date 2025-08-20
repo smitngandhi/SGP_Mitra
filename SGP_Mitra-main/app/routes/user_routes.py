@@ -1,5 +1,5 @@
 from flask import make_response, redirect, request, jsonify, url_for
-from app.models import users_collection , chats_collection
+from app.models import users_collection , chats_collection , tracking_collection
 from app.utils.mail import send_reset_email
 import secrets
 from app.routes import user_routes
@@ -327,3 +327,53 @@ def generate_music():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@user_routes.route("/receive_list", methods=["POST"])
+def post_user_tracking():
+    data=request.get_json()
+    user_activity=data.get("user_activity",[])
+    access_token = data["access_token"]
+    decoded_token = decode_token(access_token)
+    email = decoded_token.get("sub")
+    # user = users_collection.find_one({"email": email})
+    # print(email,' ',user)
+    logger.info("User Tracking recorded: ",user_activity)
+    user_doc = tracking_collection.find_one({"email": email})
+
+    if user_doc:
+        # If user exists, get last count
+        if user_doc["user_visits"]:
+            last_count = user_doc["user_visits"][-1]["count"]
+        else:
+            last_count = 0
+
+        new_count = last_count + 1
+
+        # Append new visit session
+        tracking_collection.update_one(
+            {"email": email},
+            {
+                "$push": {
+                    "user_visits": {
+                        "count": new_count,
+                        "visits": user_activity
+                    }
+                }
+            }
+        )
+
+    else:
+        # If user doesn't exist, create new document
+        tracking_collection.insert_one({
+            "email": email,
+            "user_visits": [
+                {
+                    "count": 1,
+                    "visits": user_activity
+                }
+            ]
+        })
+        new_count = 1
+
+    return jsonify({"message": f"Inserted session {new_count} for {email}"})

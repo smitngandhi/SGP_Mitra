@@ -62,7 +62,6 @@ const Music_Generation = () => {
 
   return (
     <>      
-    <Navbar/>
     <div className="bg-white text-white p-5 overflow-hidden relative">    
         <div className="flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto" style={{height: '79vh', marginTop: '96px'}}>
           {/* Left Section - Emotion Based */}

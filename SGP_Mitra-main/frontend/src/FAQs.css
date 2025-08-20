@@ -4,7 +4,7 @@
   justify-content: center;
   background-color: white;
   align-items: center;
-  padding:2.5%/* Ensures vertical centering */
+  padding:100px 20px 20px /* Ensures vertical centering */
 }
 
 .faq-container {

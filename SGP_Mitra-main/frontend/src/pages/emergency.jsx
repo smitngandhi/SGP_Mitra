@@ -74,7 +74,6 @@ const EmergencyHelp = () => {
   return (
     <div>
       {/* HEADER */}
-      <Navbar/>
 
       {/* MAIN SECTION */}
       <main className="container">

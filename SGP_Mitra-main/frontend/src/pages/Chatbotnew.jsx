@@ -250,7 +250,6 @@ const Chatbotnew = () => {
 
     return (
         <>
-            <Navbar />
             <div className="chat-container">
                 {!chatStarted ? (
                     <div className="welcome-screen">

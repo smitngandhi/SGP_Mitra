@@ -125,7 +125,6 @@ function Profile() {
   };
   return (
     <>
-    <Navbar/>
     <div>
       <div className='WelcomeDisplay'>
         <h1 >Welcome, {profileData.username}</h1>
