@@ -1,4 +1,3 @@
-from app import create_app
 from flask import make_response, redirect, request, jsonify, url_for
 from app.models import users_collection , chats_collection
 from app.utils.mail import send_reset_email
@@ -15,32 +14,39 @@ from io import BytesIO
 from flask_mail import Mail, Message
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from flask import request, jsonify
-from fpdf import FPDF
-from flask_mail import Mail, Message
-from io import BytesIO
 from datetime import datetime
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from app.utils.logger_utils import get_logger
 
+
+logger = get_logger(__name__)
 
 
 @chatbot_routes.route("/api/chat", methods=["POST"])
 def chat():
 
+    logger.debug("Received chat request")
     data = request.get_json()
     message = data["message"]
-    print(message)
+    logger.debug(f"User message: {message}")
 
     if "access_token" in data and data["access_token"]:
+        logger.debug("Access token found, processing authenticated user")
         access_token = data["access_token"]
+        logger.debug(f"Access token: {access_token}")
         decoded_token = decode_token(access_token)
+        logger.debug(f"Decoded token: {decoded_token}")
         email = decoded_token.get("sub")
         user = users_collection.find_one({"email": email})
+        logger.debug(f"User found: {user}")
 
         chatbot_preference = user["chatbot_preference"]
+        logger.debug(f"Chatbot preference: {chatbot_preference}")
         username = user["username"]
-        print(f'Username : {username}')
+        logger.debug(f"Username: {username}")
+        logger.debug(f"Getting response from LLM for message. Calling generate_llm_response_sentiment")
         response_text  , sentiment_score = generate_llm_response_sentiment(message , chatbot_preference , username)
-        print(response_text)
+        logger.debug(f"Response text: {response_text}")
         chat_entry = {
         "user_id": user["user_id"],
         "user_message": message,
@@ -49,17 +55,14 @@ def chat():
         "sentiment_score" : sentiment_score
         }
         chats_collection.insert_one(chat_entry)
-
+        logger.debug("Chat entry inserted into database")
         return jsonify({"reply": response_text , "sentiment_score": sentiment_score} )
 
 
-    print("here")
+    logger.debug("No access token found, processing unauthenticated user")
     response_text, sentiment_score = generate_llm_response_sentiment(message , None , None)
-    # user_id = request.cookies.get("user_id")  # Fetch user_id from cookies
+    logger.debug(f"Response text for unauthenticated user: {response_text}")
 
-    # if not user_id:
-    #     print("Did not find the user_id")
-    #     return jsonify({"error": "Unauthorized"}), 401
 
 
     user_id = str(uuid.uuid4())
@@ -72,7 +75,7 @@ def chat():
     }
 
     chats_collection.insert_one(chat_entry)
-
+    logger.debug("Chat entry for unauthenticated user inserted into database")
     return jsonify({"reply": response_text , "sentiment_score": sentiment_score} )
 
 
@@ -194,32 +197,42 @@ def generate_selfcare_pdf():
 
 @chatbot_routes.route("/voice_chat", methods=["POST"])
 def voice_chat():
+    logger.debug("Received voice chat request")
     data = request.get_json()
-    
+    logger.debug(f"Voice chat data: {data}")
     if data.get("from_mic"):
         # Transcribe directly
         message = transcribe_audio_from_mic()
-        print(f"[Voice Input] Transcribed: {message}")
+        logger.debug(f"Transcribed message from mic: {message}")
         response = llm.invoke(f"convert this text to english: {message} and only give the translated one")
+        logger.debug(f"LLM response: {response.content}")
         message = response.content
-        print(f'New Message is {message}')
+        logger.debug(f"Final message after translation: {message}")
     else:
         message = data["message"]
-        print(message)
+        logger.debug(f"Message from request: {message}")
 
     if "access_token" in data and data["access_token"]:
+        logger.debug("Access token found, processing authenticated user")
         access_token = data["access_token"]
+        logger.debug(f"Access token found: {access_token}")
         decoded_token = decode_token(access_token)
+        logger.debug(f"Decoded token: {decoded_token}")
         email = decoded_token.get("sub")
+        logger.debug(f"Email from decoded token: {email}")
         user = users_collection.find_one({"email": email})
+        logger.debug(f"User found: {user}")
 
         chatbot_preference = user["chatbot_preference"]
+        logger.debug(f"Chatbot preference: {chatbot_preference}")
         username = user["username"]
-        print(f'Username : {username}')
+        logger.debug(f"Username: {username}")
+        logger.debug("Getting response from LLM for message. Calling generate_llm_response_sentiment")
         response_text, sentiment_score = generate_llm_response_sentiment(message, chatbot_preference, username)
-
+        logger.debug(f"Response text: {response_text}")
         # Play the audio response
         asyncio.run(speak_and_play(response_text))
+        
 
         chat_entry = {
             "user_id": user["user_id"],
@@ -229,11 +242,13 @@ def voice_chat():
             "sentiment_score": sentiment_score
         }
         chats_collection.insert_one(chat_entry)
-
+        logger.debug("Chat entry inserted into database for authenticated user")
         return jsonify({"reply": response_text, "sentiment_score": sentiment_score , "user_message": message})
 
-    print("Unauthenticated user")
+    logger.debug("No access token found, processing unauthenticated user")
+
     response_text, sentiment_score = generate_llm_response_sentiment(message, None, None)
+    logger.debug(f"Response text for unauthenticated user: {response_text}")
     asyncio.run(speak_and_play(response_text))
 
     user_id = str(uuid.uuid4())
@@ -246,5 +261,6 @@ def voice_chat():
     }
 
     chats_collection.insert_one(chat_entry)
+    logger.debug("Chat entry for unauthenticated user inserted into database")
 
     return jsonify({"reply": response_text, "sentiment_score": sentiment_score , "user_message": message})
