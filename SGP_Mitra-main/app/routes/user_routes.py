@@ -41,7 +41,7 @@ model.add(Dense(7, activation='softmax'))
 
 
 
-OUTPUT_DIR = "C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New Odoo\\Mitra_Dhruvil_Branch\\app\\static\\generated_music"
+OUTPUT_DIR = "app\\static\\generated_music"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
