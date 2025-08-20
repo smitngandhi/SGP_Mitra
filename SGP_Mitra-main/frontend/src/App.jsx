@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation  } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
@@ -22,25 +22,29 @@ import AssessmentTestPage from "./pages/AssessmentTestPage";
 import Emergencypage from "./pages/emergency";
 import usePageTracking from "./components/usePageTracking";
 import { useCookies } from "react-cookie";
-
+import LogoutVideo from "./components/LogoutVideo";
 
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
   const [cookies] = useCookies(["access_token"]);
   const isLoggedIn = Boolean(cookies.access_token);
-
+  const location = useLocation();
+  const hideNavbarRoutes = ["/logout-video"];
+  
   usePageTracking(isLoggedIn);
   return (
     <>
+    
       {!introFinished ? (
         <VideoIntro onFinish={() => setIntroFinished(true)} />
       ) : (
         <>
-         <Navbar />
+          {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
           <Routes>
             <Route path="/" element={<AFTER_LOGIN_HOME/>} />
             <Route path="/home" element={<AFTER_LOGIN_HOME />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/logout-video" element={<LogoutVideo />} />
             <Route path="/chat-bot" element={<Chatbotnew />} />
             <Route path="/register" element={<Register />} />
             <Route path="/faqs" element={<FAQS />} />

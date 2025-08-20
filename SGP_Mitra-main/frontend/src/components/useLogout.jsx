@@ -42,8 +42,7 @@ const useLogout = () => {
       console.error("Error sending list:", error);
     }
     removeCookie("access_token", { path: "/" });
-    navigate("/login");
-    window.location.reload();
+    navigate("/logout-video");
   };
 
   return handleLogout;
