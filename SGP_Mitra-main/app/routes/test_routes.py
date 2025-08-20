@@ -103,6 +103,72 @@ def load_assessment_data():
         print(f"Error loading data: {e}")
         return pd.DataFrame()
 
+def get_phrase_for_score_range(min_score, max_score):
+    """Generate phrase mappings based on score range"""
+    phrases = {}
+    
+    if max_score - min_score == 4:  # 0-4 range
+        phrases = {
+            0: "Not at all",
+            1: "Slightly", 
+            2: "Moderately",
+            3: "Quite a bit",
+            4: "Extremely"
+        }
+    elif max_score - min_score == 6:  # 0-6 range
+        phrases = {
+            0: "Not at all",
+            1: "Very slightly",
+            2: "Slightly", 
+            3: "Moderately",
+            4: "Quite a bit",
+            5: "Very much",
+            6: "Extremely"
+        }
+    elif max_score - min_score == 7:  # 0-7 range
+        phrases = {
+            0: "Not at all",
+            1: "Very slightly",
+            2: "Slightly", 
+            3: "Somewhat",
+            4: "Moderately",
+            5: "Quite a bit",
+            6: "Very much",
+            7: "Extremely"
+        }
+    elif max_score - min_score == 9:  # 0-9 range (like pain scales)
+        phrases = {
+            0: "None",
+            1: "Very mild",
+            2: "Mild",
+            3: "Moderate",
+            4: "Moderate-severe",
+            5: "Severe",
+            6: "Very severe",
+            7: "Intense",
+            8: "Very intense",
+            9: "Unbearable"
+        }
+    else:
+        # Generic phrases for any range
+        total_range = max_score - min_score
+        for i in range(min_score, max_score + 1):
+            position = (i - min_score) / total_range
+            if position <= 0.1:
+                phrases[i] = "Not at all"
+            elif position <= 0.3:
+                phrases[i] = "Slightly"
+            elif position <= 0.5:
+                phrases[i] = "Moderately"
+            elif position <= 0.7:
+                phrases[i] = "Quite a bit"
+            elif position <= 0.9:
+                phrases[i] = "Very much"
+            else:
+                phrases[i] = "Extremely"
+    
+    return phrases
+
 @test_routes.route('/assessments', methods=['GET'])
 def get_assessments():
     """Get all assessment cards (one per row)"""
@@ -153,6 +219,9 @@ def get_assessments():
                         print(f"Error parsing score logic '{score_logic}': {parse_error}")
                         pass
                 
+                # Generate phrase mappings for this score range
+                score_phrases = get_phrase_for_score_range(min_score, max_score)
+                
                 # Ensure all values are properly converted and not NaN
                 card = {
                     'id': int(row["ID"]) if pd.notna(row["ID"]) else index,
@@ -163,7 +232,8 @@ def get_assessments():
                     'imageUrl': str(row['ImageURL']) if pd.notna(row['ImageURL']) and str(row['ImageURL']) != 'nan' else '',
                     'scoreLogic': score_logic if score_logic != 'nan' else '0-4',
                     'minScore': min_score,
-                    'maxScore': max_score
+                    'maxScore': max_score,
+                    'scorePhrases': score_phrases  # Add phrase mappings
                 }
                 cards.append(card)
                 
@@ -186,7 +256,6 @@ def get_assessments():
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
-
 @test_routes.route('/calculate-scores', methods=['POST'])
 def calculate_scores():
     """Calculate assessment scores based on user responses"""

@@ -60,59 +60,60 @@ const Navbar = () => {
 
   return (
     <>
-    <nav className="flex justify-between items-center bg-white p-2">
-  <div className="mx-auto  px-3  flex w-full">
-    
-    {/* Left: MITRA (Logo) */}
-    <div onClick={handleMitraClick} className="cursor-pointer">
-      <div><img className="logotopnav" src={Logoimg}></img></div>
-      <div><h1 className="text-2xl font-bold text-indigo-600 animated-text">MITRA</h1></div>
-    </div>
+      <nav className="fixed top-0 left-0 right-0 z-50">
+        <div className="mx-auto px-4 md:px-6">
+          <div className="glass-nav mt-2 flex items-center w-full rounded-2xl">
+            {/* Left: MITRA (Logo) */}
+            <div onClick={handleMitraClick} className="cursor-pointer">
+              <div><img className="logotopnav" src={Logoimg}></img></div>
+              <div><h1 className="text-2xl font-bold text-indigo-600 animated-text">MITRA</h1></div>
+            </div>
 
-    {/* Right: Nav Links (Push to right with ml-auto) */}
-    <div className="hidden md:flex items-center  space-x-5 ml-auto">
-      <Link to="/assessment" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">Know Your Mind</Link>
-      <Link to="/chat-bot" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">MindChat</Link>
-      <Link to="/selfcare" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">SelfCare Plans</Link>
-      <Link to="/music_generation" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">ZenBeats</Link>
-      <Link to="/faqs" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">FAQs</Link>
-      <Link to="/contact_us" className="text-gray-600 hover:text-[#7a3fa9] hover:font-semibold transition-colors duration-500">Contact Us</Link>
-    </div>
+            {/* Right: Nav Links (Push to right with ml-auto) */}
+            <div className="hidden md:flex items-center space-x-6 ml-auto">
+              <Link to="/assessment" className="nav-link">Know Your Mind</Link>
+              <Link to="/chat-bot" className="nav-link">MindChat</Link>
+              <Link to="/selfcare" className="nav-link">SelfCare Plans</Link>
+              <Link to="/music_generation" className="nav-link">ZenBeats</Link>
+              <Link to="/faqs" className="nav-link">FAQs</Link>
+              <Link to="/contact_us" className="nav-link">Contact Us</Link>
+            </div>
 
-    {/* Rightmost: Authentication Buttons (Login/Register or Username + Logout) */}
-    <div className="flex items-center bg-white space-x-5 ml-6">
-      {loading ? (
-        <p className="text-gray-500">Loading...</p>
-      ) : username ? (
-        <div className="flex items-center space-x-4">
-          <span className="text-[#7a3fa9] font-semibold hidden md:block"><Link to ="/profile">Hello, {username}</Link></span>
-          <button 
-            onClick={handleLogout}
-            className="px-4 py-2 bg-[#7a3fa9] text-white font-semibold rounded-md text-sm transition-all duration-300 hover:bg-red-600"
-          >
-            Logout
-          </button>
+            {/* Rightmost: Authentication Buttons (Login/Register or Username + Logout) */}
+            <div className="hidden md:flex items-center space-x-4 ml-6">
+              {loading ? (
+                <p className="text-gray-600">Loading...</p>
+              ) : username ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-[#7a3fa9] font-semibold"><Link to ="/profile">Hello, {username}</Link></span>
+                  <button 
+                    onClick={handleLogout}
+                    className="px-4 py-2 rounded-full bg-[#8A5DD6] text-white transition-all duration-300 hover:shadow-glow hover:scale-[1.02]"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <Link 
+                    to="/login" 
+                    className="btn-secondary px-4 py-2"
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    to="/register" 
+                    className="btn-primary px-4 py-2"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
+            </div>
+
+          </div>
         </div>
-      ) : (
-        <div className="flex items-center space-x-4">
-          <Link 
-            to="/login" 
-            className="px-4 py-2 border rounded-md transition-all duration-300 hover:bg-gray-200"
-          >
-            Login
-          </Link>
-          <Link 
-            to="/register" 
-            className="px-4 py-2 bg-[#965ec7] text-white rounded-md transition-all duration-300 hover:bg-[#7a3fa9] hover:shadow-md"
-          >
-            Register
-          </Link>
-        </div>
-      )}
-    </div>
-
-  </div>
-</nav>
+      </nav>
     </>
   );
 };

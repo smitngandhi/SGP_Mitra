@@ -2,10 +2,10 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import User from '../assets/User.png'
 import image1 from '../assets/image1.jpg'
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../After_Login.css';
+import './home.css';
 import { useCookies } from "react-cookie";
-import { useEffect } from "react";
 import music from "../assets/music.svg"
 import heart from "../assets/heart.svg"
 import message from "../assets/message.svg"
@@ -38,6 +38,71 @@ const After_Login_Home = () => {
               window.history.replaceState({}, document.title, newURL);
           }
         }, [cookies.access_token, setCookie]);
+
+        // Interactive motion gradient background (same as homepage)
+        const bgRef = useRef(null);
+        const spotRef = useRef(null);
+        useEffect(() => {
+          const element = bgRef.current;
+          const spot = spotRef.current;
+          if (!element) return;
+
+          let rafId;
+          let currentX = 50; // percentage
+          let currentY = 40;
+          let targetX = 50;
+          let targetY = 40;
+          const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+
+          const setVars = () => {
+            element.style.setProperty('--mx', currentX + '%');
+            element.style.setProperty('--my', currentY + '%');
+          };
+
+          let time = 0;
+          const loop = () => {
+            if (isCoarse) {
+              time += 0.015;
+              targetX = 50 + Math.cos(time) * 10;
+              targetY = 40 + Math.sin(time * 0.9) * 8;
+            }
+            currentX += (targetX - currentX) * 0.1;
+            currentY += (targetY - currentY) * 0.1;
+            setVars();
+            const baseHalf = 210;
+            const px = (currentX / 100) * window.innerWidth - baseHalf;
+            const py = (currentY / 100) * window.innerHeight - baseHalf;
+            if (spot) spot.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+            rafId = requestAnimationFrame(loop);
+          };
+
+          const handlePointerMove = (e) => {
+            targetX = (e.clientX / window.innerWidth) * 100;
+            targetY = (e.clientY / window.innerHeight) * 100;
+          };
+          const handleMouseMove = (e) => {
+            targetX = (e.clientX / window.innerWidth) * 100;
+            targetY = (e.clientY / window.innerHeight) * 100;
+          };
+          const handleTouchMove = (e) => {
+            const t = e.touches && e.touches[0];
+            if (!t) return;
+            targetX = (t.clientX / window.innerWidth) * 100;
+            targetY = (t.clientY / window.innerHeight) * 100;
+          };
+
+          window.addEventListener('pointermove', handlePointerMove, { passive: true });
+          window.addEventListener('mousemove', handleMouseMove, { passive: true });
+          window.addEventListener('touchmove', handleTouchMove, { passive: true });
+          loop();
+
+          return () => {
+            cancelAnimationFrame(rafId);
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchmove', handleTouchMove);
+          };
+        }, []);
 
 
         // 6 Testimonials
@@ -98,7 +163,9 @@ const After_Login_Home = () => {
       
   const navigate = useNavigate();
   return (
-    <div className="navbar-val">
+    <div className="navbar-val relative">
+    <div ref={bgRef} className="interactive-bg" />
+    <div ref={spotRef} className="cursor-spot" />
     <Navbar/>
     <div className="app">
       {/* Main Content */}
