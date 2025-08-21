@@ -5,12 +5,14 @@ import "./animate.css";
 import "../Navbar.css"
 import Logoimg from '../assets/logotop.png'
 import useLogout  from "../components/useLogout"
+import SessionExpiredOverlay from "../components/SessionExpiredOverlay";
 
 const Navbar = () => {
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cookies, setCookie, removeCookie] = useCookies(["access_token"]);
   const navigate = useNavigate();
+  const [showOverlay, setShowOverlay] = useState(false);
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -52,10 +54,11 @@ useEffect(() => {
 
   const interval = setInterval(() => {
     const now = Date.now();
-    if (now - loginTime > 3600 * 1000) {
-      alert("Session expired, please login again.");
+    if (now - loginTime > 10 * 1000) {
+      // alert("Session expired, please login again.");
       localStorage.removeItem("loginTime");
       clearInterval(interval);  // ✅ Stop further checks
+      setShowOverlay(true); // 👈 show overlay instead of alert
       handleLogout();
     }
   }, 1000); // check every second
@@ -74,6 +77,9 @@ useEffect(() => {
 
   return (
     <>
+    {showOverlay && (
+        <SessionExpiredOverlay onFinish={() => navigate("/logout-video")} />
+      )}
     <nav className="flex justify-between items-center bg-white p-2">
   <div className="mx-auto  px-3  flex w-full">
     

@@ -35,15 +35,15 @@ const LoginVideo = () => {
 
   return (
     <div className="flex items-center justify-center h-screen w-screen bg-transparent overflow-hidden">
-      <video
-        autoPlay
-        muted
-        playsInline
-        className="w-full"
-      >
-        <source src={login} type="video/mp4" />
-      </video>
-    </div>
+          <video
+            autoPlay
+            muted
+            playsInline
+            className="w-full"
+          >
+            <source src={login} type="video/mp4" />
+          </video>
+        </div>
   );
 };
 
