@@ -276,7 +276,7 @@ def callback():
         response = make_response(jsonify({"message": "Login successful" , "access_token" : access_token}))
         response.set_cookie("access_token", access_token, httponly=False, secure=False, samesite="None")  
         print("Cookies set")
-        response.headers["Location"] = f"http://localhost:3000/home/?access_token={access_token}"
+        response.headers["Location"] = f"http://localhost:3000/?access_token={access_token}"
         response.status_code = 302 
         return response
     
@@ -289,7 +289,7 @@ def callback():
     print("Existing User")
     response.set_cookie("access_token", access_token, httponly=False, secure=False, samesite="None")  
     print("Cookies set")
-    response.headers["Location"] = f"http://localhost:3000/home/?access_token={access_token}"
+    response.headers["Location"] = f"http://localhost:3000/?access_token={access_token}"
     response.status_code = 302 
 
 

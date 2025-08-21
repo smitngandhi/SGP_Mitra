@@ -48,12 +48,12 @@ const Login = () => {
           const usernameData = await usernameResponse.json();
           if (usernameResponse.ok) {
             console.log("Username:", usernameData.username);
+            navigate("/login-video");
           }
         } catch (usernameError) {
           console.error("Error fetching username:", usernameError);
         }
-
-        navigate("/home");
+        // navigate("/home");
         console.log(data.msg);
       } else {
         setError(data.msg);
