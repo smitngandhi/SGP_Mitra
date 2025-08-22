@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import User from '../assets/User.png'
 import React, { useEffect, useRef, useState } from 'react';
-import './home.css';
+import '../After_Login.css';
 import { useCookies } from "react-cookie";
 import { Brain, Heart, MessageSquare, Music } from "lucide-react";
 // Optional subtle video background (place `intro.mp4` in public/ if desired)

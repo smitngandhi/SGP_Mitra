@@ -19,6 +19,8 @@ import Chatbotnew from "./pages/Chatbotnew";
 import VoiceAssistantModel from "./pages/VoiceAssistantModel";
 import AssessmentTestPage from "./pages/AssessmentTestPage";
 import Emergencypage from "./pages/emergency";
+import After_Login_Home from "./pages/After_Login_Home";
+// import Home from "./pages/Home";
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
 
@@ -31,7 +33,7 @@ const App = () => {
           {/* Optional: <Navbar /> */}
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/home" element={<AFTER_LOGIN_HOME />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/chat-bot" element={<Chatbotnew />} />
             <Route path="/register" element={<Register />} />
