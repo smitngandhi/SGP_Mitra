@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import GoogleButton from "../components/GoogleButton";
 import illustration from "../assets/Illustration.jpg.jpeg";
-import Navbar from "../components/Navbar";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,7 +36,6 @@ const Login = () => {
       if (response.ok) {
         setCookie("access_token", data.access_token, {
           path: "/",
-          maxAge: 3600, // 1 hour expiration
         });
 
         try {
@@ -50,12 +48,12 @@ const Login = () => {
           const usernameData = await usernameResponse.json();
           if (usernameResponse.ok) {
             console.log("Username:", usernameData.username);
+            navigate("/login-video");
           }
         } catch (usernameError) {
           console.error("Error fetching username:", usernameError);
         }
-
-        navigate("/home");
+        // navigate("/home");
         console.log(data.msg);
       } else {
         setError(data.msg);
@@ -72,17 +70,16 @@ const Login = () => {
 
   return (
     <>
-    <div className="flex items-center justify-center min-h-screen bg-white pt-24">
-  <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full flex">
-    <div className="hidden md:flex w-1/2 items-center justify-center bg-white">
-      <img 
-        src={illustration} 
-        alt="Login Illustration" 
-        className="w-3/4 transition-transform duration-500 hover:scale-105"
-      />
-    </div>
-    <div className="w-full md:w-1/2 p-10">
-
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full flex">
+        <div className="hidden md:flex w-1/2 items-center justify-center bg-white">
+          <img 
+            src={illustration} 
+            alt="Login Illustration" 
+            className="w-3/4 transition-transform duration-500 hover:scale-105"
+          />
+        </div>
+        <div className="w-full md:w-1/2 p-10">
           <h2 className="text-3xl font-medium text-gray-600">
             Welcome Back, <span className="text-4xl font-bold text-[#965ec7]">Mitra</span>
           </h2>

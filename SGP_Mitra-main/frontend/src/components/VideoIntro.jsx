@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import intro from "../assets/newintro.mp4"
+import intro2 from "../assets/intro2.mp4"
+import mainintro from "../assets/intro_main.mov"
 
 const VideoIntro = ({ onFinish }) => {
   const videoRef = useRef(null);
@@ -40,31 +43,18 @@ const VideoIntro = ({ onFinish }) => {
 
   if (!shouldPlay) return null;
 
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 9999,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "white",
-      }}
-    >
+   return (
+    <div className="flex items-center justify-center bg-transparent overflow-hidden h-screen">
       <video
         ref={videoRef}
-        src="/intro.mp4"
+        src={mainintro}
         autoPlay
         playsInline
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-        }}
+        controls={false}
       >
         Your browser does not support the video tag.
       </video>
+    
     </div>
   );
 };
