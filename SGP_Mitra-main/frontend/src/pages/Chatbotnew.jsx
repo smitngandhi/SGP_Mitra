@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import MoodDetector from "../components/MoodDetector";
 import "../Chatbotnew.css";
-import robotImage from "../assets/robotnew.png"; 
+import robotImage from "../assets/robotnew.png";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useCookies } from 'react-cookie';
@@ -11,8 +11,8 @@ import voice from "../assets/voice.png";
 import recording from "../assets/recording.png";
 import send from "../assets/send.png";
 import sendhover from "../assets/sendhover.png";
-import sendSound from "../assets/sendmsg.mp3";  
-import receiveSound from "../assets/receivemsg.mp3"; 
+import sendSound from "../assets/sendmsg.mp3";
+import receiveSound from "../assets/receivemsg.mp3";
 
 
 const Chatbotnew = () => {
@@ -25,7 +25,7 @@ const Chatbotnew = () => {
     const [messageSent, setMessageSent] = useState(false);
     const [isUserScrolling, setIsUserScrolling] = useState(false);
     const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
-    
+
     // Ref for auto-scrolling to bottom of messages
     const messagesEndRef = useRef(null);
     const messagesContainerRef = useRef(null);
@@ -40,17 +40,17 @@ const Chatbotnew = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const handleMouseEnter = () => {
-      setIsRecording(true);
+        setIsRecording(true);
     };
-  
+
     const handleMouseLeave = () => {
-      setIsRecording(false);
+        setIsRecording(false);
     };
 
     const handleMouseEntersend = () => {
         setIsSending(true);
     };
-    
+
     const handleMouseLeavesend = () => {
         setIsSending(false);
     };
@@ -63,9 +63,9 @@ const Chatbotnew = () => {
     const handleSendClick = (e) => {
         handleSubmit(e);
         setMessageSent(true);
-    
+
         setTimeout(() => {
-          setMessageSent(false);
+            setMessageSent(false);
         }, 500); // remove send animation after 0.5s (matches CSS sendPulse)
     };
 
@@ -73,22 +73,22 @@ const Chatbotnew = () => {
         if (messages.length > 0 && !isUserScrolling) {
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
-        
+
         const timer = setTimeout(() => {
-            setMessages(messages.map(msg => ({...msg, isNew: false})));
+            setMessages(messages.map(msg => ({ ...msg, isNew: false })));
         }, 1000);
-        
+
         return () => clearTimeout(timer);
     }, [messages, isUserScrolling]);
 
     const handleScroll = () => {
         if (!messagesContainerRef.current) return;
-        
+
         const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
         const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 20;
-        
+
         setIsUserScrolling(!isAtBottom);
-        
+
         if (isAtBottom) {
             setIsUserScrolling(false);
         }
@@ -97,7 +97,7 @@ const Chatbotnew = () => {
     const fetchChatbotResponse = async (message) => {
         const accessToken = cookies.access_token || null;
         setIsLoading(true);
-        
+
         try {
             const response = await fetch("http://127.0.0.1:5000/api/v1/api/chat", {
                 method: "POST",
@@ -114,16 +114,16 @@ const Chatbotnew = () => {
             setTimeout(() => {
                 if (response.ok) {
                     setMessages(prev => {
-                        const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
-                        return [...updatedPrev, { 
+                        const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
+                        return [...updatedPrev, {
                             role: 'ai',
                             text: <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.reply}</ReactMarkdown>,
-                            isNew: true 
+                            isNew: true
                         }];
                     });
-                    
+
                     setIsUserScrolling(false);
-                    
+
                     if (data.sentiment_score !== undefined) {
                         setSentiment(data.sentiment_score);
                     }
@@ -132,11 +132,11 @@ const Chatbotnew = () => {
 
                 } else {
                     setMessages(prev => {
-                        const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
-                        return [...updatedPrev, { 
-                            text: 'Sorry, I had trouble understanding that. Can you try again?', 
+                        const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
+                        return [...updatedPrev, {
+                            text: 'Sorry, I had trouble understanding that. Can you try again?',
                             sender: "bot",
-                            isNew: true 
+                            isNew: true
                         }];
                     });
                     setIsUserScrolling(false);
@@ -149,11 +149,11 @@ const Chatbotnew = () => {
             console.error("Error fetching response:", error);
             setTimeout(() => {
                 setMessages(prev => {
-                    const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
-                    return [...updatedPrev, { 
-                        text: 'Network error. Please check your connection and try again.', 
+                    const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
+                    return [...updatedPrev, {
+                        text: 'Network error. Please check your connection and try again.',
                         sender: "bot",
-                        isNew: true 
+                        isNew: true
                     }];
                 });
                 setIsUserScrolling(false);
@@ -166,11 +166,11 @@ const Chatbotnew = () => {
     const handleSubmit = () => {
         if (inputText.trim() === "") return;
         setMessages(prev => {
-            const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
-            return [...updatedPrev, { 
-                text: inputText, 
+            const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
+            return [...updatedPrev, {
+                text: inputText,
                 sender: "user",
-                isNew: true 
+                isNew: true
             }];
         });
         setMessageSent(true);
@@ -178,7 +178,7 @@ const Chatbotnew = () => {
         setInputText("");
         setChatStarted(true);
         setIsUserScrolling(false);
-        playSound(sendSound);        
+        playSound(sendSound);
         fetchChatbotResponse(inputText);
     };
 
@@ -194,57 +194,57 @@ const Chatbotnew = () => {
 
     const handleQuickQuestion = (question) => {
         setMessages(prev => {
-            const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
-            return [...updatedPrev, { 
-                text: question, 
+            const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
+            return [...updatedPrev, {
+                text: question,
                 sender: "user",
-                isNew: true 
+                isNew: true
             }];
         });
 
         setMessageSent(true);
         setTimeout(() => setMessageSent(false), 500);
-        
+
         playSound(sendSound)
         setInputText("");
-        
+
         setChatStarted(true);
-        
+
         setIsUserScrolling(false);
-        
+
         fetchChatbotResponse(question);
     };
 
     const handleVoiceResponse = (reply) => {
         setMessages(prev => {
-            const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
-            return [...updatedPrev, { 
-                text: `${reply.user_message || "Voice message"}`, 
+            const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
+            return [...updatedPrev, {
+                text: `${reply.user_message || "Voice message"}`,
                 sender: "user",
-                isNew: true 
+                isNew: true
             }];
         });
 
         setMessageSent(true);
         setTimeout(() => setMessageSent(false), 500);
-        
+
         setInputText("");
-        
+
         setChatStarted(true);
-        
+
         setIsUserScrolling(false);
 
         setMessages(prev => {
-            const updatedPrev = prev.map(msg => ({...msg, isNew: false}));
-            return [...updatedPrev, { 
+            const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
+            return [...updatedPrev, {
                 role: 'ai',
                 text: <ReactMarkdown remarkPlugins={[remarkGfm]}>{reply.reply}</ReactMarkdown>,
-                isNew: true 
+                isNew: true
             }];
         });
 
         setIsUserScrolling(false);
-        
+
         setSentiment(reply.sentiment_score);
     };
 
@@ -256,19 +256,19 @@ const Chatbotnew = () => {
                         <div className="floating-robot">
                             <img src={robotImage} alt="MITRA Robot" className="robot-image" />
                         </div>
-                        
+
                         <div className="welcome-header">
                             <div className="pulsing-circle"></div>
                             <h2>Welcome to MITRA</h2>
                         </div>
                         <p className="welcome-subtitle">I'm here to support your emotional health in any way I can!</p>
-                        
+
                         <div className="horizontal-suggestions">
                             <p>Try saying:</p>
                             <div className="suggestion-row">
                                 {suggestionOptions.map((option, index) => (
-                                    <button 
-                                        key={index} 
+                                    <button
+                                        key={index}
                                         className="suggestion-button"
                                         onClick={() => handleQuickQuestion(option)}
                                     >
@@ -279,20 +279,20 @@ const Chatbotnew = () => {
                         </div>
                     </div>
                 ) : (
-                    <div 
+                    <div
                         className="messages-container"
                         ref={messagesContainerRef}
                         onScroll={handleScroll}
                     >
                         {messages.map((message, index) => (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 className={`message ${message.sender === "user" ? "user-message" : "bot-message"} ${message.isNew ? 'message-new' : ''}`}
                             >
                                 {message.text}
                             </div>
                         ))}
-                        
+
                         {isLoading && (
                             <div className="message bot-message typing-indicator">
                                 <span></span>
@@ -300,41 +300,42 @@ const Chatbotnew = () => {
                                 <span></span>
                             </div>
                         )}
-                        
+
                         <div ref={messagesEndRef} />
                     </div>
                 )}
-                
+
                 <div className="input-area">
-                    <input 
-                        type="text" 
-                        className="message-input" 
+                    <input
+                        type="text"
+                        className="message-input"
                         value={inputText}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         placeholder="Type your message here..."
                     />
-                    <button 
-                            className={`send-button ${messageSent ? "send-animation" : ""}`} 
-                            onMouseEnter={handleMouseEntersend}
-                            onMouseLeave={handleMouseLeavesend}
-                            onClick={handleSendClick}
-                            >
-                            <img 
-                                src={isSending ? sendhover : send} 
-                                alt="send" 
-                                className="send-icon" 
-                            />
+                    <button
+                        className={`send-button ${messageSent ? "send-animation" : ""}`}
+                        onMouseEnter={handleMouseEntersend}
+                        onMouseLeave={handleMouseLeavesend}
+                        onClick={handleSendClick}
+                    >
+                        <img
+                            src={isSending ? sendhover : send}
+                            alt="send"
+                            className="send-icon"
+                        />
                     </button>
 
                     <button className="voice-button" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={() => {
                         console.log("Voice button CLicked")
-                        setIsVoiceModalOpen(true)}} >
-                    <img 
-                        src={isRecording ? recording : voice} 
-                        alt="voice" 
-                        className="voice-icon"
-                    />
+                        setIsVoiceModalOpen(true)
+                    }} >
+                        <img
+                            src={isRecording ? recording : voice}
+                            alt="voice"
+                            className="voice-icon"
+                        />
                     </button>
 
                     <div className="mood-meter">
@@ -342,8 +343,8 @@ const Chatbotnew = () => {
                     </div>
                 </div>
             </div>
-            
-            <VoiceAssistantModal 
+
+            <VoiceAssistantModal
                 isOpen={isVoiceModalOpen}
                 onClose={() => setIsVoiceModalOpen(false)}
                 onVoiceResponse={handleVoiceResponse}

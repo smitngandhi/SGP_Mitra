@@ -11,7 +11,8 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const [cookies] = useCookies(["access_token"]);
   const navigate = useNavigate();
-  const handleLogout = useLogout(); // ✅ Now modular & reusable
+  const handleLogout = useLogout();
+  const [showOverlay, setShowOverlay] = useState(false); // ✅ Now modular & reusable
 
   // ✅ Fetch Username from backend
   useEffect(() => {
@@ -46,20 +47,24 @@ const Navbar = () => {
 
   // ✅ Session auto-expiry (1 hour)
   useEffect(() => {
-    const loginTime = localStorage.getItem("loginTime");
-    if (!loginTime) return;
+  const loginTime = localStorage.getItem("loginTime");
+  console.log("Login Time:", loginTime);
+  
+  if (!loginTime) return;
 
-    const interval = setInterval(() => {
-      const now = Date.now();
-      if (now - loginTime > 3600 * 1000) {
-        alert("Session expired, please login again.");
-        localStorage.removeItem("loginTime");
-        clearInterval(interval);
-        handleLogout();
-      }
-    }, 1000);
+  const interval = setInterval(() => {
+    const now = Date.now();
+    console.log("Current Time:", now, "Login Time:", loginTime);
+    if (now - loginTime > 10 * 1000) {
+      // alert("Session expired, please login again.");
+      localStorage.removeItem("loginTime");
+      clearInterval(interval);  // ✅ Stop further checks
+      setShowOverlay(true); // 👈 show overlay instead of alert
+      handleLogout();
+    }
+  }, 1000); // check every second
 
-    return () => clearInterval(interval);
+  return () => clearInterval(interval); // cleanup on unmount
   }, [handleLogout]);
 
   // ✅ Logo click navigation
