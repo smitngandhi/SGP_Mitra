@@ -5,6 +5,7 @@ import "./animate.css";
 import "../Navbar.css";
 import Logoimg from "../assets/logotop.png";
 import useLogout from "../components/useLogout"; // ✅ Reusable logout hook
+import SessionExpiredOverlay from "../components/SessionExpiredOverlay";
 
 const Navbar = () => {
   const [username, setUsername] = useState(null);
@@ -78,6 +79,9 @@ const Navbar = () => {
 
   return (
     <>
+     {showOverlay && (
+        <SessionExpiredOverlay onFinish={() => navigate("/logout-video")} />
+      )}
       <nav className="fixed top-0 left-0 right-0 z-50">
         <div className="mx-auto px-4 md:px-6">
           <div className="glass-nav mt-2 flex items-center w-full rounded-2xl">
