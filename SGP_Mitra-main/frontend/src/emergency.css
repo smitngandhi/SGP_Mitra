@@ -42,12 +42,15 @@ body {
   font-weight: 400;
 }
 
-.container {
+.main_container {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 100px 2rem 2rem; /* ⬅️ Added 100px top padding */
 }
-
+.container {
+  max-width: 1200px;
+ /* ⬅️ Added 100px top padding */
+}
 
 .crisis-alert {
   background: #fff2f2;

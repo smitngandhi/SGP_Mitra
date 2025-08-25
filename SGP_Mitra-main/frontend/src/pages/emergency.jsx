@@ -76,7 +76,7 @@ const EmergencyHelp = () => {
       {/* HEADER */}
 
       {/* MAIN SECTION */}
-      <main className="container">
+      <main className="main_container">
         {/* Crisis Alert */}
         <section className="crisis-alert">
           <h2>If you're in immediate danger, call 911</h2>
