@@ -14,6 +14,28 @@ const Home = () => {
 
         const [cookies, setCookie] = useCookies(["access_token"]);
 
+
+
+
+        const texts = [
+          "Find peace in your daily routine",
+          "Your mental health matters most",
+          "Small steps lead to big changes",
+          "Balance mind, body, and soul",
+          "Wellness begins with you",
+        ];
+
+        const [index, setIndex] = useState(0);
+
+        useEffect(() => {
+          const interval = setInterval(() => {
+            setIndex((prev) => (prev + 1) % texts.length);
+          }, 10000); // change every 10 seconds
+          return () => clearInterval(interval);
+        }, []);
+
+
+        
         useEffect(() => {
           const urlParams = new URLSearchParams(window.location.search);
           const accessTokenFromURL = urlParams.get("access_token");
@@ -233,8 +255,7 @@ const Home = () => {
                 </span>
               </h1>
               <p className="text-gray-600 text-lg md:text-xl mb-8 leading-relaxed max-w-2xl">
-                Suspendisse Potenti. In Eget Augue Egestas, Gravida Libero Eu,
-                Luctus Ipsum. Aliquam Non Pulvinar Ex
+              {texts[index]}
               </p>
               <div className="flex flex-wrap gap-4">
                 <button
@@ -336,30 +357,48 @@ const Home = () => {
       
 
       {/* Testimonials */}
+      {/* Testimonials - Enhanced Floating Windows */}
       <section className="container mx-auto px-6 md:px-10 pb-24">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900">What our Mitras say</h2>
-          <div className="flex gap-3">
-            <button onClick={showPrevTestimonials} className="nav-arrow" aria-label="Previous">‹</button>
-            <button onClick={showNextTestimonials} className="nav-arrow" aria-label="Next">›</button>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">What our Mitras say</h2>
+          <p className="text-gray-600 text-lg">Floating experiences from our community</p>
+        </div>
+
+        <div className="testimonials-container">
+          <div className="testimonials-floating-track">
+            {/* First set of testimonials */}
+            {testimonialsData.map((testimonial, index) => (
+              <div key={`first-${index}`} className="testimonial-floating-card reveal">
+                <div className="testimonial-profile">
+                  <img src={testimonial.image} alt={testimonial.name} />
+                  <div className="testimonial-info">
+                    <h4>{testimonial.name}</h4>
+                    <p>{testimonial.position}</p>
+                  </div>
+                </div>
+                <p className="testimonial-text">"{testimonial.text}"</p>
+              </div>
+            ))}
+            {/* Duplicate set for seamless scrolling */}
+            {testimonialsData.map((testimonial, index) => (
+              <div key={`second-${index}`} className="testimonial-floating-card reveal">
+                <div className="testimonial-profile">
+                  <img src={testimonial.image} alt={testimonial.name} />
+                  <div className="testimonial-info">
+                    <h4>{testimonial.name}</h4>
+                    <p>{testimonial.position}</p>
+                  </div>
+                </div>
+                <p className="testimonial-text">"{testimonial.text}"</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div
-          ref={sliderRef}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {visibleTestimonials.map((testimonial, index) => (
-            <div key={index} className="testimonial-card reveal">
-              <div className="flex flex-col items-start">
-                <img src={testimonial.image} alt={testimonial.name} className="h-12 w-12 rounded-full object-cover mb-3" />
-                <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                <p className="text-sm text-gray-500">{testimonial.position}</p>
-              </div>
-              <p className="mt-4 text-gray-700">“{testimonial.text}”</p>
-            </div>
+        {/* Optional: Add navigation dots */}
+        <div className="testimonials-nav">
+          {testimonialsData.map((_, index) => (
+            <div key={index} className={`testimonial-dot ${index === 0 ? 'active' : ''}`}></div>
           ))}
         </div>
       </section>
