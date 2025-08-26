@@ -13,6 +13,7 @@ from app.routes.user_routes import user_routes
 from app.routes.test_routes import test_routes
 from app.routes.chatbot_routes import chatbot_routes
 from app.routes.emergency_routes import emergency_routes
+from app.routes.blob_bot_routes import blob_bot_routes
 
 # Load environment variables
 
@@ -65,6 +66,7 @@ def create_app():
         app.register_blueprint(test_routes, url_prefix="/api/v1")
         app.register_blueprint(chatbot_routes, url_prefix="/api/v1")
         app.register_blueprint(emergency_routes, url_prefix="/api/v1")
+        app.register_blueprint(blob_bot_routes, url_prefix="/api/v1")
         logger.info("[INFO] Blueprints registered successfully")
 
     except Exception as e:

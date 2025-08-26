@@ -1,8 +1,8 @@
-# SGP Mitra - System Architecture Documentation
+#  Mitra - System Architecture Documentation
 
 ## 🏗️ Overview
 
-SGP Mitra is built on a modern, scalable microservices-inspired architecture that combines AI/ML capabilities with robust web technologies to deliver a comprehensive mental wellness platform.
+ Mitra is built on a modern, scalable microservices-inspired architecture that combines AI/ML capabilities with robust web technologies to deliver a comprehensive mental wellness platform.
 
 ## 🎯 Architecture Principles
 
@@ -186,7 +186,7 @@ graph LR
 ## 📁 Directory Structure Analysis
 
 ```
-SGP_Mitra-main/
+_Mitra-main/
 ├── app/                          # Backend application
 │   ├── routes/                   # API endpoint definitions
 │   │   ├── auth_routes.py        # Authentication endpoints
@@ -292,8 +292,8 @@ npm start
 ### Environment Variables
 ```env
 # Database
-MONGO_URL=mongodb://localhost:27017/sgp_mitra
-MONGO_DB_NAME=sgp_mitra
+MONGO_URL=mongodb://localhost:27017/_mitra
+MONGO_DB_NAME=_mitra
 
 # Authentication
 JWT_SECRET_KEY=your_secret_key

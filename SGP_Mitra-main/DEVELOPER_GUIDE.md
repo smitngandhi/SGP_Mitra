@@ -1,4 +1,4 @@
-# SGP Mitra - Developer Guide
+#  Mitra - Developer Guide
 
 ## 🚀 Development Setup
 
@@ -12,8 +12,8 @@
 ### Quick Setup
 ```bash
 # Clone repository
-git clone -b Smit https://github.com/your-username/SGP_Mitra.git
-cd SGP_Mitra-main
+git clone -b Smit https://github.com/your-username/_Mitra.git
+cd _Mitra-main
 
 # Backend setup
 python -m venv venv
@@ -32,7 +32,7 @@ cp .env.example .env  # Configure your API keys
 
 ### Project Structure
 ```
-SGP_Mitra-main/
+_Mitra-main/
 ├── app/                    # Flask backend
 │   ├── routes/            # API endpoints
 │   ├── utils/             # Utility functions
@@ -396,7 +396,7 @@ def verify_password(password, hashed):
 ```bash
 # Production environment variables
 export FLASK_ENV=production
-export MONGO_URL=mongodb+srv://user:pass@cluster.mongodb.net/sgp_mitra
+export MONGO_URL=mongodb+srv://user:pass@cluster.mongodb.net/_mitra
 export JWT_SECRET_KEY=your_production_secret
 export TOGETHER_API_KEY=your_production_key
 ```
@@ -419,8 +419,8 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "run:app"]
 ### Production Deployment
 ```bash
 # Build and deploy
-docker build -t sgp-mitra .
-docker run -p 5000:5000 --env-file .env sgp-mitra
+docker build -t -mitra .
+docker run -p 5000:5000 --env-file .env -mitra
 
 # Or with docker-compose
 docker-compose up -d

@@ -1,8 +1,8 @@
-# SGP Mitra - User Guide
+#  Mitra - User Guide
 
 ## 🌟 Welcome to Your Mental Wellness Journey
 
-**SGP Mitra** is your AI-powered mental wellness companion, designed to provide 24/7 emotional support, personalized therapy recommendations, and comprehensive mental health tools. This guide will help you make the most of your experience.
+** Mitra** is your AI-powered mental wellness companion, designed to provide 24/7 emotional support, personalized therapy recommendations, and comprehensive mental health tools. This guide will help you make the most of your experience.
 
 ## 🎯 What is Mitra?
 
@@ -18,7 +18,7 @@
 
 ### Creating Your Account
 
-1. **Visit the Platform**: Navigate to SGP Mitra in your web browser
+1. **Visit the Platform**: Navigate to  Mitra in your web browser
 2. **Sign Up**: Click "Register" and provide:
    - Username (choose something meaningful to you)
    - Email address (for account recovery)
@@ -269,7 +269,7 @@ Remember, mental wellness is a journey, not a destination. Mitra is here to supp
 
 ## 🎉 Welcome to Your Wellness Community
 
-**SGP Mitra** is more than just an AI assistant - it's your partner in mental wellness. We're honored to be part of your journey toward better mental health and emotional well-being.
+** Mitra** is more than just an AI assistant - it's your partner in mental wellness. We're honored to be part of your journey toward better mental health and emotional well-being.
 
 *Start your conversation with Mitra today and take the first step toward a healthier, happier you.*
 

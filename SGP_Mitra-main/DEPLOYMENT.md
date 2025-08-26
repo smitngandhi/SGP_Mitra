@@ -1,8 +1,8 @@
-# SGP Mitra - Deployment Guide
+#  Mitra - Deployment Guide
 
 ## 🚀 Deployment Overview
 
-This guide covers deploying SGP Mitra in various environments, from development to production-ready deployments with high availability and scalability.
+This guide covers deploying  Mitra in various environments, from development to production-ready deployments with high availability and scalability.
 
 ## 📋 Pre-Deployment Checklist
 
@@ -27,8 +27,8 @@ This guide covers deploying SGP Mitra in various environments, from development 
 ### Quick Start
 ```bash
 # Clone and setup
-git clone -b Smit https://github.com/your-username/SGP_Mitra.git
-cd SGP_Mitra-main
+git clone -b Smit https://github.com/your-username/_Mitra.git
+cd _Mitra-main
 
 # Backend setup
 python -m venv venv
@@ -54,8 +54,8 @@ npm start      # Frontend on :3000 (in frontend/)
 # Development .env
 FLASK_ENV=development
 DEBUG=True
-MONGO_URL=mongodb://localhost:27017/sgp_mitra_dev
-MONGO_DB_NAME=sgp_mitra_dev
+MONGO_URL=mongodb://localhost:27017/_mitra_dev
+MONGO_DB_NAME=_mitra_dev
 JWT_SECRET_KEY=dev_secret_key_change_in_production
 TOGETHER_API_KEY=your_together_ai_key
 OPENAI_API_KEY=your_openai_key
@@ -73,29 +73,29 @@ version: '3.8'
 services:
   mongodb:
     image: mongo:5.0
-    container_name: sgp_mitra_mongo
+    container_name: _mitra_mongo
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: sgp_mitra
+      MONGO_INITDB_DATABASE: _mitra
     volumes:
       - mongodb_data:/data/db
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     ports:
       - "27017:27017"
     networks:
-      - sgp_network
+      - _network
 
   backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: sgp_mitra_backend
+    container_name: _mitra_backend
     restart: unless-stopped
     environment:
       - FLASK_ENV=production
-      - MONGO_URL=mongodb://admin:${MONGO_ROOT_PASSWORD}@mongodb:27017/sgp_mitra?authSource=admin
+      - MONGO_URL=mongodb://admin:${MONGO_ROOT_PASSWORD}@mongodb:27017/_mitra?authSource=admin
     env_file:
       - .env.production
     ports:
@@ -106,24 +106,24 @@ services:
       - ./logs:/app/logs
       - ./app/static:/app/app/static
     networks:
-      - sgp_network
+      - _network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: sgp_mitra_frontend
+    container_name: _mitra_frontend
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
       - REACT_APP_API_URL=http://localhost:5000/api/v1
     networks:
-      - sgp_network
+      - _network
 
   nginx:
     image: nginx:alpine
-    container_name: sgp_mitra_nginx
+    container_name: _mitra_nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -135,13 +135,13 @@ services:
       - backend
       - frontend
     networks:
-      - sgp_network
+      - _network
 
 volumes:
   mongodb_data:
 
 networks:
-  sgp_network:
+  _network:
     driver: bridge
 ```
 
@@ -321,8 +321,8 @@ sudo apt install docker.io docker-compose -y
 sudo usermod -aG docker ubuntu
 
 # Clone repository
-git clone -b Smit https://github.com/your-username/SGP_Mitra.git
-cd SGP_Mitra-main
+git clone -b Smit https://github.com/your-username/_Mitra.git
+cd _Mitra-main
 
 # Setup environment
 cp .env.example .env.production
@@ -336,7 +336,7 @@ docker-compose up -d
 ```bash
 # Use Amazon DocumentDB (MongoDB-compatible)
 # Connection string example:
-MONGO_URL=mongodb://username:password@docdb-cluster.cluster-xyz.us-east-1.docdb.amazonaws.com:27017/sgp_mitra?ssl=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false
+MONGO_URL=mongodb://username:password@docdb-cluster.cluster-xyz.us-east-1.docdb.amazonaws.com:27017/_mitra?ssl=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false
 ```
 
 #### AWS S3 for Static Files
@@ -345,7 +345,7 @@ MONGO_URL=mongodb://username:password@docdb-cluster.cluster-xyz.us-east-1.docdb.
 import boto3
 
 class ProductionConfig:
-    S3_BUCKET = 'sgp-mitra-static'
+    S3_BUCKET = '-mitra-static'
     S3_REGION = 'us-east-1'
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -359,23 +359,23 @@ class ProductionConfig:
 steps:
   # Build backend
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/sgp-mitra-backend', '-f', 'Dockerfile.backend', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/-mitra-backend', '-f', 'Dockerfile.backend', '.']
   
   # Build frontend
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/sgp-mitra-frontend', './frontend']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/-mitra-frontend', './frontend']
   
   # Push images
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/sgp-mitra-backend']
+    args: ['push', 'gcr.io/$PROJECT_ID/-mitra-backend']
   
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/sgp-mitra-frontend']
+    args: ['push', 'gcr.io/$PROJECT_ID/-mitra-frontend']
 
   # Deploy to Cloud Run
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['run', 'deploy', 'sgp-mitra-backend', 
-           '--image', 'gcr.io/$PROJECT_ID/sgp-mitra-backend',
+    args: ['run', 'deploy', '-mitra-backend', 
+           '--image', 'gcr.io/$PROJECT_ID/-mitra-backend',
            '--platform', 'managed',
            '--region', 'us-central1',
            '--allow-unauthenticated']
@@ -390,8 +390,8 @@ steps:
 heroku login
 
 # Create applications
-heroku create sgp-mitra-backend
-heroku create sgp-mitra-frontend
+heroku create -mitra-backend
+heroku create -mitra-frontend
 
 # Backend deployment
 git subtree push --prefix=. heroku main
@@ -403,11 +403,11 @@ heroku config:set JWT_SECRET_KEY=your_production_secret
 
 # Frontend deployment
 cd frontend
-heroku create sgp-mitra-frontend
+heroku create -mitra-frontend
 git init
 git add .
 git commit -m "Initial commit"
-heroku git:remote -a sgp-mitra-frontend
+heroku git:remote -a -mitra-frontend
 git push heroku main
 ```
 
@@ -427,7 +427,7 @@ web: gunicorn --bind 0.0.0.0:$PORT run:app
 # 4. Get connection string
 
 # Connection string format:
-mongodb+srv://username:password@cluster.mongodb.net/sgp_mitra?retryWrites=true&w=majority
+mongodb+srv://username:password@cluster.mongodb.net/_mitra?retryWrites=true&w=majority
 ```
 
 ### Self-Hosted MongoDB
@@ -460,22 +460,22 @@ sudo systemctl restart mongod
 #!/bin/bash
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/backups/mongodb"
-DB_NAME="sgp_mitra"
+DB_NAME="_mitra"
 
 # Create backup
 mongodump --host localhost --db $DB_NAME --out $BACKUP_DIR/$DATE
 
 # Compress backup
-tar -czf $BACKUP_DIR/sgp_mitra_$DATE.tar.gz -C $BACKUP_DIR $DATE
+tar -czf $BACKUP_DIR/_mitra_$DATE.tar.gz -C $BACKUP_DIR $DATE
 
 # Remove uncompressed backup
 rm -rf $BACKUP_DIR/$DATE
 
 # Keep only last 7 days of backups
-find $BACKUP_DIR -name "sgp_mitra_*.tar.gz" -mtime +7 -delete
+find $BACKUP_DIR -name "_mitra_*.tar.gz" -mtime +7 -delete
 
 # Upload to S3 (optional)
-aws s3 cp $BACKUP_DIR/sgp_mitra_$DATE.tar.gz s3://your-backup-bucket/mongodb/
+aws s3 cp $BACKUP_DIR/_mitra_$DATE.tar.gz s3://your-backup-bucket/mongodb/
 ```
 
 ## 🔒 Production Security
@@ -495,13 +495,13 @@ sudo crontab -e
 ```bash
 # Use secrets management
 # AWS Secrets Manager
-aws secretsmanager create-secret --name sgp-mitra/prod --secret-string file://secrets.json
+aws secretsmanager create-secret --name -mitra/prod --secret-string file://secrets.json
 
 # Google Secret Manager
-gcloud secrets create sgp-mitra-secrets --data-file=secrets.json
+gcloud secrets create -mitra-secrets --data-file=secrets.json
 
 # Azure Key Vault
-az keyvault secret set --vault-name sgp-mitra-vault --name secrets --file secrets.json
+az keyvault secret set --vault-name -mitra-vault --name secrets --file secrets.json
 ```
 
 ### Firewall Configuration
@@ -595,7 +595,7 @@ def health_check():
 Create `.github/workflows/deploy.yml`:
 
 ```yaml
-name: Deploy SGP Mitra
+name: Deploy  Mitra
 
 on:
   push:
@@ -711,7 +711,7 @@ mongodump --uri="$MONGO_URL" --out="/backups/db/$(date +%Y%m%d)"
 tar -czf "/backups/app/app_$(date +%Y%m%d).tar.gz" /app
 
 # Upload to cloud storage
-aws s3 sync /backups s3://sgp-mitra-backups/
+aws s3 sync /backups s3://-mitra-backups/
 
 # Cleanup old backups
 find /backups -type f -mtime +30 -delete
@@ -788,6 +788,6 @@ certbot renew --dry-run
 ## 📞 Support
 
 For deployment support:
-- **Documentation**: https://docs.sgpmitra.com/deployment
-- **Issues**: https://github.com/your-username/SGP_Mitra/issues
-- **Email**: devops@sgpmitra.com
+- **Documentation**: https://docs.mitra.com/deployment
+- **Issues**: https://github.com/your-username/_Mitra/issues
+- **Email**: devops@mitra.com

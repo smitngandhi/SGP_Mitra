@@ -53,3 +53,4 @@ soundfile
 langchain_openai
 openpyxl
 elevenlabs
+langchain_google_genai

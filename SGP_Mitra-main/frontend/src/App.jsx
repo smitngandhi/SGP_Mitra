@@ -24,6 +24,7 @@ import usePageTracking from "./components/usePageTracking";
 import { useCookies } from "react-cookie";
 import LogoutVideo from "./components/LogoutVideo";
 import LoginVideo from "./components/LoginVideo"
+import ChatbotWidget from "./components/ChatbotWidget";
 
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
@@ -66,6 +67,9 @@ const App = () => {
             <Route path="/assessment" element={<AssessmentTestPage  />} />
             <Route path="/emergency" element={<Emergencypage  />} />
           </Routes>
+
+
+        {!shouldHideNavbar && <ChatbotWidget />}
         </>
       )}
     </>

@@ -1,8 +1,8 @@
-# SGP Mitra - Complete Platform Guide
+#  Mitra - Complete Platform Guide
 
 ## What is Mitra?
 
-**SGP Mitra** is an advanced AI-powered mental wellness assistant designed to provide accessible, immediate, and personalized mental health support. Named after the Sanskrit word for "friend," Mitra serves as a compassionate digital companion that combines cutting-edge artificial intelligence with evidence-based therapeutic approaches.
+** Mitra** is an advanced AI-powered mental wellness assistant designed to provide accessible, immediate, and personalized mental health support. Named after the Sanskrit word for "friend," Mitra serves as a compassionate digital companion that combines cutting-edge artificial intelligence with evidence-based therapeutic approaches.
 
 ### Mission & Purpose
 - **Accessibility**: Make mental health support available 24/7 to everyone, regardless of location or economic status
@@ -125,7 +125,7 @@ Mitra operates on the principle that mental wellness is a fundamental human righ
 
 ### Project Structure
 ```
-SGP_Mitra-main/
+_Mitra-main/
 ├── app/
 │   ├── routes/                 # API endpoint definitions
 │   │   ├── auth_routes.py      # Authentication & user management
@@ -178,7 +178,7 @@ SGP_Mitra-main/
 
 ### Base URL
 ```
-Production: https://api.sgpmitra.com
+Production: https://api.mitra.com
 Development: http://localhost:5000
 ```
 
@@ -403,8 +403,8 @@ The frontend is built with React 19 and Tailwind CSS, providing a modern, respon
 
 #### 1. Clone the Repository
 ```bash
-git clone -b Smit https://github.com/your-username/SGP_Mitra.git
-cd SGP_Mitra-main
+git clone -b Smit https://github.com/your-username/_Mitra.git
+cd _Mitra-main
 ```
 
 #### 2. Backend Setup
@@ -428,8 +428,8 @@ npm install
 Create a `.env` file in the root directory:
 ```env
 # Database Configuration
-MONGO_URL=mongodb://localhost:27017/sgp_mitra
-MONGO_DB_NAME=sgp_mitra
+MONGO_URL=mongodb://localhost:27017/_mitra
+MONGO_DB_NAME=_mitra
 
 # JWT Configuration
 JWT_SECRET_KEY=your_super_secret_jwt_key_here
@@ -550,9 +550,9 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "run:app"]
 
 - **Documentation**: Complete guides in `/docs` directory
 - **API Reference**: Detailed endpoint documentation
-- **Issues**: [GitHub Issues](https://github.com/your-username/SGP_Mitra/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/SGP_Mitra/discussions)
-- **Email**: support@sgpmitra.com
+- **Issues**: [GitHub Issues](https://github.com/your-username/_Mitra/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-username/_Mitra/discussions)
+- **Email**: support@mitra.com
 
 ---
 
@@ -564,8 +564,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 <div align="center">
 
-**SGP Mitra - Empowering Mental Wellness Through AI**
+** Mitra - Empowering Mental Wellness Through AI**
 
-*Built with ❤️ by Team SGP | Making Mental Health Support Accessible to Everyone*
+*Built with ❤️ by Team  | Making Mental Health Support Accessible to Everyone*
 
 </div>

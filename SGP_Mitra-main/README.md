@@ -1,4 +1,4 @@
-# SGP Mitra - AI-Powered Mental Wellness Assistant 
+#  Mitra - AI-Powered Mental Wellness Assistant 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -9,7 +9,7 @@
 
 ##  About The Project
 
-**SGP Mitra** is an advanced AI-powered mental wellness assistant designed to provide personalized emotional support and mental health guidance. Built with modern web technologies, it combines the power of Large Language Models (LLMs), sentiment analysis, and machine learning to deliver a comprehensive mental health platform.
+** Mitra** is an advanced AI-powered mental wellness assistant designed to provide personalized emotional support and mental health guidance. Built with modern web technologies, it combines the power of Large Language Models (LLMs), sentiment analysis, and machine learning to deliver a comprehensive mental health platform.
 
 ###  **Key Objectives**
 - Provide 24/7 accessible mental health support
@@ -48,7 +48,7 @@
 ##  Project Architecture
 
 ```
-SGP_Mitra-main/
+_Mitra-main/
 │   ├── app/
 │   │   ├── routes/                 # API endpoint definitions
 │   │   │   ├── auth_routes.py      # Authentication & user management
@@ -142,8 +142,8 @@ SGP_Mitra-main/
 
 ####  **1. Clone the Repository**
 ```bash
-git clone -b Smit https://github.com/your-username/SGP_Mitra.git
-cd SGP_Mitra-main
+git clone -b Smit https://github.com/your-username/_Mitra.git
+cd _Mitra-main
 ```
 
 ####  **2. Backend Setup**
@@ -167,8 +167,8 @@ npm install
 Create a `.env` file in the root directory:
 ```env
 # Database Configuration
-MONGO_URL=mongodb://localhost:27017/sgp_mitra
-MONGO_DB_NAME=sgp_mitra
+MONGO_URL=mongodb://localhost:27017/_mitra
+MONGO_DB_NAME=_mitra
 
 # JWT Configuration
 JWT_SECRET_KEY=your_super_secret_jwt_key_here
@@ -212,7 +212,7 @@ npm start
 
 ###  **Database Setup**
 1. **Install MongoDB** locally or use MongoDB Atlas (cloud)
-2. **Create database** named `sgp_mitra`
+2. **Create database** named `_mitra`
 3. **Update connection string** in `.env` file
 4. **Collections will be created automatically** on first run
 
@@ -348,10 +348,10 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ##  Support
 
-- **Email**: support@sgpmitra.com
-- **Issues**: [GitHub Issues](https://github.com/your-username/SGP_Mitra/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/SGP_Mitra/discussions)
-- **Documentation**: [Wiki](https://github.com/your-username/SGP_Mitra/wiki)
+- **Email**: support@mitra.com
+- **Issues**: [GitHub Issues](https://github.com/your-username/_Mitra/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-username/_Mitra/discussions)
+- **Documentation**: [Wiki](https://github.com/your-username/_Mitra/wiki)
 
 ##  Changelog
 
@@ -373,13 +373,13 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 <div align="center">
 
-** SGP Mitra - Empowering Mental Wellness Through AI **
+**  Mitra - Empowering Mental Wellness Through AI **
 
-*Built with  by Team SGP | Making Mental Health Support Accessible to Everyone*
+*Built with  by Team  | Making Mental Health Support Accessible to Everyone*
 
 </div>
-1. git clone -b Smit https://github.com/your-username/SGP_Mitra.git
-2. cd SGP_Mitra-main
+1. git clone -b Smit https://github.com/your-username/_Mitra.git
+2. cd _Mitra-main
 3. python -m venv venv
 4. venv\Scripts\activate
 5. pip install -r requirements.txt

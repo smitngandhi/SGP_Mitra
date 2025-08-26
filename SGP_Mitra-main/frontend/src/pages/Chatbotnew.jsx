@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import Navbar from "../components/Navbar";
 import MoodDetector from "../components/MoodDetector";
 import "../Chatbotnew.css";
 import robotImage from "../assets/robotnew.png";

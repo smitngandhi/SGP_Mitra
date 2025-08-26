@@ -1,0 +1,40 @@
+.input-area-focused {
+    box-shadow: 0 0 15px 5px rgba(255, 107, 107, 0.5), 0 0 25px 10px rgba(255, 159, 64, 0.4);
+    border-radius: 1.5rem; /* Match the input-area border-radius */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.initial-chat-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    margin: 2rem 0;
+    color: #ccc;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.prompt-robot-image {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(138, 93, 214, 0.5);
+}
+
+.initial-chat-prompt p {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

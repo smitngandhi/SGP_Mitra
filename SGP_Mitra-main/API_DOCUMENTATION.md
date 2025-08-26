@@ -1,4 +1,4 @@
-# SGP Mitra - API Documentation
+#  Mitra - API Documentation
 
 ## 🔗 Base URL
 ```
@@ -806,7 +806,7 @@ Triggered when crisis is detected in user conversation.
 ```javascript
 const axios = require('axios');
 
-class SGPMitraAPI {
+class MitraAPI {
     constructor(baseURL, token) {
         this.client = axios.create({
             baseURL,
@@ -829,7 +829,7 @@ class SGPMitraAPI {
 }
 
 // Usage
-const api = new SGPMitraAPI('http://localhost:5000/api/v1', 'your_token');
+const api = new MitraAPI('http://localhost:5000/api/v1', 'your_token');
 const response = await api.sendMessage('Hello Mitra');
 ```
 
@@ -837,7 +837,7 @@ const response = await api.sendMessage('Hello Mitra');
 ```python
 import requests
 
-class SGPMitraAPI:
+class MitraAPI:
     def __init__(self, base_url, token):
         self.base_url = base_url
         self.headers = {
@@ -861,7 +861,7 @@ class SGPMitraAPI:
         return response.json()
 
 # Usage
-api = SGPMitraAPI('http://localhost:5000/api/v1', 'your_token')
+api = MitraAPI('http://localhost:5000/api/v1', 'your_token')
 response = api.send_message('Hello Mitra')
 ```
 
@@ -870,6 +870,6 @@ response = api.send_message('Hello Mitra')
 ## 📞 Support
 
 For API support and questions:
-- **Email**: api-support@sgpmitra.com
-- **Documentation**: https://docs.sgpmitra.com
-- **Status Page**: https://status.sgpmitra.com
+- **Email**: api-support@mitra.com
+- **Documentation**: https://docs.mitra.com
+- **Status Page**: https://status.mitra.com
