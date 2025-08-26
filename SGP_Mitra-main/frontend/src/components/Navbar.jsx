@@ -14,6 +14,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const handleLogout = useLogout();
   const [showOverlay, setShowOverlay] = useState(false); // ✅ Now modular & reusable
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // ✅ Fetch Username from backend
   useEffect(() => {
@@ -45,6 +46,17 @@ const Navbar = () => {
 
     fetchUsername();
   }, [cookies.access_token]);
+
+  // ✅ Scroll detection for navbar styling
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 50); // Trigger after 50px scroll
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // ✅ Session auto-expiry (1 hour)
   useEffect(() => {
@@ -83,8 +95,12 @@ const Navbar = () => {
         <SessionExpiredOverlay onFinish={() => navigate("/logout-video")} />
       )}
       <nav className="fixed top-0 left-0 right-0 z-50">
-        <div className="mx-auto px-4 md:px-6">
-          <div className="glass-nav mt-2 flex items-center w-full rounded-2xl">
+        <div className={`mx-auto transition-all duration-300 ${
+          isScrolled ? 'px-4 md:px-6' : 'px-0'
+        }`}>
+          <div className={`glass-nav flex items-center w-full transition-all duration-300 ${
+            isScrolled ? 'mt-2 rounded-2xl' : 'mt-0 rounded-none'
+          }`}>
             {/* Left: MITRA (Logo) */}
             <div onClick={handleMitraClick} className="cursor-pointer">
               <div>
