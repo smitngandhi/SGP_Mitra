@@ -72,9 +72,9 @@ const EmergencyHelp = () => {
   }, []);
 
   return (
-    <div>
+    <div className="emergencymaindiv">
       {/* HEADER */}
-
+      
       {/* MAIN SECTION */}
       <main className="main_container">
         {/* Crisis Alert */}

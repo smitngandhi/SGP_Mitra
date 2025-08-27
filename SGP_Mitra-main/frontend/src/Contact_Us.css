@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: center;
     min-height: 100%;
-    background: white;
+    background-color: #faf8ff;
     font-family: "Poppins", sans-serif;
     padding: 100px 20px 30px; /* ⬅️ added top padding (100px) */
 }
@@ -34,6 +34,7 @@
     flex-wrap: wrap; /* Allows wrapping on smaller screens */
     /* padding: 20px 0; */
     max-width: 95vw;
+    margin: 50px;
 }
 
 /* Flip card container */

@@ -16,6 +16,9 @@ body {
   gap: 2rem;
 }
 
+.emergencymaindiv{
+  background-color: #faf8ff;
+}
 .back-button {
   color: #7c3aed;
   text-decoration: none;

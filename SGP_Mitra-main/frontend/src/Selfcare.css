@@ -22,10 +22,12 @@
     display: flex;
     height: 100%;
     width: 100%;
+    background-color: #faf8ff;
   }
   
   .main-content {
-    margin-top: 96px;
+    padding-top: 96px;
+    /* margin-top: 96px; */
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -154,6 +156,7 @@
     margin-top: 30px;
     padding: 0 20px;
     margin-left: 28px;
+    background-color: #faf8ff;
   }
   
   .progress-tracking h2 {

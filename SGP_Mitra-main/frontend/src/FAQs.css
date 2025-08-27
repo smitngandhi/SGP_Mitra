@@ -2,9 +2,11 @@
 .faq-wrapper {
   display: flex;
   justify-content: center;
-  background-color: white;
+  background-color: #faf8ff;
   align-items: center;
-  padding:100px 20px 20px /* Ensures vertical centering */
+  padding:100px 20px 20px /* Ensures vertical centering */;
+  margin: 50px;
+
 }
 
 .faq-container {

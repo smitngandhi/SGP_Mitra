@@ -54,3 +54,5 @@ langchain_openai
 openpyxl
 elevenlabs
 langchain_google_genai
+langchain-huggingface
+faiss-cpu

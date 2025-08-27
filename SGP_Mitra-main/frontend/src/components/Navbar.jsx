@@ -68,7 +68,7 @@ const Navbar = () => {
   const interval = setInterval(() => {
     const now = Date.now();
     console.log("Current Time:", now, "Login Time:", loginTime);
-    if (now - loginTime > 10 * 1000) {
+    if (now - loginTime > 3600 * 1000) {
       // alert("Session expired, please login again.");
       localStorage.removeItem("loginTime");
       clearInterval(interval);  // ✅ Stop further checks
