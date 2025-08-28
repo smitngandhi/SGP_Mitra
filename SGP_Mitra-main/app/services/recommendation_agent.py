@@ -24,7 +24,9 @@ class UserRecommendationAgent:
     def __init__(self):
         self.running = False
         self.scheduler_thread = None
-        logger.info("[INFO] UserRecommendationAgent initialized")
+        self.logger = get_logger(__name__)
+        self.logger.info("[INFO] UserRecommendationAgent initialized")
+        self.tracking_collection = tracking_collection
         
     def start_background_service(self):
         """Start the background recommendation service"""
@@ -71,14 +73,14 @@ class UserRecommendationAgent:
             
             for user_data in users:
                 try:
-                    self._analyze_user_behavior(user_data)
+                    self.generate_recommendation_for_user(user_data)
                 except Exception as e:
                     logger.error(f"[ERROR] Failed to analyze user {user_data.get('email', 'unknown')}: {str(e)}")
                     
         except Exception as e:
             logger.error(f"[ERROR] Failed to analyze users: {str(e)}")
             
-    def _analyze_user_behavior(self, user_data: Dict) -> Optional[Dict]:
+    def generate_recommendation_for_user(self, user_data: Dict) -> Optional[Dict]:
         """
         Analyze individual user behavior and generate recommendations
         
@@ -345,11 +347,64 @@ class UserRecommendationAgent:
         
         return page_names.get(page_path, page_path.replace('/', '').replace('_', ' ').title())
         
+    def analyze_user_behavior(self):
+        """Analyze user behavior and generate recommendations using combined tracking data"""
+        try:
+            # Get all users with tracking data
+            users_with_data = list(self.tracking_collection.find({}))
+            
+            if not users_with_data:
+                self.logger.info("No users with tracking data found")
+                return
+            
+            self.logger.info(f"Analyzing behavior for {len(users_with_data)} users")
+            
+            for user_data in users_with_data:
+                try:
+                    email = user_data.get('email')
+                    if not email:
+                        continue
+                    
+                    # Check if user already has a valid recommendation
+                    existing_rec = self.recommendations_collection.find_one({
+                        'email': email,
+                        'expires_at': {'$gt': datetime.utcnow().isoformat() + 'Z'}
+                    })
+                    
+                    if existing_rec:
+                        self.logger.debug(f"User {email} already has valid recommendation")
+                        continue
+                    
+                    # Analyze user visits and generate recommendation
+                    recommendation = self.generate_recommendation_for_user(user_data)
+                    
+                    if recommendation:
+                        # Store recommendation in database
+                        recommendation['email'] = email
+                        recommendation['generated_at'] = datetime.utcnow().isoformat() + 'Z'
+                        recommendation['expires_at'] = (datetime.utcnow() + timedelta(hours=24)).isoformat() + 'Z'
+                        recommendation['notification_type'] = 'chatbot'  # Mark for chatbot notification
+                        
+                        # Remove any existing recommendations for this user
+                        self.recommendations_collection.delete_many({'email': email})
+                        
+                        # Insert new recommendation
+                        self.recommendations_collection.insert_one(recommendation)
+                        
+                        self.logger.info(f"Generated chatbot recommendation for user: {email}")
+                    
+                except Exception as e:
+                    self.logger.error(f"Error analyzing user {user_data.get('email', 'unknown')}: {str(e)}")
+                    continue
+            
+        except Exception as e:
+            self.logger.error(f"Error in analyze_user_behavior: {str(e)}")
+            
     def _store_recommendation(self, email: str, recommendation: Dict):
         """Store recommendation in database for frontend retrieval"""
         try:
             # Store in recommendations collection
-            recommendations_collection = tracking_collection.database['recommendations']
+            recommendations_collection = self.tracking_collection.database['recommendations']
             
             # Update or insert recommendation
             recommendations_collection.update_one(
@@ -358,10 +413,10 @@ class UserRecommendationAgent:
                 upsert=True
             )
             
-            logger.debug(f"[DEBUG] Stored recommendation for user {email}")
+            self.logger.debug(f"[DEBUG] Stored recommendation for user {email}")
             
         except Exception as e:
-            logger.error(f"[ERROR] Failed to store recommendation: {str(e)}")
+            self.logger.error(f"[ERROR] Failed to store recommendation: {str(e)}")
             
     def get_user_recommendation(self, email: str) -> Optional[Dict]:
         """
@@ -374,7 +429,7 @@ class UserRecommendationAgent:
             Current recommendation or None
         """
         try:
-            recommendations_collection = tracking_collection.database['recommendations']
+            recommendations_collection = self.tracking_collection.database['recommendations']
             
             recommendation = recommendations_collection.find_one({"email": email})
             
@@ -382,27 +437,32 @@ class UserRecommendationAgent:
                 return None
                 
             # Check if recommendation is still valid
-            expires_at = datetime.fromisoformat(recommendation['expires_at'])
-            if datetime.utcnow() > expires_at:
-                # Remove expired recommendation
-                recommendations_collection.delete_one({"email": email})
-                return None
+            if 'expires_at' in recommendation:
+                try:
+                    expires_at = datetime.fromisoformat(recommendation['expires_at'].replace('Z', '+00:00'))
+                    if datetime.utcnow() > expires_at.replace(tzinfo=None):
+                        # Remove expired recommendation
+                        recommendations_collection.delete_one({"email": email})
+                        return None
+                except (ValueError, AttributeError) as date_error:
+                    self.logger.warning(f"Invalid date format in recommendation: {date_error}")
+                    # Continue with recommendation if date parsing fails
                 
             return recommendation
             
         except Exception as e:
-            logger.error(f"[ERROR] Failed to get user recommendation: {str(e)}")
+            self.logger.error(f"[ERROR] Failed to get user recommendation: {str(e)}")
             return None
             
     def mark_recommendation_used(self, email: str):
         """Mark recommendation as used by user"""
         try:
-            recommendations_collection = tracking_collection.database['recommendations']
+            recommendations_collection = self.tracking_collection.database['recommendations']
             recommendations_collection.delete_one({"email": email})
-            logger.debug(f"[DEBUG] Marked recommendation as used for user {email}")
+            self.logger.debug(f"[DEBUG] Marked recommendation as used for user {email}")
             
         except Exception as e:
-            logger.error(f"[ERROR] Failed to mark recommendation as used: {str(e)}")
+            self.logger.error(f"[ERROR] Failed to mark recommendation as used: {str(e)}")
 
 # Global instance
 recommendation_agent = UserRecommendationAgent()

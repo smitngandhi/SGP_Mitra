@@ -15,6 +15,7 @@ from app.routes.chatbot_routes import chatbot_routes
 from app.routes.emergency_routes import emergency_routes
 from app.routes.blob_bot_routes import blob_bot_routes
 from app.routes.recommendation_routes import recommendation_bp
+from app.routes.tracking_routes import tracking_bp
 from app.services.service_manager import service_manager
 
 # Load environment variables
@@ -69,7 +70,8 @@ def create_app():
         app.register_blueprint(chatbot_routes, url_prefix="/api/v1")
         app.register_blueprint(emergency_routes, url_prefix="/api/v1")
         app.register_blueprint(blob_bot_routes, url_prefix="/api/v1")
-        app.register_blueprint(recommendation_bp, url_prefix="/api/v1")
+        app.register_blueprint(recommendation_bp, url_prefix='/api/v1')
+        app.register_blueprint(tracking_bp, url_prefix='/api/v1')
         logger.info("[INFO] Blueprints registered successfully")
         
         # Start background services

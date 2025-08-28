@@ -83,7 +83,7 @@ def test_recommendation_generation():
         return False
     
     # Analyze user behavior
-    recommendation = recommendation_agent._analyze_user_behavior(user_data)
+    recommendation = recommendation_agent.generate_recommendation_for_user(user_data)
     
     if recommendation:
         print("✅ Recommendation generated successfully!")

@@ -1,6 +1,9 @@
-import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
-import "../ChatbotWidget.css";
+import React, { useState, useEffect, useRef } from 'react';
+
+import { MessageCircle, X, Send, Bell, ExternalLink } from 'lucide-react';
+import '../ChatbotWidget.css';
+import { autoFillHandler } from '../utils/autoFillHandler';
+import { useCookies } from 'react-cookie';
 
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);
@@ -9,9 +12,36 @@ export default function ChatbotWidget() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(1); // Start with 1 for welcome message
+  const [unreadCount, setUnreadCount] = useState(1); 
+  const [hasRecommendation, setHasRecommendation] = useState(false);
+  const [currentRecommendation, setCurrentRecommendation] = useState(null);
+  const [cookies] = useCookies(['access_token']);
   const messagesEndRef = useRef(null);
   const isOpenRef = useRef(open);
+
+  // Decode JWT token to get user email
+  const getUserEmail = () => {
+    const access_token = cookies.access_token;
+    if (!access_token) {
+      console.log('No access_token present');
+      return null;
+    }
+    
+    try {
+      // Simple JWT decode (for payload only, not verification)
+      const base64Url = access_token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      
+      const decoded_token = JSON.parse(jsonPayload);
+      return decoded_token.sub; // 'sub' is the standard JWT claim for subject (user email)
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
 
   // Keep ref in sync with open state
   useEffect(() => {
@@ -22,6 +52,172 @@ export default function ChatbotWidget() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Sync localStorage tracking data and check for recommendations
+  useEffect(() => {
+    syncTrackingData();
+    checkForRecommendations();
+    
+    // Check for recommendations every 30 seconds
+    const recommendationInterval = setInterval(checkForRecommendations, 30000);
+    return () => clearInterval(recommendationInterval);
+  }, []);
+
+  const syncTrackingData = async () => {
+    try {
+      const userEmail = getUserEmail();
+      if (!userEmail) {
+        console.log('No access_token present - cannot sync tracking data');
+        return;
+      }
+      
+      const pageTracking = JSON.parse(localStorage.getItem('pageTracking') || '{}');
+      
+      if (Object.keys(pageTracking).length > 0) {
+        const response = await fetch('http://localhost:5000/api/v1/sync-tracking-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            email: userEmail,
+            pageTracking 
+          })
+        });
+        
+        if (response.ok) {
+          console.log('Tracking data synced successfully');
+          // Clear localStorage after successful sync
+          localStorage.removeItem('pageTracking');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to sync tracking data:', error);
+    }
+  };
+
+  const checkForRecommendations = async () => {
+    try {
+      const userEmail = getUserEmail();
+      console.log(userEmail);
+      if (!userEmail) {
+        console.log('No access_token present - not generating recommendation');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:5000/api/v1/get-recommendation?email=${userEmail}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.has_recommendation && data.recommendation) {
+        setHasRecommendation(true);
+        setCurrentRecommendation(data.recommendation);
+        
+        // Add recommendation as a bot message
+        const recommendationMessage = {
+          sender: "bot",
+          text: `🎯 **Smart Recommendation for You**\n\n**${data.recommendation.page_display_name}**\n\n${data.recommendation.message}\n\n**✨ Features:** ${data.recommendation.features}\n\n**🤔 Why this suggestion:** ${data.recommendation.reasoning}\n\n*Click "Take me there!" and I'll automatically set everything up for you.*`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isRecommendation: true,
+          recommendationData: data.recommendation
+        };
+        
+        setMessages(prev => {
+          // Check if recommendation already exists
+          const hasExistingRec = prev.some(msg => msg.isRecommendation);
+          if (!hasExistingRec) {
+            // Increment unread count if widget is closed
+            if (!isOpenRef.current) {
+              setUnreadCount(prevCount => prevCount + 1);
+            }
+            return [...prev, recommendationMessage];
+          }
+          return prev;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to check for recommendations:', error);
+    }
+  };
+
+  const handleRecommendationAction = async (action, recommendationData) => {
+    try {
+      if (action === 'accept') {
+        // Mark recommendation as accepted
+        const userEmail = getUserEmail();
+
+        if (!userEmail) {
+          console.log('No access_token present - cannot accept recommendation');
+          return;
+        }
+        
+        await fetch('http://localhost:5000/api/v1/accept-recommendation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: userEmail
+          })
+        });
+        
+        // Navigate to recommended page with automatic input filling
+        if (recommendationData.frontend_url) {
+          const targetPage = recommendationData.page || recommendationData.recommended_page;
+          
+          // Store input data for automatic filling
+          const inputData = getAutoFillData(targetPage, recommendationData);
+          if (inputData) {
+            localStorage.setItem('autoFillData', JSON.stringify(inputData));
+          }
+          
+          // Navigate to the page
+          window.location.href = recommendationData.frontend_url;
+        }
+      }
+      
+      // Clear recommendation state
+      setHasRecommendation(false);
+      setCurrentRecommendation(null);
+      
+    } catch (error) {
+      console.error('Failed to handle recommendation action:', error);
+    }
+  };
+
+  const getAutoFillData = (targetPage, recommendationData) => {
+    const autoFillMap = {
+      '/music_generation': {
+        inputField: 'prompt',
+        value: `Generate music based on my current mood and preferences. I'm interested in ${recommendationData.features || 'therapeutic music'}.`,
+        placeholder: 'Describe the type of music you want to generate...',
+        focusDelay: 1000
+      },
+      '/chat-bot': {
+        inputField: 'message',
+        value: `Hi! I was recommended to try ${recommendationData.page_display_name}. ${recommendationData.reasoning || 'Can you help me get started?'}`,
+        placeholder: 'Type your message...',
+        focusDelay: 1000
+      },
+      '/assessment': {
+        inputField: null, // No input field, just navigation
+        action: 'scroll_to_assessment',
+        message: 'Ready to begin your assessment'
+      },
+      '/selfcare': {
+        inputField: null,
+        action: 'highlight_features',
+        message: 'Explore your wellness insights'
+      }
+    };
+    
+    return autoFillMap[targetPage] || null;
+  };
 
   // Fetch response from Flask API
   const fetchChatbotResponse = async (message) => {
@@ -170,6 +366,12 @@ export default function ChatbotWidget() {
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <h2 className="font-semibold text-white">Mitra Chat</h2>
+              {hasRecommendation && (
+                <div className="flex items-center gap-1 bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                  <Bell size={12} />
+                  <span className="text-xs">New recommendation</span>
+                </div>
+              )}
             </div>
             <button 
               onClick={() => setOpen(false)}
@@ -202,6 +404,26 @@ export default function ChatbotWidget() {
                   <div className="text-sm leading-relaxed">
                     {formatMessage(msg.text)}
                   </div>
+                  
+                  {/* Recommendation action buttons */}
+                  {msg.isRecommendation && msg.recommendationData && (
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={() => handleRecommendationAction('accept', msg.recommendationData)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-[#965ec7] to-[#7a3fa9] text-white text-xs rounded-full hover:opacity-90 transition-all duration-200 hover:scale-105 shadow-lg"
+                      >
+                        <ExternalLink size={12} />
+                        ✨ Take me there!
+                      </button>
+                      <button
+                        onClick={() => handleRecommendationAction('dismiss', msg.recommendationData)}
+                        className="px-3 py-1.5 bg-gray-200 text-gray-700 text-xs rounded-full hover:bg-gray-300 transition-all duration-200"
+                      >
+                        Maybe later
+                      </button>
+                    </div>
+                  )}
+                  
                   {msg.timestamp && (
                     <div className={`text-xs mt-2 opacity-70 ${
                       msg.sender === "user" ? "text-purple-100" : "text-gray-500"
