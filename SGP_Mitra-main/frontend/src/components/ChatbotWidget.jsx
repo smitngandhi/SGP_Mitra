@@ -9,7 +9,7 @@ export default function ChatbotWidget() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(1); // Start with 1 for welcome message
   const messagesEndRef = useRef(null);
   const isOpenRef = useRef(open);
 
