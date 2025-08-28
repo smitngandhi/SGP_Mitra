@@ -113,7 +113,7 @@ const numberToPhrase = {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
         }),
-        fetch('http://localhost:5000/api/v1/get-recommendations', {
+        fetch('http://localhost:5000/api/v1/recommendation/get-recommendations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })

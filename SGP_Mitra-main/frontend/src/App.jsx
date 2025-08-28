@@ -7,7 +7,6 @@ import Register from "./pages/Register";
 import FAQS from "./pages/FAQs";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-
 import Profile from "./pages/Profile";
 import Test from "./pages/Test";
 import ContactUs from "./pages/Contact_Us";
@@ -25,7 +24,6 @@ import { useCookies } from "react-cookie";
 import LogoutVideo from "./components/LogoutVideo";
 import LoginVideo from "./components/LoginVideo"
 import ChatbotWidget from "./components/ChatbotWidget";
-import RecommendationPopup from "./components/RecommendationPopup";
 
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
@@ -71,7 +69,6 @@ const App = () => {
 
 
         {!shouldHideNavbar && <ChatbotWidget />}
-        {isLoggedIn && <RecommendationPopup />}
         </>
       )}
     </>

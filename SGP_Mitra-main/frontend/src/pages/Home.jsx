@@ -263,7 +263,7 @@ const Home = () => {
                   className="hero-primary-btn"
                 >
                   <Download size={20} />
-                  Download the app now
+                  Get Started
                 </button>
                 <button
                   onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}

@@ -17,6 +17,25 @@ const Music_Generation = () => {
     setIsVisible(true);
   }, []);
 
+  // Add this useEffect hook after the existing useEffect (around line 20)
+useEffect(() => {
+  // Check for intelligent music prompt from recommendation system
+  const urlParams = new URLSearchParams(window.location.search);
+  const intelligentPrompt = urlParams.get('prompt');
+  const autoSubmit = urlParams.get('autoSubmit');
+  
+  if (intelligentPrompt) {
+      setMusicPrompt(decodeURIComponent(intelligentPrompt));
+      
+      // Auto-submit if specified
+      if (autoSubmit === 'true') {
+          setTimeout(() => {
+              generateMusic();
+          }, 1500); // 1.5 second delay for user to see the prompt
+      }
+  }
+}, []);
+
 
   
 

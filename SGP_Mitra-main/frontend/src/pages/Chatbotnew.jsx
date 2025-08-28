@@ -69,6 +69,27 @@ const Chatbotnew = () => {
     };
 
     useEffect(() => {
+        // Check for intelligent prompt from recommendation system
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log(urlParams)
+        const intelligentPrompt = urlParams.get('prompt');
+        console.log(intelligentPrompt)
+        const autoSubmit = urlParams.get('autoSubmit');
+        console.log(autoSubmit)
+        
+        if (intelligentPrompt) {
+            setInputText(decodeURIComponent(intelligentPrompt));
+            
+            // Auto-submit if specified
+            if (autoSubmit === 'true') {
+                setTimeout(() => {
+                    handleSubmit();
+                }, 1000); // 1 second delay for user to see the prompt
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         if (messages.length > 0 && !isUserScrolling) {
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
@@ -163,11 +184,13 @@ const Chatbotnew = () => {
     };
 
     const handleSubmit = () => {
-        if (inputText.trim() === "") return;
+        const messageToSend = inputText.trim();
+        if (messageToSend === "") return;
+        
         setMessages(prev => {
             const updatedPrev = prev.map(msg => ({ ...msg, isNew: false }));
             return [...updatedPrev, {
-                text: inputText,
+                text: messageToSend,
                 sender: "user",
                 isNew: true
             }];
@@ -178,7 +201,7 @@ const Chatbotnew = () => {
         setChatStarted(true);
         setIsUserScrolling(false);
         playSound(sendSound);
-        fetchChatbotResponse(inputText);
+        fetchChatbotResponse(messageToSend);
     };
 
     const handleInputChange = (e) => {

@@ -38,7 +38,8 @@ chats_collection = db[os.getenv("CHATS_COLLECTION")]
 logger.info(f"[INFO] Chats collection initialized: {os.getenv('CHATS_COLLECTION')}")
 tracking_collection = db[os.getenv("TRACKING_COLLECTION")]
 logger.info("[INFO] Tracking collection initialized: tracking")
-
+analytics_collection = db[os.getenv("ANALYTICS_COLLECTION")]
+logger.info("[INFO] Analytics collection initialized: analytics")
 # Initialize Together.AI-powered LLM
 
 llm = ChatOpenAI(

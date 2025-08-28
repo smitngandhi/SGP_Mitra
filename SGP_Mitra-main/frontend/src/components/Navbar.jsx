@@ -58,29 +58,36 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ✅ Session auto-expiry (1 hour)
+  // Session auto-expiry (1 hour)
   useEffect(() => {
-  const loginTime = localStorage.getItem("loginTime");
-  console.log("Login Time:", loginTime);
-  
-  if (!loginTime) return;
+    const loginTime = localStorage.getItem("loginTime");
+    console.log("Login Time:", loginTime);
+    
+    // Only start session timer if user is logged in AND loginTime exists
+    if (!loginTime || !cookies.access_token) return;
 
-  const interval = setInterval(() => {
-    const now = Date.now();
-    console.log("Current Time:", now, "Login Time:", loginTime);
-    if (now - loginTime > 3600 * 1000) {
-      // alert("Session expired, please login again.");
-      localStorage.removeItem("loginTime");
-      clearInterval(interval);  // ✅ Stop further checks
-      setShowOverlay(true); // 👈 show overlay instead of alert
-      handleLogout();
-    }
-  }, 1000); // check every second
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const loginTimestamp = parseInt(loginTime);
+      
+      // Debug logging
+      console.log("Session Check - Current:", now, "Login:", loginTimestamp, "Diff:", now - loginTimestamp);
+      
+      // Check if 1 hour (3600000ms) has passed
+      if (now - loginTimestamp > 3600000) {
+        console.log("Session expired - logging out");
+        alert("Session expired, please login again.");
+        localStorage.removeItem("loginTime");
+        clearInterval(interval);
+        setShowOverlay(true);
+        handleLogout();
+      }
+    }, 60000); // Check every minute instead of every second
 
-  return () => clearInterval(interval); // cleanup on unmount
-  }, [handleLogout]);
+    return () => clearInterval(interval);
+  }, [handleLogout, cookies.access_token]);
 
-  // ✅ Logo click navigation
+  // Logo click navigation
   const handleMitraClick = () => {
     if (cookies.access_token) {
       navigate("/home");

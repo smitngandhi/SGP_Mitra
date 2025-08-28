@@ -103,7 +103,14 @@ const Login = () => {
       if (response.ok) {
         setCookie("access_token", data.access_token, {
           path: "/",
+          maxAge: 3600, // 1 hour
+          secure: false, // Set to true in production with HTTPS
+          sameSite: 'lax'
         });
+        
+        // Set login time for session management
+        localStorage.setItem("loginTime", Date.now());
+        console.log("Login time set in Login.jsx:", Date.now());
 
         try {
           const usernameResponse = await fetch("http://127.0.0.1:5000/api/v1/get-username", {

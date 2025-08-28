@@ -50,6 +50,7 @@ def chat():
         logger.debug(f"Response text: {response_text}")
         chat_entry = {
         "user_id": user["user_id"],
+        "email": user["email"],
         "user_message": message,
         "bot_response": response_text,
         "timestamp": datetime.now(timezone.utc),
@@ -72,6 +73,7 @@ def chat():
         "user_message": message,
         "bot_response": response_text,
         "timestamp": datetime.now(timezone.utc),
+        "email": "unauthenticated",
         "sentiment_score" : sentiment_score
     }
 
@@ -274,6 +276,7 @@ def voice_chat():
                 # Store in DB
                 chat_entry = {
                     "user_id": user["user_id"],
+                    "email": user["email"],
                     "user_message": message,
                     "bot_response": response_text,
                     "timestamp": datetime.now(timezone.utc),
@@ -311,6 +314,7 @@ def voice_chat():
             user_id = str(uuid.uuid4())
             chat_entry = {
                 "user_id": user_id,
+                "email": "unauthenticated",
                 "user_message": message,
                 "bot_response": response_text,
                 "timestamp": datetime.now(timezone.utc),
