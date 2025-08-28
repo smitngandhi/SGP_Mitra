@@ -1,8 +1,26 @@
 #  Mitra - API Documentation
 
+## 🎯 Frontend Feature Mapping
+
+This table maps frontend features to their corresponding backend API sections:
+
+| Frontend Feature | Frontend Route | Backend Section | Example APIs |
+|------------------|----------------|-----------------|-------------|
+| **Know Your Mind** | `http://localhost:3000/assessment` | Assessment & Testing Endpoints | `/test/questions`, `/test/submit`, `/test/history` |
+| **MindChat** | `http://localhost:3000/chat-bot` | Chatbot Integration | `/api/chat`, `/api/voice-chat`, `/api/chat-history` |
+| **ZenBeats** | `http://localhost:3000/music_generation` | AI Music Generation & Emotion Detection | `/music/generate`, `/music/library` |
+| **SelfCare** | `http://localhost:3000/selfcare` | Insights & Recommendations | `/api/generate_selfcare_pdf`, `/profile` |
+| **Emergency Help** | `http://localhost:3000/emergency` | Emergency Services | `/emergency/resources`, `/emergency/crisis` |
+| **User Account** | `http://localhost:3000/profile` | Authentication & User Management | `/register`, `/login`, `/profile` |
+| **Voice Assistant** | `http://localhost:3000/voice_assistant` | Voice Chat Integration | `/api/voice-chat` |
+| **Meditation** | `http://localhost:3000/meditation` | Wellness Features | N/A |
+| **Breathing Exercises** | `http://localhost:3000/breathing` | Wellness Features | N/A |
+| **Testing (Legacy)** | `http://localhost:3000/test` | Assessment Features | `/test/*` |
+
 ## 🔗 Base URL
 ```
-Development: http://localhost:5000/api/v1
+Frontend Development: http://localhost:3000
+Backend Development: http://localhost:5000/api/v1
 Production: https://your-domain.com/api/v1
 ```
 
@@ -22,10 +40,14 @@ Authorization: Bearer <your_jwt_token>
 
 ## 📋 API Endpoints
 
-## Authentication Endpoints
+## 🔐 User Account (Authentication & User Management)
+
+### Authentication Endpoints
 
 ### Register User
 Create a new user account.
+
+**Frontend Usage:** Used in the User Account registration flow.
 
 **Endpoint:** `POST /register`
 
@@ -57,6 +79,8 @@ Create a new user account.
 
 ### Login User
 Authenticate user and receive JWT tokens.
+
+**Frontend Usage:** Used in the User Account login flow to authenticate users.
 
 **Endpoint:** `POST /login`
 
@@ -94,6 +118,8 @@ Authenticate user and receive JWT tokens.
 ### Google OAuth Login
 Initiate Google OAuth authentication flow.
 
+**Frontend Usage:** Used in the User Account section for social login via Google.
+
 **Endpoint:** `GET /login/google`
 
 **Response:** Redirects to Google OAuth consent screen
@@ -105,6 +131,8 @@ Handles OAuth callback and creates user session.
 
 ### Forgot Password
 Request password reset email.
+
+**Frontend Usage:** Used in the User Account password recovery flow.
 
 **Endpoint:** `POST /forgot-password`
 
@@ -127,6 +155,8 @@ Request password reset email.
 ### Reset Password
 Reset password using token from email.
 
+**Frontend Usage:** Used in the User Account password reset completion flow.
+
 **Endpoint:** `POST /reset-password/<token>`
 
 **Request Body:**
@@ -148,6 +178,8 @@ Reset password using token from email.
 ### Logout
 Invalidate user session.
 
+**Frontend Usage:** Used throughout the app when users sign out from their User Account.
+
 **Endpoint:** `POST /logout`
 **Authentication:** Required
 
@@ -158,10 +190,13 @@ Invalidate user session.
 }
 ```
 
-## Chatbot Endpoints
+## 💬 MindChat (Chatbot Integration)
 
 ### Send Chat Message
 Send message to AI chatbot and receive response.
+
+**Frontend Usage:** Used in MindChat feature for therapeutic conversations with the AI assistant.
+**Frontend Route:** Access at `http://localhost:3000/chat-bot`
 
 **Endpoint:** `POST /api/chat`
 **Authentication:** Required
@@ -199,6 +234,9 @@ Send message to AI chatbot and receive response.
 ### Voice Chat
 Send audio message and receive text/audio response.
 
+**Frontend Usage:** Used in MindChat for voice-based therapeutic conversations.
+**Frontend Route:** Access at `http://localhost:3000/voice_assistant`
+
 **Endpoint:** `POST /api/voice-chat`
 **Authentication:** Required
 **Content-Type:** `multipart/form-data`
@@ -229,6 +267,9 @@ session_id: "optional_session_id"
 
 ### Get Chat History
 Retrieve user's conversation history.
+
+**Frontend Usage:** Used in MindChat to display previous conversations and maintain context.
+**Frontend Route:** Access at `http://localhost:3000/chat-bot`
 
 **Endpoint:** `GET /api/chat-history`
 **Authentication:** Required
@@ -266,6 +307,9 @@ Retrieve user's conversation history.
 ### Generate Self-Care PDF
 Generate personalized wellness report.
 
+**Frontend Usage:** Used in SelfCare feature to create downloadable wellness insights and recommendations.
+**Frontend Route:** Access at `http://localhost:3000/selfcare`
+
 **Endpoint:** `POST /api/generate_selfcare_pdf`
 **Authentication:** Required
 
@@ -294,10 +338,13 @@ Generate personalized wellness report.
 }
 ```
 
-## User Management Endpoints
+### User Management Endpoints
 
 ### Get User Profile
 Retrieve current user's profile information.
+
+**Frontend Usage:** Used in User Account and SelfCare sections to display user information and preferences.
+**Frontend Route:** Access at `http://localhost:3000/profile`
 
 **Endpoint:** `GET /profile`
 **Authentication:** Required
@@ -328,6 +375,9 @@ Retrieve current user's profile information.
 
 ### Update User Profile
 Update user profile information.
+
+**Frontend Usage:** Used in User Account settings to modify user preferences and personal information.
+**Frontend Route:** Access at `http://localhost:3000/profile`
 
 **Endpoint:** `PUT /profile`
 **Authentication:** Required
@@ -366,6 +416,9 @@ Update user profile information.
 ### Get Username
 Retrieve current user's username.
 
+**Frontend Usage:** Used throughout the app to display the current user's name in the interface.
+**Frontend Route:** Available across all authenticated pages
+
 **Endpoint:** `GET /get-username`
 **Authentication:** Required
 
@@ -380,6 +433,9 @@ Retrieve current user's username.
 
 ### Update Chatbot Preferences
 Update AI chatbot behavior preferences.
+
+**Frontend Usage:** Used in MindChat settings to customize the AI assistant's communication style and responses.
+**Frontend Route:** Access at `http://localhost:3000/chat-bot` (settings section)
 
 **Endpoint:** `POST /update-preferences`
 **Authentication:** Required
@@ -408,10 +464,13 @@ Update AI chatbot behavior preferences.
 }
 ```
 
-## Assessment Endpoints
+## 🧠 Know Your Mind (Assessment & Testing Endpoints)
 
 ### Get Assessment Questions
 Retrieve questions for mental health assessments.
+
+**Frontend Usage:** Used in Know Your Mind feature to display PHQ-9, GAD-7, and other mental health assessment questionnaires.
+**Frontend Route:** Access at `http://localhost:3000/assessment`
 
 **Endpoint:** `GET /test/questions`
 **Authentication:** Required
@@ -455,6 +514,9 @@ Retrieve questions for mental health assessments.
 
 ### Submit Assessment
 Submit assessment responses and receive results.
+
+**Frontend Usage:** Used in Know Your Mind to process completed assessments and provide mental health scores and recommendations.
+**Frontend Route:** Access at `http://localhost:3000/assessment`
 
 **Endpoint:** `POST /test/submit`
 **Authentication:** Required
@@ -501,6 +563,9 @@ Submit assessment responses and receive results.
 ### Get Assessment Results
 Retrieve specific assessment results.
 
+**Frontend Usage:** Used in Know Your Mind and SelfCare to display detailed assessment results and historical data.
+**Frontend Route:** Access at `http://localhost:3000/assessment` or `http://localhost:3000/selfcare`
+
 **Endpoint:** `GET /test/results/<assessment_id>`
 **Authentication:** Required
 
@@ -527,6 +592,9 @@ Retrieve specific assessment results.
 
 ### Get Assessment History
 Retrieve user's assessment history and trends.
+
+**Frontend Usage:** Used in Know Your Mind and SelfCare to show progress tracking and mental health trends over time.
+**Frontend Route:** Access at `http://localhost:3000/assessment` or `http://localhost:3000/selfcare`
 
 **Endpoint:** `GET /test/history`
 **Authentication:** Required
@@ -572,10 +640,13 @@ Retrieve user's assessment history and trends.
 }
 ```
 
-## Emergency Support Endpoints
+## 🚨 Emergency Help (Emergency Services)
 
 ### Get Emergency Resources
 Retrieve crisis intervention resources.
+
+**Frontend Usage:** Used in Emergency Help feature to provide immediate access to crisis hotlines and local mental health resources.
+**Frontend Route:** Access at `http://localhost:3000/emergency`
 
 **Endpoint:** `GET /emergency/resources`
 **Authentication:** Required
@@ -621,6 +692,9 @@ Retrieve crisis intervention resources.
 ### Report Crisis
 Report a mental health crisis for immediate intervention.
 
+**Frontend Usage:** Used in Emergency Help when crisis situations are detected or reported, triggering immediate support protocols.
+**Frontend Route:** Access at `http://localhost:3000/emergency`
+
 **Endpoint:** `POST /emergency/crisis`
 **Authentication:** Required
 
@@ -653,10 +727,13 @@ Report a mental health crisis for immediate intervention.
 }
 ```
 
-## Music Therapy Endpoints
+## 🎵 ZenBeats (AI Music Generation & Emotion Detection)
 
 ### Generate Therapeutic Music
 Generate AI-powered music based on mood and preferences.
+
+**Frontend Usage:** Used in ZenBeats feature to create personalized therapeutic music based on user's current emotional state and preferences.
+**Frontend Route:** Access at `http://localhost:3000/music_generation`
 
 **Endpoint:** `POST /music/generate`
 **Authentication:** Required
@@ -697,6 +774,9 @@ Generate AI-powered music based on mood and preferences.
 
 ### Get Music Library
 Retrieve user's saved therapeutic music.
+
+**Frontend Usage:** Used in ZenBeats to display the user's collection of generated therapeutic music tracks and favorites.
+**Frontend Route:** Access at `http://localhost:3000/music_generation`
 
 **Endpoint:** `GET /music/library`
 **Authentication:** Required
