@@ -9,7 +9,14 @@ export default function ChatbotWidget() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef(null);
+  const isOpenRef = useRef(open);
+
+  // Keep ref in sync with open state
+  useEffect(() => {
+    isOpenRef.current = open;
+  }, [open]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -39,6 +46,10 @@ export default function ChatbotWidget() {
               timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             },
           ]);
+          // Increment unread count if widget is closed
+          if (!isOpenRef.current) {
+            setUnreadCount(prev => prev + 1);
+          }
         } else {
           setMessages((prev) => [
             ...prev,
@@ -48,6 +59,10 @@ export default function ChatbotWidget() {
               timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             },
           ]);
+          // Increment unread count if widget is closed
+          if (!isOpenRef.current) {
+            setUnreadCount(prev => prev + 1);
+          }
         }
         setIsLoading(false);
       }, 500);
@@ -60,6 +75,10 @@ export default function ChatbotWidget() {
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         },
       ]);
+      // Increment unread count if widget is closed
+      if (!isOpenRef.current) {
+        setUnreadCount(prev => prev + 1);
+      }
       setIsLoading(false);
     }
   };
@@ -115,15 +134,27 @@ export default function ChatbotWidget() {
     <div className="fixed bottom-5 right-5 z-50">
       {/* Floating blob button */}
       {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="w-16 h-16 rounded-full bg-gradient-to-r from-[#965ec7] to-[#7a3fa9] shadow-2xl flex items-center justify-center text-white hover:shadow-3xl hover:scale-105 transition-all duration-300 animate-pulse"
-          style={{
-            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-          }}
-        >
-          <MessageCircle size={28} />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => {
+              setOpen(true);
+              setUnreadCount(0); // Clear notifications when opening chat
+            }}
+            className="w-16 h-16 rounded-full bg-gradient-to-r from-[#965ec7] to-[#7a3fa9] shadow-2xl flex items-center justify-center text-white hover:shadow-3xl hover:scale-105 transition-all duration-300 animate-pulse"
+            style={{
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}
+          >
+            <MessageCircle size={28} />
+          </button>
+          
+          {/* Notification badge */}
+          {unreadCount > 0 && (
+            <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg animate-bounce">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Chat window */}
