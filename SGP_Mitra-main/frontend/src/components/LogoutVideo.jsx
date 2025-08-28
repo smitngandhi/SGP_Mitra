@@ -7,6 +7,7 @@ const LogoutVideo = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      localStorage.removeItem("loginTime");
       navigate("/login");
       window.location.reload();
     }, 6000); // match video length

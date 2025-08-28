@@ -16,6 +16,7 @@ This table maps frontend features to their corresponding backend API sections:
 | **Meditation** | `http://localhost:3000/meditation` | Wellness Features | N/A |
 | **Breathing Exercises** | `http://localhost:3000/breathing` | Wellness Features | N/A |
 | **Testing (Legacy)** | `http://localhost:3000/test` | Assessment Features | `/test/*` |
+| **Smart Recommendations** | All authenticated pages | AI-Powered User Recommendations | `/get-recommendation`, `/accept-recommendation` |
 
 ## 🔗 Base URL
 ```
@@ -798,6 +799,117 @@ Retrieve user's saved therapeutic music.
     ],
     "total": 12,
     "favorites": 3
+}
+```
+
+## 🤖 Smart Recommendations (AI-Powered User Recommendations)
+
+### Get User Recommendation
+Retrieve personalized page recommendation based on user behavior analysis.
+
+**Frontend Usage:** Automatically displayed as popup notifications across all authenticated pages.
+**Frontend Route:** Available on all authenticated pages
+
+**Endpoint:** `GET /get-recommendation`
+**Authentication:** Required
+
+**Response (200 OK - Has Recommendation):**
+```json
+{
+    "has_recommendation": true,
+    "recommendation": {
+        "page": "/assessment",
+        "page_display_name": "Know Your Mind",
+        "frontend_url": "http://localhost:3000/assessment",
+        "message": "Based on your usage patterns, we recommend revisiting Know Your Mind",
+        "features": "PHQ-9, GAD-7 assessments, mental health scoring, progress tracking",
+        "reasoning": "You've spent significant time here before and may benefit from tracking your progress",
+        "generated_at": "2024-01-15T10:30:00Z"
+    }
+}
+```
+
+**Response (200 OK - No Recommendation):**
+```json
+{
+    "has_recommendation": false,
+    "message": "Getting to know your preferences. Keep exploring!"
+}
+```
+
+---
+
+### Accept Recommendation
+Mark recommendation as accepted/used by user.
+
+**Frontend Usage:** Called when user clicks "Take me there!" or "Maybe later" on recommendation popup.
+**Frontend Route:** Triggered from recommendation popup on any page
+
+**Endpoint:** `POST /accept-recommendation`
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+    "success": true,
+    "message": "Recommendation accepted"
+}
+```
+
+---
+
+### Start Recommendation Service
+Start the background recommendation analysis service (Admin only).
+
+**Frontend Usage:** Admin panel for service management.
+**Frontend Route:** Admin dashboard
+
+**Endpoint:** `POST /start-recommendation-service`
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+    "success": true,
+    "message": "Recommendation service started"
+}
+```
+
+---
+
+### Stop Recommendation Service
+Stop the background recommendation analysis service (Admin only).
+
+**Frontend Usage:** Admin panel for service management.
+**Frontend Route:** Admin dashboard
+
+**Endpoint:** `POST /stop-recommendation-service`
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+    "success": true,
+    "message": "Recommendation service stopped"
+}
+```
+
+---
+
+### Get Recommendation Service Status
+Check if the recommendation service is running.
+
+**Frontend Usage:** Admin panel status monitoring.
+**Frontend Route:** Admin dashboard
+
+**Endpoint:** `GET /recommendation-status`
+**Authentication:** Required
+
+**Response (200 OK):**
+```json
+{
+    "service_running": true,
+    "message": "Recommendation service is running"
 }
 ```
 

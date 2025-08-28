@@ -25,6 +25,7 @@ import { useCookies } from "react-cookie";
 import LogoutVideo from "./components/LogoutVideo";
 import LoginVideo from "./components/LoginVideo"
 import ChatbotWidget from "./components/ChatbotWidget";
+import RecommendationPopup from "./components/RecommendationPopup";
 
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
@@ -70,6 +71,7 @@ const App = () => {
 
 
         {!shouldHideNavbar && <ChatbotWidget />}
+        {isLoggedIn && <RecommendationPopup />}
         </>
       )}
     </>
