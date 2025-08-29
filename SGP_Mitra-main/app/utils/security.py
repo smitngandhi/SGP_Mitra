@@ -175,7 +175,7 @@ def generate_llm_response_sentiment(user_message, chatbot_preference, username):
 
     # Get agentic response
     logger.debug(f"[DEBUG] Invoking agent with user message: '{user_message}'")
-    response = agent.predict(input=user_message)
+    response = agent.predict(input=user_message + "\nKeep your answers as short as possible and provided answer in the language in which i asked the question.")
     logger.debug(f"[DEBUG] Agent response received: {response}")
 
     # Only upsert if user_message is not empty or whitespace

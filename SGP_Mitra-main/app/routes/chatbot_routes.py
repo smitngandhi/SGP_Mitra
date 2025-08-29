@@ -18,9 +18,16 @@ from app.utils.logger_utils import get_logger
 from app.models import elevenlabs
 from elevenlabs import play
 import base64
+import os
+from google import genai
+from dotenv import load_dotenv
+from langdetect import detect
 
+load_dotenv()
 
 logger = get_logger(__name__)
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
 
 
 @chatbot_routes.route("/api/chat", methods=["POST"])
@@ -209,7 +216,7 @@ def voice_chat():
         audio_file = request.files["audio"]
         logger.debug(f"Audio file received: {audio_file.filename}")
 
-
+        
     
 
         # Access token (optional)
@@ -219,22 +226,61 @@ def voice_chat():
         logger.debug(f"Access token received: {bool(access_token)}")
 
         # Read file into BytesIO for transcription
-        audio_data = BytesIO(audio_file.read())
+        # audio_data = BytesIO(audio_file.read())
         logger.debug("Audio data loaded into memory for transcription")
 
         # Transcription
         try:
-            transcription = elevenlabs.speech_to_text.convert(
-                file=audio_data,
-                model_id="scribe_v1",
-                tag_audio_events=True,
-                diarize=True,
-            )
-            message = transcription.text.strip()
+            # transcription = elevenlabs.speech_to_text.convert(
+            #     file=audio_data,
+            #     model_id="scribe_v1",
+            #     tag_audio_events=True,
+            #     diarize=True,
+            # )
+            # message = transcription.text.strip()
+            UPLOAD_DIR = "uploads"  # your custom folder
+
+            # Ensure folder exists
+            os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+            # Save file to that folder
+            temp_path = os.path.join(UPLOAD_DIR, "uploaded_audio.mp3")
+            audio_file.save(temp_path)
+
+            # Upload to Gemini
+            myfile = client.files.upload(file=temp_path)
+
+            # logger.debug(f"File uploaded to GenAI: {myfile.id}")
+
+            prompt = """You are an AI transcription assistant.  
+                        Your task is to accurately transcribe the provided audio recording into text.  
+
+                        Instructions:
+                        - Do not summarize or paraphrase.  
+                        - Write out the exact spoken words.  
+                        - Preserve natural pauses, filler words, and incomplete sentences.  
+                        - Format as plain text transcript.  
+                        - If audio is unclear, mark it as [inaudible].
+                        - Do not add any additional commentary or interpretation.
+                        - Ensure the transcription is clear and easy to read.
+                        - Use punctuation to reflect the natural flow of speech."""
+            
+            response = client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=[prompt, myfile]
+                        )
+            
+            message = response.text
             logger.debug(f"Transcription result: {message}")
         except Exception as e:
             logger.error(f"Error during transcription: {e}", exc_info=True)
             return jsonify({"error": "Failed to transcribe audio"}), 500
+        
+        finally:
+        # ✅ Always clean up temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
 
         # If authenticated
         if access_token:
@@ -270,6 +316,7 @@ def voice_chat():
                     logger.debug("Converting to raw")
                     audio_bytes = b"".join(audio)
                     audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
+                    print("Audio conversion successful")
                 except Exception as e:
                     logger.error(f"Error generating TTS: {e}", exc_info=True)
 

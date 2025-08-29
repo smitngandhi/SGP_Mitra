@@ -57,3 +57,5 @@ langchain_google_genai
 langchain-huggingface
 faiss-cpu
 schedule
+google-genai
+langdetect
