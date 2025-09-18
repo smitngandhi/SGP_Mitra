@@ -40,7 +40,7 @@ const numberToPhrase = {
   const fetchAssessments = async () => {
     try {
       setError(null);
-      const response = await fetch('http://localhost:5000/api/v1/assessments');
+      const response = await fetch('http://13.211.214.231/api/v1/assessments');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
@@ -98,22 +98,22 @@ const numberToPhrase = {
         growthInsightResponse,
         recommendationsResponse
       ] = await Promise.all([
-        fetch('http://localhost:5000/api/v1/get-personal-insight', {
+        fetch('http://13.211.214.231/api/v1/get-personal-insight', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
         }),
-        fetch('http://localhost:5000/api/v1/get-strength-insight', {
+        fetch('http://13.211.214.231/api/v1/get-strength-insight', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
         }),
-        fetch('http://localhost:5000/api/v1/get-growth-insight', {
+        fetch('http://13.211.214.231/api/v1/get-growth-insight', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
         }),
-        fetch('http://localhost:5000/api/v1/recommendation/get-recommendations', {
+        fetch('http://13.211.214.231/api/v1/recommendation/get-recommendations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
@@ -229,7 +229,7 @@ const numberToPhrase = {
     try {
       console.log('Submitting responses:', responses);
       
-      const calculateResponse = await fetch('http://localhost:5000/api/v1/calculate-scores', {
+      const calculateResponse = await fetch('http://13.211.214.231/api/v1/calculate-scores', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -251,7 +251,7 @@ const numberToPhrase = {
       await fetchAIInsights(calculateData.assessmentResults);
 
       // Submit to backend
-      const submitResponse = await fetch('http://localhost:5000/api/v1/submit-assessment', {
+      const submitResponse = await fetch('http://13.211.214.231/api/v1/submit-assessment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

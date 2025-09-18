@@ -7,7 +7,7 @@ const GoogleButton = ({ text }) => {
 
   const handleLogin = () => {
     // Redirect to the backend route for Google login
-    window.location.href = "http://127.0.0.1:5000/api/v1/login/google";
+    window.location.href = "http://13.211.214.231/api/v1/login/google";
     
   };
 

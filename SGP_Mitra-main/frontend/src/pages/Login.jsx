@@ -90,7 +90,7 @@ const Login = () => {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/login", {
+      const response = await fetch("http://13.211.214.231/api/v1/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +113,7 @@ const Login = () => {
         console.log("Login time set in Login.jsx:", Date.now());
 
         try {
-          const usernameResponse = await fetch("http://127.0.0.1:5000/api/v1/get-username", {
+          const usernameResponse = await fetch("http://13.211.214.231/api/v1/get-username", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ access_token: data.access_token }),

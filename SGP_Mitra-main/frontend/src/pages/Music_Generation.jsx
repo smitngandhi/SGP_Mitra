@@ -44,7 +44,7 @@ useEffect(() => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/detect_emotion");
+      const response = await fetch("http://13.211.214.231/api/v1/detect_emotion");
       const data = await response.json();
       console.log("Data Response:", data);
       setTracks(data.recommendations);
@@ -64,7 +64,7 @@ useEffect(() => {
   const generateMusic = async () => {
     setMusicLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/generate_music", {
+      const response = await fetch("http://13.211.214.231/api/v1/generate_music", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

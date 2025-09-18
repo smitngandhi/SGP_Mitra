@@ -42,7 +42,7 @@ function Test() {
           return;
         }
 
-        const response = await fetch("http://127.0.0.1:5000/api/v1/get-username", {
+        const response = await fetch("http://13.211.214.231/api/v1/get-username", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -120,7 +120,7 @@ function Test() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/api/v1/store_test_score",
+        "http://13.211.214.231/api/v1/store_test_score",
         {
           method: "POST",
           headers: {

@@ -156,3 +156,9 @@ wrapt
 wsproto
 yarl
 zstandard
+google-genai
+langdetect
+langchain-huggingface
+tf-keras
+faiss-cpu
+gunicorn

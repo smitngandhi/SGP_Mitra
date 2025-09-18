@@ -41,7 +41,7 @@ function Profile() {
   // Fetch profile data from backend
   const fetchProfileData = async (accessToken) => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/v1/profile', {
+      const response = await axios.post('http://13.211.214.231/api/v1/profile', {
         access_token: accessToken
       });
 

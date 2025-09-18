@@ -116,7 +116,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
         console.log("FormData:", formData);
 
         try {
-          const res = await fetch("http://localhost:5000/api/v1/voice_chat", {
+          const res = await fetch("http://13.211.214.231/api/v1/voice_chat", {
             method: "POST",
             body: formData,
           });

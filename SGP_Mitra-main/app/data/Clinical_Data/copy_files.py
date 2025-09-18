@@ -3,8 +3,8 @@ import os
 import shutil
 
 # Set your source and destination directories
-source_dir = 'C:\\Users\\Smit\\Desktop\\Clinical Tests'  # Replace with your actual source path
-destination_dir = 'C:\\Users\\Smit\\Desktop\\DESKTOP\\6th sem\\New SGP\\Mitra_Dhruvil_Branch\\SGP_Mitra\\SGP_Mitra-main\\app\\data\\Clinical_Data'  # Replace with your actual destination path
+source_dir = 'C:/Users/Smit/Desktop/Clinical Tests'  # Replace with your actual source path
+destination_dir = 'C:/Users/Smit/Desktop/DESKTOP/6th sem/New SGP/Mitra_Dhruvil_Branch/SGP_MitraSGP_Mitra-main\\app\\data\\Clinical_Data'  # Replace with your actual destination path
 
 # Ensure the destination directory exists
 os.makedirs(destination_dir, exist_ok=True)

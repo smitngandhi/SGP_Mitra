@@ -20,7 +20,7 @@ const EmergencyHelp = () => {
 
   // ✅ Fetch emergency contacts & coping strategies from Flask
   useEffect(() => {
-    fetch("http://localhost:5000/api/v1/emergency-data")
+    fetch("http://13.211.214.231/api/v1/emergency-data")
       .then((response) => response.json())
       .then((data) => {
         console.log("✅ Emergency Data Response:", data);
@@ -48,7 +48,7 @@ const EmergencyHelp = () => {
       console.log("📍 Latitude:", latitude, "Longitude:", longitude);
 
       fetch(
-        `http://localhost:5000/api/v1/get_nearby_doctors?lat=${latitude}&lng=${longitude}`
+        `http://13.211.214.231/api/v1/get_nearby_doctors?lat=${latitude}&lng=${longitude}`
       )
         .then((response) => response.json())
         .then((data) => {

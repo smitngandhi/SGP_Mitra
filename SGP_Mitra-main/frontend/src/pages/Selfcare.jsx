@@ -22,7 +22,7 @@ const SelfCare = () => {
   useEffect(() => {
     const fetchUsername = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/api/v1/get-username", {
+        const response = await fetch("http://13.211.214.231/api/v1/get-username", {
           method: "POST", // Use POST to send JSON data
           headers: {
             "Content-Type": "application/json",

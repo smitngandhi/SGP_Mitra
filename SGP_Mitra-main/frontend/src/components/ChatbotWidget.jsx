@@ -146,7 +146,7 @@ export default function ChatbotWidget() {
         return null;
       }
 
-      const response = await fetch('http://127.0.0.1:5000/api/v1/tracking/intelligent-recommendation', {
+      const response = await fetch('http://13.211.214.231/api/v1/tracking/intelligent-recommendation', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
@@ -247,7 +247,7 @@ export default function ChatbotWidget() {
         return [];
       }
       console.log("Access token found in cookies" , cookies.access_token);
-      const response = await fetch('http://127.0.0.1:5000/api/v1/tracking/user', {
+      const response = await fetch('http://13.211.214.231/api/v1/tracking/user', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
@@ -352,7 +352,7 @@ export default function ChatbotWidget() {
       Description: ${metadata.description}.
       Keep it under 40 words and focus on value proposition.`;
 
-      const response = await fetch("http://127.0.0.1:5000/api/v1/blob/chat", {
+      const response = await fetch("http://13.211.214.231/api/v1/blob/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: contextualPrompt }),
@@ -381,7 +381,7 @@ export default function ChatbotWidget() {
         return;
       }
       
-      await fetch('http://127.0.0.1:5000/api/v1/tracking/recommendation-event', {
+      await fetch('http://13.211.214.231/api/v1/tracking/recommendation-event', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
@@ -563,7 +563,7 @@ export default function ChatbotWidget() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/blob/chat", {
+      const response = await fetch("http://13.211.214.231/api/v1/blob/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),

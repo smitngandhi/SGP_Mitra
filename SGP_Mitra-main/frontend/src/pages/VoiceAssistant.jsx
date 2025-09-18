@@ -10,7 +10,7 @@ const VoiceAssistant = () => {
     const accessToken = cookies.access_token || null;
     setIsRecording(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/voice_chat", {
+      const res = await fetch("http://13.211.214.231/api/v1/voice_chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

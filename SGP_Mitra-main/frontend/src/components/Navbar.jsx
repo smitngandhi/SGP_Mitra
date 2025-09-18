@@ -21,7 +21,7 @@ const Navbar = () => {
     const fetchUsername = async () => {
       if (cookies.access_token) {
         try {
-          const response = await fetch("http://127.0.0.1:5000/api/v1/get-username", {
+          const response = await fetch("http://13.211.214.231/api/v1/get-username", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ access_token: cookies.access_token }),
