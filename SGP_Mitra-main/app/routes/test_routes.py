@@ -1,6 +1,6 @@
 
 from flask import make_response, redirect, request, jsonify, url_for
-from app.models import users_collection , chats_collection , recommendation_llm , llm
+from app.models import users_collection , groq_llm, llm
 from app.utils.mail import send_reset_email
 import secrets
 from app.routes import test_routes
@@ -347,7 +347,7 @@ def get_strength_insight():
         Write a 2-3 line encouraging and strength-focused insight. Emphasize what's going well for the user and where they show resilience or positive capacity.
         """
 
-        strength_insight = llm.invoke(prompt).content.strip()
+        strength_insight = groq_llm.invoke(prompt).content.strip()
 
         return jsonify({"insight": strength_insight}), 200
 
@@ -387,7 +387,7 @@ def get_growth_insight():
         Kindly provide a warm, empathetic 2-3 line growth insight. Gently suggest where the user could focus to improve their mental well-being or resilience. Do not be judgmental—focus on support and encouragement.
         """
 
-        growth_insight = llm.invoke(prompt).content.strip()
+        growth_insight = groq_llm.invoke(prompt).content.strip()
 
         return jsonify({"insight": growth_insight}), 200
 
@@ -429,7 +429,7 @@ def get_recommendations():
         Respond only with a Python list of strings.
         """
 
-        response = llm.invoke(prompt).content.strip()
+        response = groq_llm.invoke(prompt).content.strip()
         response = re.sub(r"^- ", "", response, flags=re.MULTILINE)
         print(f'Response is: {response}')
         try:

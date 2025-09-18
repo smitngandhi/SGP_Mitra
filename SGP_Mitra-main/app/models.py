@@ -10,6 +10,8 @@ import whisper
 from dotenv import load_dotenv
 from app.utils.logger_utils import get_logger
 from elevenlabs.client import ElevenLabs
+from langchain_huggingface import HuggingFacePipeline
+from langchain_groq import ChatGroq
 
 logger = get_logger(__name__)
 logger.debug("[DEBUG] Starting app initialization process in models.py")
@@ -41,7 +43,7 @@ logger.info("[INFO] Tracking collection initialized: tracking")
 analytics_collection = db[os.getenv("ANALYTICS_COLLECTION")]
 logger.info("[INFO] Analytics collection initialized: analytics")
 # Initialize Together.AI-powered LLM
-
+os.environ["GROQ_API_KEY"] = os.getenv('GROQ_API_KEY')
 llm = ChatOpenAI(
     model="lgai/exaone-3-5-32b-instruct",
     openai_api_key=os.getenv('TOGETHER_API_KEY'),
@@ -49,13 +51,13 @@ llm = ChatOpenAI(
     temperature = 0.001
 )
 logger.info("[INFO] LLM initialized with Together.AI model")
-
-recommendation_llm = ChatOpenAI(
-    model="lgai/exaone-3-5-32b-instruct",
-    openai_api_key=os.getenv('TOGETHER_API_KEY'),
-    openai_api_base="https://api.together.xyz/v1",
-    temperature = 0.001
+groq_llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.0,
+    max_retries=2,
+    # other params...
 )
+
 logger.info("[INFO] Recommendation LLM initialized with Together.AI model")
 
 
