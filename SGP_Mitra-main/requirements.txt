@@ -38,17 +38,12 @@ pandas
 numpy
 matplotlib
 seaborn
-tensorflow
-tf-keras
 fpdf
 huggingface_hub
-torch
 sounddevice
 openai-whisper
 edge-tts
 pydub
-torchaudio
-torchvision
 soundfile
 langchain_openai
 openpyxl
@@ -58,5 +53,9 @@ langchain-huggingface
 faiss-cpu
 schedule
 google-genai
-langdetect
 gunicorn
+torch --index-url https://download.pytorch.org/whl/cpu
+torchvision --index-url https://download.pytorch.org/whl/cpu
+torchaudio --index-url https://download.pytorch.org/whl/cpu
+tensorflow-cpu --index-url https://download.pytorch.org/whl/cpu
+tf-keras
