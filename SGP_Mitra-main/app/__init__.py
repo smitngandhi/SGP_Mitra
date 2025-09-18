@@ -51,7 +51,7 @@ def create_app():
         logger.info("[INFO] Flask extensions initialized successfully")
 
         # Enable CORS
-        CORS(app, origins="http://localhost:3000", supports_credentials=False)
+        CORS(app, origins=["http://localhost:3000","https://mitra-alpha.vercel.app"], supports_credentials=True)
         logger.info("[INFO] CORS enabled for http://localhost:3000")
 
         # Database Connection
