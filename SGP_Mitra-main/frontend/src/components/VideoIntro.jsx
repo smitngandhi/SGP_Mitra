@@ -49,6 +49,7 @@ const VideoIntro = ({ onFinish }) => {
         ref={videoRef}
         src={mainintro}
         autoPlay
+        muted
         playsInline
         controls={false}
       >
