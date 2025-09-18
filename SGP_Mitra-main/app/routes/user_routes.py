@@ -47,8 +47,8 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Load MusicGen model and processor
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
-processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+# model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
+# processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
 # Load the model weights
 model_path = 'app\\data\\model.h5'
@@ -273,60 +273,60 @@ def handle_emotion_detection():
     return response
 
 
-@user_routes.route("generate_music", methods=["POST"])
-def generate_music():
-    data = request.get_json()
-    prompt = data.get("prompt", "")
+# @user_routes.route("generate_music", methods=["POST"])
+# def generate_music():
+#     data = request.get_json()
+#     prompt = data.get("prompt", "")
 
-    print(f'Prompt: {prompt}')
-
-
-    if not prompt:
-        return jsonify({"error": "No prompt provided"}), 400
-
-    try:
-        # Process text input
-        # prompt = generate_prompt_for_music_generation(prompt)
-
-        print(f"New prompt: {prompt}" )
-        inputs = processor(text=[prompt], return_tensors="pt").to(device)
-
-        # Generate AI music
-        print("Generating")
-        music_waveform = model_musicgen.generate(**inputs, max_new_tokens=500)
-        print("Before")
-
-        print(music_waveform.shape)
-
-        # print("Converting to 2D")
-        # Convert waveform to 2D (mono)
-        music_waveform = music_waveform.squeeze(0).cpu()
-
-        print("After")
-
-        print(music_waveform.shape)
+#     print(f'Prompt: {prompt}')
 
 
-        # Define output file path
-        print("Getting folder output")
-        output_path = os.path.join(OUTPUT_DIR, "generated_music.wav")
+#     if not prompt:
+#         return jsonify({"error": "No prompt provided"}), 400
 
-        print(f'Output Path {output_path}')
+#     try:
+#         # Process text input
+#         # prompt = generate_prompt_for_music_generation(prompt)
 
-        # Save generated music
-        print("Saving")
-        torchaudio.save('app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
-        title = generate_music_title(prompt)
-        print(f'New title of music {title}')
-        torchaudio.save(f'app\\music_samples\\{title}.wav', music_waveform, 24000)
-        print("here")
-        # Return audio URL
+#         print(f"New prompt: {prompt}" )
+#         inputs = processor(text=[prompt], return_tensors="pt").to(device)
+
+#         # Generate AI music
+#         print("Generating")
+#         music_waveform = model_musicgen.generate(**inputs, max_new_tokens=500)
+#         print("Before")
+
+#         print(music_waveform.shape)
+
+#         # print("Converting to 2D")
+#         # Convert waveform to 2D (mono)
+#         music_waveform = music_waveform.squeeze(0).cpu()
+
+#         print("After")
+
+#         print(music_waveform.shape)
 
 
-        return jsonify({"audio_url": f"http://127.0.0.1:5000/static/generated_music/generated_music.wav"})
+#         # Define output file path
+#         print("Getting folder output")
+#         output_path = os.path.join(OUTPUT_DIR, "generated_music.wav")
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#         print(f'Output Path {output_path}')
+
+#         # Save generated music
+#         print("Saving")
+#         torchaudio.save('app\\static\\generated_music\\generated_music.wav', music_waveform, 24000)
+#         title = generate_music_title(prompt)
+#         print(f'New title of music {title}')
+#         torchaudio.save(f'app\\music_samples\\{title}.wav', music_waveform, 24000)
+#         print("here")
+#         # Return audio URL
+
+
+#         return jsonify({"audio_url": f"http://127.0.0.1:5000/static/generated_music/generated_music.wav"})
+
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
     
 
 @user_routes.route("/receive_list", methods=["POST"])
