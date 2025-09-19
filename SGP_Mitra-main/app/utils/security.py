@@ -8,7 +8,6 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from app.utils import *
 import uuid
 import numpy as np
-import whisper
 import sounddevice as sd
 import time
 import scipy.io.wavfile as wav
@@ -208,31 +207,31 @@ async def speak_and_play(text):
     play(audio)
     # os.remove("output.mp3")
 
-def transcribe_audio_from_mic():
-    recorded_chunks = []
-    silence_start = None
-    stream = sd.InputStream(samplerate=SAMPLE_RATE, channels=1, dtype='int16', blocksize=CHUNK_SIZE)
-    with stream:
-        stream.start()
-        while True:
-            audiochunk , _  = stream.read(CHUNK_SIZE)
-            audio_chunk = audiochunk.flatten()
-            recorded_chunks.append(audio_chunk)
+# def transcribe_audio_from_mic():
+#     recorded_chunks = []
+#     silence_start = None
+#     stream = sd.InputStream(samplerate=SAMPLE_RATE, channels=1, dtype='int16', blocksize=CHUNK_SIZE)
+#     with stream:
+#         stream.start()
+#         while True:
+#             audiochunk , _  = stream.read(CHUNK_SIZE)
+#             audio_chunk = audiochunk.flatten()
+#             recorded_chunks.append(audio_chunk)
 
-            rms = np.sqrt(np.mean(audio_chunk.astype(np.float32)**2))
-            if rms < ENERGY_THRESHOLD:
-                if silence_start is None:
-                    silence_start = time.time()
-                elif time.time() - silence_start > SILENCE_DURATION:
-                    break
-            else:
-                silence_start = None
+#             rms = np.sqrt(np.mean(audio_chunk.astype(np.float32)**2))
+#             if rms < ENERGY_THRESHOLD:
+#                 if silence_start is None:
+#                     silence_start = time.time()
+#                 elif time.time() - silence_start > SILENCE_DURATION:
+#                     break
+#             else:
+#                 silence_start = None
 
-    audio_data = np.concatenate(recorded_chunks)
-    wav.write("temp.wav", SAMPLE_RATE, audio_data)
-    result = whisper_model.transcribe("temp.wav")
-    os.remove("temp.wav")
-    return result['text']
+#     audio_data = np.concatenate(recorded_chunks)
+#     wav.write("temp.wav", SAMPLE_RATE, audio_data)
+#     result = whisper_model.transcribe("temp.wav")
+#     os.remove("temp.wav")
+#     return result['text']
 
 def generate_prompt_for_music_generation(user_prompt):
      

@@ -84,7 +84,6 @@ numba
 numpy
 oauthlib
 openai
-openai-whisper
 opencv-python
 openpyxl
 opt_einsum
@@ -151,7 +150,6 @@ vaderSentiment
 websockets
 Werkzeug
 wheel
-whisper
 wrapt
 wsproto
 yarl

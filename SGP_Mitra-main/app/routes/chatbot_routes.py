@@ -5,7 +5,7 @@ import secrets
 from app.routes import chatbot_routes
 from datetime import datetime , timedelta 
 from datetime import datetime, timedelta, timezone
-from app.utils.security import  decode_token, generate_llm_response_sentiment , transcribe_audio_from_mic
+from app.utils.security import  decode_token, generate_llm_response_sentiment
 import uuid
 from fpdf import FPDF
 from io import BytesIO

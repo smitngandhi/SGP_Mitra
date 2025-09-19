@@ -4,15 +4,10 @@ from langchain_openai import ChatOpenAI
 import os
 from dotenv import load_dotenv
 from langchain.agents import initialize_agent, AgentType
+from app.models import llm
 
 load_dotenv()
 
-llm = ChatOpenAI(
-    model="lgai/exaone-3-5-32b-instruct",
-    api_key=os.getenv('TOGETHER_API_KEY'),
-    openai_api_base="https://api.together.xyz/v1",
-    temperature = 0.001
-)
 
 agent = initialize_agent(
     tools=mitra_tools,
@@ -29,27 +24,3 @@ agent = initialize_agent(
         )
     }
 )
-
-
-# if __name__ == "__main__":
-#     print("SGP Mitra Assistant initialized successfully!")
-#     print("=" * 60)
-    
-#     # Test questions
-#     test_questions = [
-#         "What is Mitra?",
-#         "Who is Mitra?", 
-#         "How do I use the voice chat feature?",
-#         "What are the main API endpoints?",
-#         "How do I deploy Mitra locally?",
-#         "What mental health assessments are available?"
-#     ]
-    
-#     for i, question in enumerate(test_questions, 1):
-#         print(f"\n{i}. Testing Question: {question}")
-#         print("-" * 40)
-        
-#         # Test with standard agent
-#         answer = agent.invoke({"input": question})
-#         print(f"Answer: {answer}")
-#         print("-" * 40)

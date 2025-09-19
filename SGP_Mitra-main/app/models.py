@@ -6,7 +6,6 @@ from app.config import Config
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationChain
-import whisper
 from dotenv import load_dotenv
 from app.utils.logger_utils import get_logger
 from elevenlabs.client import ElevenLabs
@@ -60,8 +59,8 @@ logger.info("[INFO] Recommendation LLM initialized with Together.AI model")
 
 
 
-whisper_model = whisper.load_model("base")
-logger.info("[INFO] Whisper model loaded successfully")
+# whisper_model = whisper.load_model("base")
+# logger.info("[INFO] Whisper model loaded successfully")
 
 
 elevenlabs = ElevenLabs(
