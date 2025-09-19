@@ -160,3 +160,4 @@ tf-keras
 faiss-cpu
 gunicorn
 tensorflow
+pyaudioop
