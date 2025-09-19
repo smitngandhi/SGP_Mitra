@@ -8,7 +8,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from app.utils import *
 import uuid
 import numpy as np
-import sounddevice as sd
+# import sounddevice as sd
 import time
 import scipy.io.wavfile as wav
 from langchain_openai import ChatOpenAI

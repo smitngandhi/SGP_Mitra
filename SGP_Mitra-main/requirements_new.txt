@@ -127,7 +127,6 @@ seaborn
 sentence-transformers
 six
 sniffio
-sounddevice
 SQLAlchemy
 sympy
 tabulate
@@ -160,3 +159,4 @@ langchain-huggingface
 tf-keras
 faiss-cpu
 gunicorn
+tensorflow
