@@ -44,7 +44,7 @@ useEffect(() => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://13.211.214.231/api/v1/detect_emotion");
+      const response = await fetch("http://127.0.0.1:5000/api/v1/detect_emotion");
       const data = await response.json();
       console.log("Data Response:", data);
       setTracks(data.recommendations);
@@ -64,7 +64,7 @@ useEffect(() => {
   const generateMusic = async () => {
     setMusicLoading(true);
     try {
-      const response = await fetch("http://13.211.214.231/api/v1/generate_music", {
+      const response = await fetch("http://127.0.0.1:5000/api/v1/generate_music", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +148,7 @@ useEffect(() => {
           </div>
           
           {/* Right Section - Text to Music */}
-          {/* <div className="group w-full lg:w-1/2 bg-[#d7c6e6] backdrop-blur-md rounded-2xl p-6 transform transition-all duration-500 hover:scale-102 hover:bg-[#7a3fa9]">
+          <div className="group w-full lg:w-1/2 bg-[#d7c6e6] backdrop-blur-md rounded-2xl p-6 transform transition-all duration-500 hover:scale-102 hover:bg-[#7a3fa9]">
             <h2 className="text-2xl font-bold p-6 mb-6 text-center text-[#1e1e3f] transition-colors duration-500 group-hover:text-white">
               Text-to-Music Generation
             </h2>
@@ -187,7 +187,7 @@ useEffect(() => {
             </div>
             
             {/* Generated Music Player */}
-            {/* {generatedMusic ? (
+            {generatedMusic ? (
               <div className="mt-6 music-player-container animate-fadeIn">
                 <div className="bg-[#7a3fa9]/40 group-hover:bg-[#d7c6e6]/40 p-4 rounded-xl">
                   <div className="audio-visualizer mb-3"></div>
@@ -206,8 +206,8 @@ useEffect(() => {
               <div className="flex flex-col items-center justify-center text-center text-gray-300">
                 <p className="transition-all duration-500 group-hover:text-white" style={{paddingTop:'15px'}}>Enter a description above and generate your custom music</p>
               </div>
-            )} */} */
-          {/* </div> */}
+            )}
+          </div>
         </div>
     </div>
     </>
