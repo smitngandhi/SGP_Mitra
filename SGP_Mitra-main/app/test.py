@@ -1,7 +1,6 @@
 from huggingface_hub import InferenceClient
 
 # Initialize the client
-# client = InferenceClient(token="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")
 
 # Define your text prompt
 prompt = "lo-fi music with a soothing melody"
