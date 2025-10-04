@@ -60,3 +60,5 @@ schedule
 google-genai
 langdetect
 langchain-groq
+accelerate
+bitsandbytes

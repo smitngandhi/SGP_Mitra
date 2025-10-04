@@ -12,6 +12,8 @@ from app.utils.logger_utils import get_logger
 from elevenlabs.client import ElevenLabs
 from langchain_huggingface import HuggingFacePipeline
 from langchain_groq import ChatGroq
+import torch
+from transformers import AutoProcessor , MusicgenForConditionalGeneration
 
 logger = get_logger(__name__)
 logger.debug("[DEBUG] Starting app initialization process in models.py")
@@ -70,7 +72,10 @@ elevenlabs = ElevenLabs(
   api_key=os.getenv("ELEVENLABS_API_KEY")
 )
 
-
+# Load MusicGen model and processor
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
+processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 
 
 

@@ -23,7 +23,7 @@ import os
 import torch
 import torchaudio
 from flask import Flask, request, jsonify, send_from_directory
-from transformers import AutoProcessor, MusicgenForConditionalGeneration
+from app.models import model_musicgen , processor
 
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
@@ -45,10 +45,7 @@ OUTPUT_DIR = "app\\static\\generated_music"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-# Load MusicGen model and processor
-device = "cuda" if torch.cuda.is_available() else "cpu"
-model_musicgen = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small").to(device)
-processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
+
 
 # Load the model weights
 model_path = 'app\\data\\model.h5'
