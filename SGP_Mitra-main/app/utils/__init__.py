@@ -33,7 +33,7 @@ try:
     else:
         logger.info(f"[INFO] Index {index_name} already exists")
     
-    dense_index = pc.Index(index_name)
+    dense_index = pc.Index(index_name)  
     logger.info("[INFO] Pinecone dense index initialized successfully")
     
 except Exception as e:

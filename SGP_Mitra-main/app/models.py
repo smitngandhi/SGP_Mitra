@@ -14,6 +14,7 @@ from langchain_huggingface import HuggingFacePipeline
 from langchain_groq import ChatGroq
 import torch
 from transformers import AutoProcessor , MusicgenForConditionalGeneration
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 logger = get_logger(__name__)
 logger.debug("[DEBUG] Starting app initialization process in models.py")
@@ -40,17 +41,18 @@ users_collection = db[os.getenv("USERS_COLLECTION")]
 logger.info(f"[INFO] Users collection initialized: {os.getenv('USERS_COLLECTION')}")
 chats_collection = db[os.getenv("CHATS_COLLECTION")]
 logger.info(f"[INFO] Chats collection initialized: {os.getenv('CHATS_COLLECTION')}")
+chat_sessions_collection = db["chat_sessions"]
+logger.info("[INFO] Chat sessions collection initialized: chat_sessions")
 tracking_collection = db[os.getenv("TRACKING_COLLECTION")]
 logger.info("[INFO] Tracking collection initialized: tracking")
 analytics_collection = db[os.getenv("ANALYTICS_COLLECTION")]
 logger.info("[INFO] Analytics collection initialized: analytics")
 # Initialize Together.AI-powered LLM
 os.environ["GROQ_API_KEY"] = os.getenv('GROQ_API_KEY')
-llm = ChatOpenAI(
-    model="lgai/exaone-3-5-32b-instruct",
-    openai_api_key=os.getenv('TOGETHER_API_KEY'),
-    openai_api_base="https://api.together.xyz/v1",
-    temperature = 0.001
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash", 
+    google_api_key=os.getenv("GOOGLE_API_KEY"),
+    temperature=0.001
 )
 logger.info("[INFO] LLM initialized with Together.AI model")
 groq_llm = ChatGroq(

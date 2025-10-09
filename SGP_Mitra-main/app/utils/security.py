@@ -23,6 +23,7 @@ from langchain.chains.conversation.memory import ConversationBufferMemory
 from app.models import llm
 import datetime
 from app.utils.logger_utils import get_logger
+from app.utils import dense_index
 
 
 logger = get_logger(__name__)

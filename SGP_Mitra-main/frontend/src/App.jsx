@@ -68,7 +68,7 @@ const App = () => {
           </Routes>
 
 
-        {!shouldHideNavbar && <ChatbotWidget />}
+        {/* {!shouldHideNavbar && <ChatbotWidget />} */}
         </>
       )}
     </>
