@@ -41,7 +41,7 @@ users_collection = db[os.getenv("USERS_COLLECTION")]
 logger.info(f"[INFO] Users collection initialized: {os.getenv('USERS_COLLECTION')}")
 chats_collection = db[os.getenv("CHATS_COLLECTION")]
 logger.info(f"[INFO] Chats collection initialized: {os.getenv('CHATS_COLLECTION')}")
-chat_sessions_collection = db["chat_sessions"]
+chat_sessions_collection = db[os.getenv("CHATS_SESSION_COLLECTION")]
 logger.info("[INFO] Chat sessions collection initialized: chat_sessions")
 tracking_collection = db[os.getenv("TRACKING_COLLECTION")]
 logger.info("[INFO] Tracking collection initialized: tracking")

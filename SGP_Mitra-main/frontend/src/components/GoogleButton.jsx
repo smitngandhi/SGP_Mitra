@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import googleIcon from "../assets/google.svg";
 import googleColorIcon from "../assets/google_color.svg";
+import { getBackendUrl } from '../config/api';
 
 const GoogleButton = ({ text }) => {
   const [icon, setIcon] = useState(googleIcon);
 
   const handleLogin = () => {
     // Redirect to the backend route for Google login
-    window.location.href = "http://127.0.0.1:5000/api/v1/login/google";
+    window.location.href = `${getBackendUrl()}/api/v1/auth/login/google`;
     
   };
 

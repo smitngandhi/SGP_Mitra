@@ -1,8 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect  , useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import GoogleButton from "../components/GoogleButton";
-import { Brain, Sparkles, ArrowRight } from "lucide-react";
+import { getApiUrl } from '../config/api';
+import {
+  ArrowRight,
+  Sparkles,
+  Brain
+} from 'lucide-react';
 import '../After_Login.css';
 
 const Login = () => {
@@ -90,7 +95,7 @@ const Login = () => {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/login", {
+      const response = await fetch(getApiUrl("/auth/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,7 +118,7 @@ const Login = () => {
         console.log("Login time set in Login.jsx:", Date.now());
 
         try {
-          const usernameResponse = await fetch("http://127.0.0.1:5000/api/v1/get-username", {
+          const usernameResponse = await fetch(getApiUrl("/get-username"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ access_token: data.access_token }),

@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import { getApiUrl } from '../config/api';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email_or_username, setEmail_or_Username] = useState("");
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/forgot-password", {
+      const response = await fetch(getApiUrl("/auth/forgot-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email_or_username }),

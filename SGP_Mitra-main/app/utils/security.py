@@ -23,8 +23,9 @@ from langchain.chains.conversation.memory import ConversationBufferMemory
 from app.models import llm
 import datetime
 from app.utils.logger_utils import get_logger
-from app.utils import dense_index
+from app.utils import initialize_pinecone
 
+dense_index = initialize_pinecone()
 
 logger = get_logger(__name__)
 logger.debug("[DEBUG] Initializing security utilities")

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleButton from "../components/GoogleButton";
+import { getApiUrl } from '../config/api';
 import { Sparkles, ArrowRight, UserPlus } from "lucide-react";
 import '../After_Login.css';
 
@@ -93,7 +94,7 @@ const Register = () => {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/register", {
+      const response = await fetch(getApiUrl("/auth/register"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

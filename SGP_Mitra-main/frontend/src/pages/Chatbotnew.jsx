@@ -6,6 +6,7 @@ import { useCookies } from 'react-cookie';
 import VoiceAssistantModal from "./VoiceAssistantModel";
 import sendSound from "../assets/sendmsg.mp3";
 import receiveSound from "../assets/receivemsg.mp3";
+import { getApiUrl } from '../config/api';
 import {
   Send,
   Mic,
@@ -17,7 +18,9 @@ import {
   MessageCircle,
   Plus,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 const Chatbotnew = () => {
@@ -37,6 +40,9 @@ const Chatbotnew = () => {
   const [chatSessions, setChatSessions] = useState([]);
   const [groupedSessions, setGroupedSessions] = useState({});
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+  
+  // Sidebar collapse state
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -56,7 +62,7 @@ const Chatbotnew = () => {
 
     setIsLoadingSessions(true);
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/chat/sessions", {
+      const response = await fetch(getApiUrl("/chat/sessions"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ access_token: accessToken }),
@@ -79,7 +85,7 @@ const Chatbotnew = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/v1/chat/sessions/${sessionId}`, {
+      const response = await fetch(getApiUrl(`/chat/sessions/${sessionId}`), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ access_token: accessToken }),
@@ -116,7 +122,7 @@ const Chatbotnew = () => {
 
     try {
       // Create a new session via backend
-      const response = await fetch("http://127.0.0.1:5000/api/v1/chat/sessions/create", {
+      const response = await fetch(getApiUrl("/chat/sessions/create"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ access_token: accessToken }),
@@ -165,7 +171,7 @@ const Chatbotnew = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/v1/chat/session", {
+      const response = await fetch(getApiUrl("/chat/session"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -286,7 +292,7 @@ const Chatbotnew = () => {
     if (!accessToken) return;
 
     try {
-      await fetch(`http://127.0.0.1:5000/api/v1/chat/sessions/${sessionId}/pin`, {
+      await fetch(getApiUrl(`/chat/sessions/${sessionId}/pin`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ access_token: accessToken }),
@@ -306,7 +312,7 @@ const Chatbotnew = () => {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/v1/chat/sessions/${sessionId}`, {
+      const response = await fetch(getApiUrl(`/chat/sessions/${sessionId}`), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ access_token: accessToken }),
@@ -347,42 +353,58 @@ const Chatbotnew = () => {
     <div className="min-h-screen-100% w-full bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-100 font-['Inter',sans-serif]">
       <div className="h-[calc(100vh-80px)] mt-20 flex overflow-hidden">
         {/* Left Sidebar */}
-        <div className="w-80 bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 shadow-2xl flex-shrink-0 flex flex-col border-r border-purple-200/30 backdrop-blur-sm">
+        <div className={`${isSidebarCollapsed ? 'w-16' : 'w-80'} bg-gradient-to-br from-gray-50 via-purple-50 to-gray-50 shadow-2xl flex-shrink-0 flex flex-col border-r border-purple-200/30 backdrop-blur-sm transition-all duration-300 ease-in-out`}>
           <div className="p-4 border-b border-purple-200/30 flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-purple-300/50">
-                      <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                      <h3 className="text-gray-800 font-semibold">Welcome!</h3>
-                  </div>
+              {!isSidebarCollapsed && (
+                <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg ring-2 ring-purple-300/50">
+                        <User className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                        <h3 className="text-gray-800 font-semibold">Welcome!</h3>
+                    </div>
+                </div>
+              )}
+              <div className="flex items-center space-x-2">
+                {!isSidebarCollapsed && (
+                  <button onClick={createNewChat} className="p-2 text-purple-500 hover:text-purple-700 hover:bg-purple-100 rounded-lg transition-all duration-200">
+                      <Plus className="w-5 h-5" />
+                  </button>
+                )}
+                <button 
+                  onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
+                  className="p-2 text-purple-500 hover:text-purple-700 hover:bg-purple-100 rounded-lg transition-all duration-200"
+                  title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                >
+                  {isSidebarCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+                </button>
               </div>
-              <button onClick={createNewChat} className="p-2 text-purple-500 hover:text-purple-700 hover:bg-purple-100 rounded-lg transition-all duration-200">
-                  <Plus className="w-5 h-5" />
-              </button>
           </div>
 
-          <div className="p-4 border-b border-purple-200/30">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search conversations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/70 border border-purple-200/50 rounded-2xl text-gray-700 placeholder-purple-400 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 focus:bg-white/90 transition-all duration-200 backdrop-blur-sm shadow-inner"
-              />
+          {!isSidebarCollapsed && (
+            <div className="p-4 border-b border-purple-200/30">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search conversations..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-white/70 border border-purple-200/50 rounded-2xl text-gray-700 placeholder-purple-400 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 focus:bg-white/90 transition-all duration-200 backdrop-blur-sm shadow-inner"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="flex-1 overflow-y-auto min-h-0">
-            {isLoadingSessions ? <div className="p-4 text-center text-purple-600">Loading chats...</div> : 
-            Object.entries(groupedSessions).map(([groupTitle, sessions]) => (
-              sessions.length > 0 && (
-                <div key={groupTitle} className="p-4">
-                  <h4 className="text-purple-700 text-sm font-semibold uppercase tracking-wide mb-4 px-2">{groupTitle}</h4>
-                  <div className="space-y-3">
-                    {sessions.map((session) => (
+          {!isSidebarCollapsed && (
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {isLoadingSessions ? <div className="p-4 text-center text-purple-600">Loading chats...</div> : 
+              Object.entries(groupedSessions).map(([groupTitle, sessions]) => (
+                sessions.length > 0 && (
+                  <div key={groupTitle} className="p-4">
+                    <h4 className="text-purple-700 text-sm font-semibold uppercase tracking-wide mb-4 px-2">{groupTitle}</h4>
+                    <div className="space-y-3">
+                      {sessions.map((session) => (
                       <div
                         key={session.session_id}
                         onClick={() => loadSession(session.session_id)}
@@ -417,14 +439,17 @@ const Chatbotnew = () => {
                   </div>
                 </div>
               )
-            ))}
-          </div>
-          
-          <div className="p-4 border-t border-purple-200/30 bg-white/60">
-            <div className="bg-gradient-to-r from-purple-100/60 to-purple-50/60 rounded-2xl p-4 backdrop-blur-sm shadow-lg">
-              <MoodDetector sentiment={sentiment} />
+              ))}
             </div>
-          </div>
+          )}
+          
+          {!isSidebarCollapsed && (
+            <div className="p-4 border-t border-purple-200/30 bg-white/60">
+              <div className="bg-gradient-to-r from-purple-100/60 to-purple-50/60 rounded-2xl p-4 backdrop-blur-sm shadow-lg">
+                <MoodDetector sentiment={sentiment} />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Main Chat Area */}

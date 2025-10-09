@@ -12,7 +12,6 @@ from app.routes.auth_routes import auth_routes
 from app.routes.user_routes import user_routes
 from app.routes.test_routes import test_routes
 from app.routes.chatbot_routes import chatbot_routes
-from app.routes.chat_sessions_routes import chat_sessions_routes
 from app.routes.emergency_routes import emergency_routes
 from app.routes.blob_bot_routes import blob_bot_routes
 from app.routes.tracking_routes import tracking_routes
@@ -49,8 +48,8 @@ def create_app():
         logger.info("[INFO] Flask extensions initialized successfully")
 
         # Enable CORS
-        CORS(app, origins="http://localhost:3000", supports_credentials=False)
-        logger.info("[INFO] CORS enabled for http://localhost:3000")
+        CORS(app, origins=app.config["FRONTEND_URL"], supports_credentials=False)
+        logger.info(f"[INFO] CORS enabled for {app.config['FRONTEND_URL']}")
 
         # Database Connection
         client = MongoClient(app.config["MONGO_URL"])
@@ -60,11 +59,10 @@ def create_app():
         # Register Blueprints
         
 
-        app.register_blueprint(auth_routes, url_prefix="/api/v1")
+        app.register_blueprint(auth_routes, url_prefix="/api/v1/auth")
         app.register_blueprint(user_routes, url_prefix="/api/v1")
         app.register_blueprint(test_routes, url_prefix="/api/v1")
         app.register_blueprint(chatbot_routes, url_prefix="/api/v1")
-        app.register_blueprint(chat_sessions_routes, url_prefix="/api/v1")
         app.register_blueprint(emergency_routes, url_prefix="/api/v1")
         app.register_blueprint(blob_bot_routes, url_prefix="/api/v1")
         app.register_blueprint(tracking_routes, url_prefix="/api/v1")

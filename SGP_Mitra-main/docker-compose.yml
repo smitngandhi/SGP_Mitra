@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: sgp-mitra-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password123}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-sgp_mitra}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - sgp-mitra-network
+
+  # SGP Mitra Application (Frontend + Backend)
+  sgp-mitra:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PORT: ${PORT:-5000}
+    container_name: sgp-mitra-app
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5000}:${PORT:-5000}"
+    environment:
+      # Backend Configuration
+      - PORT=${PORT:-5000}
+      - BACKEND_HOST=0.0.0.0
+      - BACKEND_PORT=${PORT:-5000}
+      - BACKEND_URL=http://localhost:${PORT:-5000}
+      
+      # Frontend Configuration
+      - FRONTEND_HOST=localhost
+      - FRONTEND_PORT=${PORT:-5000}
+      - FRONTEND_URL=http://localhost:${PORT:-5000}
+      
+      # Database Configuration
+      - MONGO_URL=mongodb://mongodb:27017
+      - MONGO_DB_NAME=${MONGO_DB_NAME:-sgp_mitra}
+      
+      # JWT Configuration
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-super-secret-jwt-key-change-this-in-production}
+      
+      # Email Configuration (Optional)
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USE_TLS=${MAIL_USE_TLS:-True}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      
+      # Google OAuth (Optional)
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      
+      # API Keys (Optional)
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
+      
+      # Directory Paths
+      - LOGS_DIRECTORY=logs
+      - UPLOADS_DIRECTORY=uploads
+      - MUSIC_SAMPLES_DIRECTORY=app/music_samples
+      
+      # Production Settings
+      - NODE_ENV=production
+      - FLASK_ENV=production
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./app/music_samples:/app/app/music_samples
+    depends_on:
+      - mongodb
+    networks:
+      - sgp-mitra-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-5000}/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  sgp-mitra-network:
+    driver: bridge
