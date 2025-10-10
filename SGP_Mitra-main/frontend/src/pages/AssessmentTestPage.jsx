@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Send, BarChart3, Brain, TrendingUp, Heart, Target, Home } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Send, BarChart3, Brain, TrendingUp, Heart, Target, Home, CheckCircle, Circle, Lightbulb } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar } from 'recharts';
 import Mitra from '../assets/Mitra Logo.png'
 import Navbar from '../components/Navbar';
+import { getApiUrl } from '../config/api';
 
 const AssessmentTestPage = () => {
   const [cards, setCards] = useState([]);
@@ -40,7 +41,7 @@ const numberToPhrase = {
   const fetchAssessments = async () => {
     try {
       setError(null);
-      const response = await fetch('http://localhost:5000/api/v1/assessments');
+      const response = await fetch(getApiUrl('/assessments'));
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
@@ -98,22 +99,22 @@ const numberToPhrase = {
         growthInsightResponse,
         recommendationsResponse
       ] = await Promise.all([
-        fetch('http://localhost:5000/api/v1/get-personal-insight', {
+        fetch(getApiUrl('/get-personal-insight'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
         }),
-        fetch('http://localhost:5000/api/v1/get-strength-insight', {
+        fetch(getApiUrl('/get-strength-insight'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
         }),
-        fetch('http://localhost:5000/api/v1/get-growth-insight', {
+        fetch(getApiUrl('/get-growth-insight'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
         }),
-        fetch('http://localhost:5000/api/v1/recommendation/get-recommendations', {
+        fetch(getApiUrl('/get-recommendations'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ scores: Scores })
@@ -198,9 +199,8 @@ const numberToPhrase = {
     const totalCards = cards.length;
     if (totalCards === 0) return 0;
     
-    const respondedCards = Object.keys(responses).filter(cardId => 
-      responses[cardId] !== undefined && responses[cardId] !== null
-    ).length;
+    // Use touchedCards to count only user-interacted responses
+    const respondedCards = Object.keys(touchedCards).length;
     
     const progress = Math.round((respondedCards / totalCards) * 100);
     console.log(`Progress: ${respondedCards}/${totalCards} = ${progress}%`);
@@ -229,7 +229,7 @@ const numberToPhrase = {
     try {
       console.log('Submitting responses:', responses);
       
-      const calculateResponse = await fetch('http://localhost:5000/api/v1/calculate-scores', {
+      const calculateResponse = await fetch(getApiUrl('/calculate-scores'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -251,7 +251,7 @@ const numberToPhrase = {
       await fetchAIInsights(calculateData.assessmentResults);
 
       // Submit to backend
-      const submitResponse = await fetch('http://localhost:5000/api/v1/submit-assessment', {
+      const submitResponse = await fetch(getApiUrl('/submit-assessment'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -420,10 +420,10 @@ const numberToPhrase = {
     
     return (
       <>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pt-24 pb-12">
+      <div className="min-h-screen bg-slate-50 pt-24 pb-12 font-sans">
         <div className="max-w-7xl mx-auto px-6">
           {/* Header Section */}
-          <div className="text-center mb-16 border-b-4 border-gradient-to-r from-blue-500 to-purple-600 pb-8">
+          <div className="text-center mb-12">
             {/* <div className="flex items-center justify-center mb-8">
               <img 
                 src={Mitra} 
@@ -431,17 +431,17 @@ const numberToPhrase = {
                 className="w-32 h-32 rounded-full object-cover shadow-2xl border-4 border-white" 
               />
             </div> */}
-            <h1 className="text-5xl font-bold text-gray-800 mb-6 tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 tracking-tight">
               Your Mental Wellness Profile
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg text-slate-600 max-w-3xl mx-auto">
               Discover insights about your emotional patterns and get personalized recommendations for mental strength
             </p>
           </div>
                     {/* Charts Section - Enhanced */}
-          <div className="grid lg:grid-cols-2 gap-10 mb-12">
-            {/* Bar Chart */}
-            <div className="w-1/2 bg-white rounded-3xl shadow-2xl p-10 border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
+          <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          {/* Bar Chart */}
+          <div className="w-1/2 bg-white rounded-3xl shadow-2xl p-10 border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
               <div className="flex items-center mb-8 pb-4 border-b-2 border-gray-100">
                 <BarChart3 className="w-8 h-8 text-blue-600 mr-4" />
                 <h3 className="text-2xl font-bold text-gray-800">Score Overview</h3>
@@ -466,8 +466,8 @@ const numberToPhrase = {
               </div>
             </div>
 
-            {/* Radar Chart */}
-            <div className="w-1/2 bg-white rounded-3xl shadow-2xl p-10 border-2 border-gray-200 hover:border-purple-300 transition-all duration-300">
+          {/* Radar Chart */}
+          <div className="w-1/2 bg-white rounded-3xl shadow-2xl p-10 border-2 border-gray-200 hover:border-purple-300 transition-all duration-300">
               <div className="flex items-center mb-8 pb-4 border-b-2 border-gray-100">
                 <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-4">
                   <span className="text-white font-bold">R</span>
@@ -496,12 +496,12 @@ const numberToPhrase = {
           </div>
 
           {/* AI Insights Section */}
-          <div className="bg-white rounded-3xl shadow-2xl p-10 mb-12 border-2 border-gray-200 hover:border-purple-300 transition-all duration-300">
+          <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-12 border border-slate-200/80">
             <div className="flex items-center mb-8 pb-4 border-b-2 border-gray-100">
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-6 shadow-lg">
                 <Brain className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-800">AI-Powered Insights</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-slate-800">AI-Powered Insights</h2>
             </div>
             
             {loadingInsights ? (
@@ -540,7 +540,20 @@ const numberToPhrase = {
                 </div>
 
                 {/* Recommendations */}
-                {/* Pending */}
+                  {/* Recommendations Section */}
+                  {aiInsights.recommendations && aiInsights.recommendations.length > 0 && (
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border-l-6 border-purple-500 shadow-lg mt-8">
+                    <div className="flex items-center mb-4">
+                      <Lightbulb className="w-6 h-6 text-purple-600 mr-3" />
+                      <h3 className="text-2xl font-semibold text-gray-800">Personalized Recommendations</h3>
+                    </div>
+                    <ul className="space-y-4 list-disc list-inside text-gray-700 leading-relaxed text-lg">
+                      {aiInsights.recommendations.map((rec, index) => (
+                        <li key={index}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-gray-600 text-lg">Unable to generate insights at this time.</p>
@@ -594,10 +607,6 @@ const numberToPhrase = {
 
           {/* Progress bar */}
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-gray-600 mb-1">
-              <span>Progress</span>
-              <span>{data.percentage}%</span>
-            </div>
             <div className="w-full bg-gray-200 rounded-full h-2 shadow-inner">
               <div
                 className="h-2 rounded-full transition-all duration-700 shadow-sm"
@@ -617,11 +626,11 @@ const numberToPhrase = {
 
 
           {/* Action Buttons - Enhanced */}
-          <div className="text-center border-t-4 border-gradient-to-r from-blue-500 to-purple-600 pt-12">
+          <div className="text-center border-t border-slate-200 pt-8">
             <div className="flex gap-6 justify-center flex-wrap">
               <button
                 onClick={goToHome}
-                className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-10 py-4 rounded-2xl font-semibold text-xl transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center transform hover:scale-105 border-2 border-green-400"
+                className="bg-slate-800 hover:bg-slate-900 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center transform hover:scale-105"
               >
                 <Home className="w-6 h-6 mr-3" />
                 Return Home
@@ -638,7 +647,7 @@ const numberToPhrase = {
                   });
                   setResponses(initialResponses);
                 }}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-10 py-4 rounded-2xl font-semibold text-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 border-2 border-blue-400"
+                className="bg-violet-600 hover:bg-violet-700 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
               >
                 Take New Assessment
               </button>
@@ -678,16 +687,13 @@ const numberToPhrase = {
   return (
     <>
     <Navbar />
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-violet-50 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-violet-50 py-4 md:py-8">
       <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 pt-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs md:text-sm font-medium text-slate-600">
               🌸 Step {currentCard + 1} of {cards.length}
-            </span>
-            <span className="text-xs md:text-sm font-medium text-slate-500">
-              {currentProgress}% complete
             </span>
           </div>
           
@@ -702,16 +708,19 @@ const numberToPhrase = {
         </div>
 
         {/* Card with Animation */}
-        <div className={`rounded-2xl bg-white border border-violet-100 shadow-md relative transition-all duration-300 transform ${isAnimating ? 'scale-95 opacity-70' : 'scale-100 opacity-100'} p-6 md:p-8`}>
+        <div className={`rounded-2xl bg-white border border-violet-100 shadow-md relative transition-all duration-300 transform ${isAnimating ? 'scale-95 opacity-70' : 'scale-100 opacity-100'} p-6`}>
           <div className="space-y-6">
             {/* Optional subtle image */}
             {currentCardData.imageUrl ? (
-              <img
-                src={currentCardData.imageUrl}
-                alt={currentCardData.searchItem}
-                className="w-full h-28 md:h-32 object-cover rounded-xl border border-violet-100"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
+              <div className="relative overflow-hidden rounded-xl border border-violet-100 shadow-sm">
+                <img
+                  src={currentCardData.imageUrl}
+                  alt={currentCardData.searchItem}
+                  className="w-full h-40 md:h-48 object-cover transition-transform duration-300 hover:scale-105 [object-position:center_top_-100px]"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+              </div>
             ) : null}
 
             {/* Question */}
@@ -730,9 +739,10 @@ const numberToPhrase = {
             {/* Slider Section */}
             <div className="mb-6">
               {/* Current Value Display */}
-              <div className="text-center mb-3">
-                <span className="text-sm md:text-base font-medium text-slate-700">
-                  Current: {currentCardData?.scorePhrases?.[currentResponse] || numberToPhrase[currentResponse] || currentResponse}
+                            {/* Current Value Display */}
+              <div className="text-center mb-4 h-6">
+                <span className="text-lg font-semibold text-violet-600 bg-violet-50 px-3 py-1 rounded-full">
+                  {currentCardData?.scorePhrases?.[currentResponse] || numberToPhrase[currentResponse] || currentResponse}
                 </span>
               </div>
 

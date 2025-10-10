@@ -430,17 +430,55 @@ def get_recommendations():
         """
 
         response = llm.invoke(prompt).content.strip()
-        response = re.sub(r"^- ", "", response, flags=re.MULTILINE)
-        print(f'Response is: {response}')
+        print(f'LLM Raw Response is: {response}')
+
+        # Robustly parse the response, handling markdown code blocks and lists
         try:
-            recommendations = ast.literal_eval(response)
-            if isinstance(recommendations, list):
+            # Step 1: Clean the raw response by removing markdown fences
+            cleaned_response = re.sub(r'```python|```', '', response).strip()
+
+            # Step 2: Try to evaluate it as a Python literal first
+            if cleaned_response.startswith('[') and cleaned_response.endswith(']'):
+                try:
+                    recommendations = ast.literal_eval(cleaned_response)
+                    if isinstance(recommendations, list):
+                        return jsonify({"recommendations": recommendations}), 200
+                except (ValueError, SyntaxError):
+                    # If literal_eval fails, proceed to text parsing
+                    pass
+
+            # Step 3: If not a valid list literal, parse as a text list
+            lines = cleaned_response.strip().split('\n')
+            recommendations = []
+            for line in lines:
+                # Remove common list markers, brackets on their own lines, and extra whitespace
+                cleaned_line = re.sub(r'^\s*[-*]\s*|^\s*\d+\.\s*', '', line).strip()
+                if cleaned_line in ('[', ']', ''):
+                    continue
+                
+                # Remove quotes if the LLM adds them around the string
+                if (cleaned_line.startswith('"') and cleaned_line.endswith('"')) or \
+                   (cleaned_line.startswith("'") and cleaned_line.endswith("'")):
+                    cleaned_line = cleaned_line[1:-1]
+
+                # Remove trailing commas that might be left over
+                cleaned_line = cleaned_line.rstrip(',')
+                
+                if cleaned_line:
+                    recommendations.append(cleaned_line)
+            
+            if recommendations:
                 return jsonify({"recommendations": recommendations}), 200
             else:
-                raise ValueError("LLM response is not a list.")
-        except Exception:
+                # If parsing results in an empty list, it's still an error
+                raise ValueError("Parsed recommendations list is empty.")
+
+        except Exception as e:
+            logger.error(f"Failed to parse LLM response: {e}")
+            logger.error(f"Raw response was: {response}")
+            # Fallback: return a generic error or the raw response for debugging
             return jsonify({
-                "error": "Failed to parse LLM response as a list.",
+                "error": "Failed to parse recommendations from the AI.",
                 "raw_response": response
             }), 500
 
