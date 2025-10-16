@@ -66,9 +66,7 @@ const App = () => {
             <Route path="/assessment" element={<AssessmentTestPage  />} />
             <Route path="/emergency" element={<Emergencypage  />} />
           </Routes>
-
-
-        {/* {!shouldHideNavbar && <ChatbotWidget />} */}
+        {!shouldHideNavbar && <ChatbotWidget />}
         </>
       )}
     </>
