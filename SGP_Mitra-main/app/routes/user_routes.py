@@ -109,7 +109,6 @@ def get_username():
         return jsonify({"msg": "Error retrieving username", "error": str(e)}), 500
 
     
-
 @user_routes.route("/profile", methods=["POST"])
 def get_profile():
     try:

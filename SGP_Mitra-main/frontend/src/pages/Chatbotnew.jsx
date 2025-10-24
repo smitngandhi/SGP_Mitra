@@ -82,6 +82,7 @@ const Chatbotnew = () => {
   const loadSession = async (sessionId) => {
     const accessToken = cookies.access_token || null;
     if (!accessToken) return;
+    console.log('Loading session:', sessionId);
 
     setIsLoading(true);
     try {
@@ -94,11 +95,11 @@ const Chatbotnew = () => {
         const session = await response.json();
         setCurrentSession(session);
         setActiveChat(session);
-        const formattedMessages = session.messages?.map(msg => ({
-          text: msg.role === 'user' ? msg.content : <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>,
-          sender: msg.role === 'user' ? 'user' : 'ai',
-          timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        })) || [];
+        const formattedMessages = session.messages?.map(msg => {
+    if (msg.user) return { text: msg.user, sender: 'user' }
+    if (msg.bot) return { text: <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.bot}</ReactMarkdown>, sender: 'bot' }
+    return null
+}).filter(Boolean);
         setMessages(formattedMessages);
         setChatStarted(true);
       }
@@ -130,6 +131,7 @@ const Chatbotnew = () => {
       
       if (response.ok) {
         const newSession = await response.json();
+        console.log('Created new session:', newSession);
         setCurrentSession(newSession);
         setActiveChat(newSession);
         setMessages([]);
@@ -165,6 +167,35 @@ const Chatbotnew = () => {
       console.log('Sound playback error:', error);
     }
   };
+  const typeMessage = (fullText, sender = "bot", speed = 30, onComplete) => {
+  let index = 0;
+  const intervalId = setInterval(() => {
+    setMessages(prev => {
+      const lastMessage = prev[prev.length - 1];
+      if (lastMessage && lastMessage.isTyping) {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          ...lastMessage,
+          text: fullText.slice(0, index + 1)
+        };
+        return updated;
+      } else {
+        return [...prev, { text: fullText.slice(0, 1), sender, isTyping: true }];
+      }
+    });
+
+    index++;
+    if (index >= fullText.length) {
+      clearInterval(intervalId);
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { ...updated[updated.length - 1], isTyping: false };
+        return updated;
+      });
+      if (onComplete) onComplete();
+    }
+  }, speed);
+};
 
   const fetchChatbotResponse = async (message) => {
     const accessToken = cookies.access_token || null;
@@ -203,9 +234,8 @@ const Chatbotnew = () => {
         
         setMessages(prev => [...prev, {
           text: <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.reply}</ReactMarkdown>,
-          sender: "ai",
-          isNew: true,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          sender: "bot",
+          isNew: true
         }]);
 
         if (data.sentiment_score !== undefined) {
@@ -217,9 +247,8 @@ const Chatbotnew = () => {
       } else {
         setMessages(prev => [...prev, {
           text: 'Sorry, I had trouble understanding. Can you try again?',
-          sender: "ai",
-          isNew: true,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          sender: "bot",
+          isNew: true
         }]);
       }
     } catch (error) {
@@ -227,8 +256,7 @@ const Chatbotnew = () => {
        setMessages(prev => [...prev, {
           text: 'Network error. Please check your connection.',
           sender: "ai",
-          isNew: true,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          isNew: true
         }]);
     } finally {
         setIsLoading(false);
@@ -242,8 +270,7 @@ const Chatbotnew = () => {
     const newUserMessage = {
       text: inputText,
       sender: "user",
-      isNew: true,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      isNew: true
     };
 
     setMessages(prev => [...prev, newUserMessage]);
@@ -279,8 +306,7 @@ const Chatbotnew = () => {
     setMessages([{
       text: question,
       sender: "user",
-      isNew: true,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      isNew: true
     }]);
     setChatStarted(true);
     fetchChatbotResponse(question);
@@ -415,7 +441,6 @@ const Chatbotnew = () => {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h5 className="text-gray-800 font-semibold text-sm truncate mb-1">{session.title}</h5>
-                            <p className="text-purple-600 text-xs mt-2 font-medium">{formatTimestamp(session.updated_at)}</p>
                           </div>
                                 <div className="flex items-center space-x-1">
         <button
@@ -501,7 +526,6 @@ const Chatbotnew = () => {
                     <div key={index} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
                       <div className={`max-w-[70%] p-4 rounded-2xl shadow-lg ${message.sender === "user" ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-tr-md" : "bg-gradient-to-br from-white to-purple-50 text-purple-900 border border-purple-200/50 rounded-tl-md"}`}>
                         <div className="text-sm leading-relaxed">{message.text}</div>
-                        <div className={`text-xs mt-3 font-medium ${message.sender === "user" ? "text-purple-100" : "text-purple-500"}`}>{message.timestamp}</div>
                       </div>
                     </div>
                   ))}
@@ -551,10 +575,17 @@ const Chatbotnew = () => {
       </div>
       
       <VoiceAssistantModal
-       isOpen={isVoiceModalOpen}
-       onClose={() => setIsVoiceModalOpen(false)}
-       onVoiceResponse={() => {}} // Placeholder
-     />
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+        currentSession={currentSession}
+        setCurrentSession={setCurrentSession}
+        setActiveChat={setActiveChat}
+        loadChatSessions={loadChatSessions}
+        setMessages={setMessages}
+        setChatStarted={setChatStarted}
+        sentiment={sentiment}
+        setSentiment={setSentiment}
+      />
   </div>
   );
 };

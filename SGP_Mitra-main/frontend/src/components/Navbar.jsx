@@ -69,6 +69,7 @@ const Navbar = () => {
     const interval = setInterval(() => {
       const now = Date.now();
       const loginTimestamp = parseInt(loginTime);
+      console.log("Parsed Login Time:", loginTimestamp);
       
       // Debug logging
       console.log("Session Check - Current:", now, "Login:", loginTimestamp, "Diff:", now - loginTimestamp);
@@ -122,7 +123,7 @@ const Navbar = () => {
 
             {/* Right: Nav Links */}
             <div className="hidden md:flex items-center space-x-6 ml-auto">
-              <Link to="/assessment" className="nav-link">
+              <Link to="/testnew" className="nav-link">
                 Know Your Mind
               </Link>
               <Link to="/chat-bot" className="nav-link">

@@ -15,25 +15,19 @@ const LoginVideo = () => {
           
                   // If token is in the URL and cookie isn't set yet
             if (accessTokenFromURL && !cookies.access_token) {
-              localStorage.setItem("loginTime", Date.now());
-              console.log("Login time set in localStorage!");
                     // console.log("Inside IF");
-                    setCookie("access_token", accessTokenFromURL, { 
-                      path: "/", 
-                      maxAge: 3600,
-                      secure: false,
-                      sameSite: 'lax'
-                    });
+                    setCookie("access_token", accessTokenFromURL, { path: "/" });
                     console.log("Access token stored in cookies!");
-                    
+                    localStorage.setItem("loginTime", Date.now());
                     // Remove token from URL
-                    // window.history.replaceState({}, document.title, window.location.pathname);
+                    window.history.replaceState({}, document.title, window.location.pathname);
               }
                   }, [cookies.access_token, setCookie]);
           
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/home");
+      navigate("/login");
+      window.location.reload();
     }, 6000); // match video length
 
     return () => clearTimeout(timer);

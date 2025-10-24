@@ -47,6 +47,8 @@ tracking_collection = db[os.getenv("TRACKING_COLLECTION")]
 logger.info("[INFO] Tracking collection initialized: tracking")
 analytics_collection = db[os.getenv("ANALYTICS_COLLECTION")]
 logger.info("[INFO] Analytics collection initialized: analytics")
+tests_collection = db[os.getenv("TESTS_COLLECTION")]
+logger.info(f"[INFO] Tests collection initialized: {os.getenv('TESTS_COLLECTION')}")
 # Initialize Together.AI-powered LLM
 os.environ["GROQ_API_KEY"] = os.getenv('GROQ_API_KEY')
 llm = ChatGoogleGenerativeAI(

@@ -1,54 +1,66 @@
 import { useState, useEffect, useRef } from "react";
 import { useCookies } from "react-cookie";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { getApiUrl } from '../config/api';
 
-const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
+const VoiceAssistantModal = ({ 
+  isOpen, 
+  onClose, 
+  currentSession,
+  setCurrentSession,
+  setActiveChat,
+  loadChatSessions,
+  setMessages,
+  setChatStarted,
+  sentiment,
+  setSentiment
+}) => {
   const [cookies] = useCookies(["access_token"]);
   const [isRecording, setIsRecording] = useState(false);
   const [responseText, setResponseText] = useState("");
   const [isHovering, setIsHovering] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
+  const [isLoading, setIsLoading] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
   const mediaRecorderRef = useRef(null);
   const audioRef = useRef(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   // Function to play audio response
   const playAudioResponse = (audioBase64) => {
-  try {
-    // Decode base64 to raw binary
-    const byteCharacters = atob(audioBase64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    try {
+      const byteCharacters = atob(audioBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+
+      const audioBlob = new Blob([byteArray], { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+
+      if (audioRef.current) {
+        audioRef.current.src = audioUrl;
+        audioRef.current.play();
+        setIsPlayingAudio(true);
+
+        audioRef.current.onended = () => {
+          setIsPlayingAudio(false);
+          URL.revokeObjectURL(audioUrl);
+        };
+
+        audioRef.current.onerror = () => {
+          console.error("Error playing audio response");
+          setIsPlayingAudio(false);
+          URL.revokeObjectURL(audioUrl);
+        };
+      }
+    } catch (error) {
+      console.error("Error setting up audio playback:", error);
+      setIsPlayingAudio(false);
     }
-    const byteArray = new Uint8Array(byteNumbers);
-
-    // Make Blob (adjust MIME type to match your backend output_format)
-    const audioBlob = new Blob([byteArray], { type: 'audio/mpeg' }); // since you use mp3_44100_128
-    const audioUrl = URL.createObjectURL(audioBlob);
-
-    if (audioRef.current) {
-      audioRef.current.src = audioUrl;
-      audioRef.current.play();
-      setIsPlayingAudio(true);
-
-      audioRef.current.onended = () => {
-        setIsPlayingAudio(false);
-        URL.revokeObjectURL(audioUrl);
-      };
-
-      audioRef.current.onerror = () => {
-        console.error("Error playing audio response");
-        setIsPlayingAudio(false);
-        URL.revokeObjectURL(audioUrl);
-      };
-    }
-  } catch (error) {
-    console.error("Error setting up audio playback:", error);
-    setIsPlayingAudio(false);
-  }
-};
-
+  };
 
   // Engaging loading messages
   const loadingMessages = [
@@ -69,7 +81,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
     if (isLoading) {
       const interval = setInterval(() => {
         setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
-      }, 1500); // Change message every 1.5 seconds
+      }, 1500);
       return () => clearInterval(interval);
     }
   }, [isLoading, loadingMessages.length]);
@@ -82,13 +94,14 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  
   const handleVoiceChat = async () => {
     const accessToken = cookies.access_token || null;
     
+    // Clear previous states
     setIsRecording(true);
     setResponseText("");
-    setIsLoading(false); // Reset loading state
+    setErrorMessage("");
+    setIsLoading(false);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -103,44 +116,90 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
       };
 
       mediaRecorder.onstop = async () => {
-        setIsLoading(true); // Show loading when processing starts
-        setIsRecording(false); // Hide recording UI
-        setLoadingMessageIndex(0); // Reset message index
+        setIsLoading(true);
+        setIsRecording(false);
+        setLoadingMessageIndex(0);
         
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
         const formData = new FormData();
         formData.append("audio", audioBlob, "voice_input.webm");
         formData.append("access_token", accessToken);
-        console.log(accessToken)
+        formData.append("session_id", currentSession?.session_id || ""); // Add session_id
+
         console.log("Sending voice data to server...");
-        console.log("FormData:", formData);
 
         try {
-          const res = await fetch("http://localhost:5000/api/v1/voice_chat", {
+          const res = await fetch(getApiUrl("/voice_chat"), {
             method: "POST",
             body: formData,
           });
 
           const data = await res.json();
+
+          if (!res.ok) {
+            // Handle error response
+            setErrorMessage(data.error || "Failed to process voice message");
+            setIsLoading(false);
+            return;
+          }
+
           setResponseText(data.reply);
 
-          // Play audio response if available
+          // Update session if new one was created or title changed
+          if (data.session_id) {
+            const sessionInfo = {
+              session_id: data.session_id,
+              title: data.session_title || currentSession?.title || "New Chat"
+            };
+            
+            if (!currentSession || currentSession.session_id !== data.session_id) {
+              setCurrentSession(sessionInfo);
+              setActiveChat(sessionInfo);
+            } else if (data.session_title && data.session_title !== currentSession.title) {
+              setCurrentSession(prev => ({ ...prev, title: data.session_title }));
+              setActiveChat(prev => ({ ...prev, title: data.session_title }));
+            }
+          }
+
+          // Add user message to parent chat
+          if (data.user_message) {
+            setMessages(prev => [...prev, {
+              text: data.user_message,
+              sender: "user",
+              isNew: true
+            }]);
+          }
+
+          // Add bot response to parent chat
+          if (data.reply) {
+            setMessages(prev => [...prev, {
+              text: <ReactMarkdown remarkPlugins={[remarkGfm]}>{data.reply}</ReactMarkdown>,
+              sender: "bot",
+              isNew: true
+            }]);
+          }
+
+          // Update sentiment
+          if (data.sentiment_score !== undefined) {
+            setSentiment(data.sentiment_score);
+          }
+
+          // Show chat area
+          setChatStarted(true);
+
+          // Refresh sidebar
+          loadChatSessions();
+
+          // Play audio response
           if (data.audio) {
             playAudioResponse(data.audio);
           }
 
-          if (data.reply && data.user_message && data.sentiment_score !== undefined) {
-            onVoiceResponse({
-              reply: data.reply,
-              user_message: data.user_message,
-              sentiment_score: data.sentiment_score,
-            });
-          }
         } catch (error) {
           console.error("Error in voice chat:", error);
-          setResponseText("Sorry, there was an error processing your voice request.");
+          setErrorMessage("Network error. Please check your connection and try again.");
         } finally {
-          setIsLoading(false); // Hide loading when done
+          setIsLoading(false);
         }
 
         stream.getTracks().forEach(track => track.stop());
@@ -150,7 +209,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
 
     } catch (error) {
       console.error("Microphone error:", error);
-      setResponseText("Microphone access was denied or unavailable.");
+      setErrorMessage("Microphone access was denied or unavailable. Please check your browser permissions.");
       setIsRecording(false);
       setIsLoading(false);
     }
@@ -160,6 +219,33 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.stop();
     }
+  };
+
+  const handleSpeakAgain = () => {
+    // Clear previous response and start new recording
+    setResponseText("");
+    setErrorMessage("");
+    setIsPlayingAudio(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    handleVoiceChat();
+  };
+
+  const handleClose = () => {
+    // Clean up and close
+    setResponseText("");
+    setErrorMessage("");
+    setIsRecording(false);
+    setLoadingMessageIndex(0);
+    setIsLoading(false);
+    setIsPlayingAudio(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -194,7 +280,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
       border: "none",
       cursor: "pointer",
       color: "#666",
-      display: (isRecording || isLoading) ? "none" : "block", // Hide close button during recording/loading
+      display: (isRecording || isLoading) ? "none" : "block",
     },
     container: {
       display: "flex",
@@ -252,6 +338,26 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
       lineHeight: "1.6",
       color: "#333",
     },
+    errorBox: {
+      marginTop: "1.5rem",
+      backgroundColor: "#fee",
+      padding: "15px",
+      borderRadius: "12px",
+      width: "100%",
+      textAlign: "left",
+      border: "1px solid #fcc",
+    },
+    errorTitle: {
+      fontSize: "1rem",
+      fontWeight: "600",
+      marginBottom: "8px",
+      color: "#c33",
+    },
+    errorText: {
+      fontSize: "0.95rem",
+      lineHeight: "1.5",
+      color: "#a00",
+    },
     doneBtn: {
       marginTop: "1.5rem",
       padding: "12px 28px",
@@ -263,7 +369,20 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
       fontSize: "1rem",
       cursor: "pointer",
       transition: "all 0.3s ease",
-      display: (isRecording || isLoading) ? "none" : "block", // Hide done button during recording/loading
+      display: (isRecording || isLoading) ? "none" : "block",
+    },
+    speakAgainBtn: {
+      marginTop: "1rem",
+      padding: "12px 28px",
+      backgroundColor: "#7a3fa9",
+      color: "white",
+      border: "none",
+      borderRadius: "8px",
+      fontWeight: "600",
+      fontSize: "1rem",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+      display: responseText && !isRecording && !isLoading ? "block" : "none",
     },
     blob: {
       width: "140px",
@@ -363,7 +482,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
       </style>
       <div style={styles.overlay}>
         <div style={styles.modal}>
-          <button style={styles.closeBtn} onClick={onClose}>×</button>
+          <button style={styles.closeBtn} onClick={handleClose}>×</button>
 
           <div style={styles.container}>
             {isLoading ? (
@@ -391,6 +510,16 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
                 <button onClick={handleVoiceChat} style={styles.recordBtn}>
                   Start Voice Chat 🎙️
                 </button>
+                
+                {/* Error Message */}
+                {errorMessage && (
+                  <div style={styles.errorBox}>
+                    <h2 style={styles.errorTitle}>⚠️ Error</h2>
+                    <p style={styles.errorText}>{errorMessage}</p>
+                  </div>
+                )}
+
+                {/* Response */}
                 {responseText && (
                   <div style={styles.responseBox}>
                     <h2 style={styles.responseTitle}>Assistant Reply:</h2>
@@ -414,6 +543,14 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
                     </div>
                   </div>
                 )}
+
+                {/* Speak Again Button */}
+                <button
+                  style={styles.speakAgainBtn}
+                  onClick={handleSpeakAgain}
+                >
+                  🎙️ Speak Again
+                </button>
               </>
             )}
 
@@ -421,18 +558,7 @@ const VoiceAssistantModal = ({ isOpen, onClose, onVoiceResponse }) => {
               style={styles.doneBtn}
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
-              onClick={() => {
-                setResponseText("");
-                setIsRecording(false);
-                setLoadingMessageIndex(0);
-                setIsLoading(false);
-                setIsPlayingAudio(false);
-                if (audioRef.current) {
-                  audioRef.current.pause();
-                  audioRef.current.currentTime = 0;
-                }
-                onClose();
-              }}
+              onClick={handleClose}
             >
               Done
             </button>

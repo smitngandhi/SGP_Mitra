@@ -70,7 +70,7 @@ def generate_hash_token(token):
 def generate_llm_response_sentiment(user_message, chatbot_preference, username):
 
     global user_memories
-    logger.debug(f"DEBUG User memories: {user_memories}")
+    # logger.debug(f"DEBUG User memories: {user_memories}")
     logger.debug(f"[DEBUG] Function called with user_message: '{user_message}', chatbot_preference: '{chatbot_preference}', username: '{username}'")
     
     # Defining Analyzer
@@ -247,3 +247,6 @@ def generate_music_title(user_prompt):
      response = llm.invoke(f'Generate an attractive and attention grabbing small title for the prompt in one word without any quotation or punctuation:- {user_prompt}')
      logger.debug(f"[DEBUG] Generated music title: {response.content}")
      return response.content
+
+
+

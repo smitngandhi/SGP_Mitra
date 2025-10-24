@@ -24,6 +24,8 @@ import { useCookies } from "react-cookie";
 import LogoutVideo from "./components/LogoutVideo";
 import LoginVideo from "./components/LoginVideo"
 import ChatbotWidget from "./components/ChatbotWidget";
+import Testnew from "./pages/Testnew";
+import Results from "./pages/Results"
 
 const App = () => {
   const [introFinished, setIntroFinished] = useState(false);
@@ -53,10 +55,12 @@ const App = () => {
             <Route path="/chat-bot" element={<Chatbotnew />} />
             <Route path="/register" element={<Register />} />
             <Route path="/faqs" element={<FAQS />} />
+            <Route path="/results" element={<Results />}/>
             <Route path="/forgot_password" element={<ForgotPassword />} />
             <Route path="/reset_password/:token" element={<ResetPassword />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/test" element={<Test />} />
+            <Route path="/testnew" element={<Testnew />} />
             <Route path="/contact_us" element={<ContactUs />} />
             <Route path="/selfcare" element={<Selfcare />} />
             <Route path="/meditation" element={<Meditation />} />
@@ -66,7 +70,9 @@ const App = () => {
             <Route path="/assessment" element={<AssessmentTestPage  />} />
             <Route path="/emergency" element={<Emergencypage  />} />
           </Routes>
-        {!shouldHideNavbar && <ChatbotWidget />}
+
+
+        {/* {!shouldHideNavbar && <ChatbotWidget />} */}
         </>
       )}
     </>

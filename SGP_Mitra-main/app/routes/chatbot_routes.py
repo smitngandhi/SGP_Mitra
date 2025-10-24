@@ -17,6 +17,14 @@ from datetime import datetime, timezone, timedelta
 import uuid
 from collections import defaultdict
 from app.routes import chatbot_routes
+from flask_mail import Mail, Message
+from fpdf import FPDF
+from io import BytesIO
+from app.utils import generate_llm_response_with_session
+from app.utils.tools_utils import chatbot_tools
+from app.utils import initialize_pinecone
+from app.utils.generate_llm_response_with_session import generate_llm_response_with_session
+
 
 
 load_dotenv()
@@ -100,238 +108,126 @@ def group_sessions_by_date(sessions):
     # Remove empty categories
     return {k: v for k, v in grouped.items() if v}
 
-@chatbot_routes.route("/api/chat", methods=["POST"])
-def chat():
-    """Original chat endpoint for backward compatibility"""
-    logger.debug("Received chat request")
-    data = request.get_json()
-    message = data["message"]
-    logger.debug(f"User message: {message}")
-
-    if "access_token" in data and data["access_token"]:
-        logger.debug("Access token found, processing authenticated user")
-        access_token = data["access_token"]
-        decoded_token = decode_token(access_token)
-        email = decoded_token.get("sub")
-        user = users_collection.find_one({"email": email})
-        logger.debug(f"User found: {user}")
-
-        if not user:
-            logger.warning(f"User not found for email: {email}")
-            return jsonify({"error": "User not found"}), 404
-
-        chatbot_preference = user["chatbot_preference"]
-        username = user["username"]
-        logger.debug(f"Getting response from LLM for message. Calling generate_llm_response_sentiment")
-        response_text, sentiment_score = generate_llm_response_sentiment(message, chatbot_preference, username)
-        logger.debug(f"Response text: {response_text}")
-        
-        chat_entry = {
-            "user_id": user["user_id"],
-            "email": user["email"],
-            "user_message": message,
-            "bot_response": response_text,
-            "timestamp": datetime.now(timezone.utc),
-            "sentiment_score": sentiment_score
-        }
-        chats_collection.insert_one(chat_entry)
-        logger.debug("Chat entry inserted into database")
-        return jsonify({"reply": response_text, "sentiment_score": sentiment_score})
-
-    logger.debug("No access token found, processing unauthenticated user")
-    response_text, sentiment_score = generate_llm_response_sentiment(message, None, None)
-    logger.debug(f"Response text for unauthenticated user: {response_text}")
-
-    user_id = str(uuid.uuid4())
-    chat_entry = {
-        "user_id": user_id,
-        "user_message": message,
-        "bot_response": response_text,
-        "timestamp": datetime.now(timezone.utc),
-        "email": "unauthenticated",
-        "sentiment_score": sentiment_score
-    }
-
-    chats_collection.insert_one(chat_entry)
-    logger.debug("Chat entry for unauthenticated user inserted into database")
-    return jsonify({"reply": response_text, "sentiment_score": sentiment_score})
-
 @chatbot_routes.route("/chat/session", methods=["POST"])
 def chat_with_session():
-    """New chat endpoint that integrates with session management - allows multiple sessions per day"""
-    logger.debug("Received chat request with session management")
+    """
+    Updated chat endpoint with session-aware memory and Pinecone integration
+    
+    Flow:
+    1. Authenticate user and get/create session
+    2. Call generate_llm_response_with_session which:
+       - Loads previous session into memory (if new session)
+       - Retrieves top 3 similar messages from Pinecone
+       - Uses initialize_agent with tools and context
+       - Stores message in Pinecone and MongoDB
+    3. Return response with session info
+    """
+    logger.debug("[ROUTE] Received chat request with session management")
     data = request.get_json()
-    message = data["message"]
+    message = data.get("message")
     session_id = data.get("session_id")  # Optional - will create new session if not provided
-    logger.debug(f"User message: {message}, Session ID: {session_id}")
+    logger.debug(f"[ROUTE] User message: {message}, Session ID: {session_id}")
 
+    if not message or not message.strip():
+        logger.warning("[ROUTE] Empty message received")
+        return jsonify({"error": "Message cannot be empty"}), 400
+
+    # Check for authentication
     if "access_token" in data and data["access_token"]:
-        logger.debug("Access token found, processing authenticated user")
+        logger.debug("[ROUTE] Access token found, processing authenticated user")
         access_token = data["access_token"]
-        decoded_token = decode_token(access_token)
-        email = decoded_token.get("sub")
-        user = users_collection.find_one({"email": email})
-        logger.debug(f"User found: {user}")
-
-        if not user:
-            logger.warning(f"User not found for email: {email}")
-            return jsonify({"error": "User not found"}), 404
-
-        chatbot_preference = user["chatbot_preference"]
-        username = user["username"]
-        user_id = user["user_id"]
         
-        # Get or create session
-        if session_id:
-            # Use provided session
-            session = chat_sessions_collection.find_one({
-                "session_id": session_id,
-                "user_id": user_id
-            })
-            if not session:
-                logger.warning(f"Session {session_id} not found for user {email}")
-                return jsonify({"error": "Session not found"}), 404
-        else:
-            # Create new session (allows multiple sessions per day)
-            now = datetime.now(timezone.utc)
-            today = now.strftime("%Y-%m-%d")
-            session = {
-                "session_id": str(uuid.uuid4()),
-                "user_id": user_id,
-                "email": email,
-                "title": "New Chat",
-                "created_at": now,
-                "updated_at": now,
-                "date_group": today,
-                "message_count": 0,
-                "is_pinned": False,
-                "messages": []
-            }
-            chat_sessions_collection.insert_one(session)
-            logger.info(f"Created new session: {session['session_id']}")
+        try:
+            decoded_token = decode_token(access_token)
+            email = decoded_token.get("sub")
+            user = users_collection.find_one({"email": email})
+            logger.debug(f"[ROUTE] User found with email: {email}")
 
-        # Generate bot response
-        logger.debug(f"Getting response from LLM for message. Calling generate_llm_response_sentiment")
-        response_text, sentiment_score = generate_llm_response_sentiment(message, chatbot_preference, username)
-        logger.debug(f"Response text: {response_text}")
+            if not user:
+                logger.warning(f"[ROUTE] User not found for email: {email}")
+                return jsonify({"error": "User not found"}), 404
 
-        # Add user message to session
-        now = datetime.now(timezone.utc)
-        user_message = {
-            "message_id": str(uuid.uuid4()),
-            "role": "user",
-            "content": message,
-            "timestamp": now,
-            "sentiment_score": sentiment_score
-        }
-
-        # Add bot response to session
-        bot_message = {
-            "message_id": str(uuid.uuid4()),
-            "role": "assistant",
-            "content": response_text,
-            "timestamp": now
-        }
-
-        # Update session with new messages
-        updated_messages = session.get("messages", []) + [user_message, bot_message]
-        
-        # Generate title if this is the first user message
-        title = session.get("title", "New Chat")
-        if title == "New Chat" and len([m for m in updated_messages if m.get("role") == "user"]) == 1:
-            title = generate_chat_title(updated_messages)
-
-        # Update session in database
-        chat_sessions_collection.update_one(
-            {"session_id": session["session_id"]},
-            {
-                "$set": {
-                    "messages": updated_messages,
-                    "message_count": len(updated_messages),
+            username = user["username"]
+            user_id = user["user_id"]
+            
+            # ===== Get or create session =====
+            if session_id:
+                # Use provided session
+                session = chat_sessions_collection.find_one({
+                    "session_id": session_id,
+                    "user_id": user_id
+                })
+                if not session:
+                    logger.warning(f"[ROUTE] Session {session_id} not found for user {email}")
+                    return jsonify({"error": "Session not found"}), 404
+                logger.debug(f"[ROUTE] Using existing session: {session_id}")
+            else:
+                # Create new session (allows multiple sessions per day)
+                now = datetime.now(timezone.utc)
+                today = now.strftime("%Y-%m-%d")
+                
+                # Count user's sessions for session number
+                user_sessions_count = chat_sessions_collection.count_documents({"user_id": user_id})
+                session_no = user_sessions_count + 1
+                
+                session = {
+                    "session_id": str(uuid.uuid4()),
+                    "user_id": user_id,
+                    "email": email,
+                    "title": "New Chat",
+                    "created_at": now,
                     "updated_at": now,
-                    "title": title
+                    "date_group": today,
+                    "message_count": 0,
+                    "is_pinned": False,
+                    "session_no": session_no,
+                    "messages": []
                 }
-            }
-        )
+                chat_sessions_collection.insert_one(session)
+                logger.info(f"[ROUTE] Created new session: {session['session_id']}")
+                session_id = session["session_id"]
 
-        # Also save to old chats collection for backward compatibility
-        chat_entry = {
-            "user_id": user["user_id"],
-            "email": user["email"],
-            "user_message": message,
-            "bot_response": response_text,
-            "timestamp": now,
-            "sentiment_score": sentiment_score,
-            "session_id": session["session_id"]  # Link to session
-        }
-        chats_collection.insert_one(chat_entry)
-        logger.debug("Chat entry inserted into database")
+            # ===== Generate bot response using new function =====
+            logger.debug(f"[ROUTE] Calling generate_llm_response_with_session")
+            
+            try:
+                response_text, sentiment_score = generate_llm_response_with_session(
+                    user_message=message,
+                    username=email,  # Using email as username identifier
+                    session_id=session_id,
+                    chatbot_tools=chatbot_tools
+                )
 
+
+                logger.debug(f"[ROUTE] Response received: {response_text[:100]}...")
+            except Exception as e:
+                logger.error(f"[ROUTE] Error generating response: {e}", exc_info=True)
+                return jsonify({"error": "Failed to generate response"}), 500
+
+            # Get updated session title
+            updated_session = chat_sessions_collection.find_one({"session_id": session_id})
+            title = updated_session.get("title", "New Chat") if updated_session else "New Chat"
+
+            logger.debug(f"[ROUTE] Successfully processed message, returning response")
+            return jsonify({
+                "reply": response_text,
+                "sentiment_score": sentiment_score,
+                "session_id": session_id,
+                "session_title": title
+            })
+
+        except Exception as e:
+            logger.error(f"[ROUTE] Error processing authenticated request: {e}", exc_info=True)
+            return jsonify({"error": "Authentication or processing failed"}), 500
+
+    # Handle unauthenticated users (simplified - no session support)
+    else:
+        logger.debug("[ROUTE] No access token found, processing unauthenticated user")
+        logger.warning("[ROUTE] Unauthenticated users not supported in new architecture")
         return jsonify({
-            "reply": response_text,
-            "sentiment_score": sentiment_score,
-            "session_id": session["session_id"],
-            "session_title": title
-        })
-
-    # Handle unauthenticated users (same as before but with session creation)
-    logger.debug("No access token found, processing unauthenticated user")
-    response_text, sentiment_score = generate_llm_response_sentiment(message, None, None)
-    logger.debug(f"Response text for unauthenticated user: {response_text}")
-
-    # Create temporary session for unauthenticated user
-    temp_user_id = str(uuid.uuid4())
-    now = datetime.now(timezone.utc)
-    today = now.strftime("%Y-%m-%d")
-    
-    temp_session = {
-        "session_id": str(uuid.uuid4()),
-        "user_id": temp_user_id,
-        "email": "unauthenticated",
-        "title": "Anonymous Chat",
-        "created_at": now,
-        "updated_at": now,
-        "date_group": today,
-        "message_count": 2,
-        "is_pinned": False,
-        "messages": [
-            {
-                "message_id": str(uuid.uuid4()),
-                "role": "user",
-                "content": message,
-                "timestamp": now,
-                "sentiment_score": sentiment_score
-            },
-            {
-                "message_id": str(uuid.uuid4()),
-                "role": "assistant", 
-                "content": response_text,
-                "timestamp": now
-            }
-        ]
-    }
-    
-    chat_sessions_collection.insert_one(temp_session)
-
-    # Also save to old chats collection
-    chat_entry = {
-        "user_id": temp_user_id,
-        "user_message": message,
-        "bot_response": response_text,
-        "timestamp": now,
-        "email": "unauthenticated",
-        "sentiment_score": sentiment_score,
-        "session_id": temp_session["session_id"]
-    }
-    chats_collection.insert_one(chat_entry)
-    logger.debug("Chat entry for unauthenticated user inserted into database")
-    
-    return jsonify({
-        "reply": response_text,
-        "sentiment_score": sentiment_score,
-        "session_id": temp_session["session_id"],
-        "session_title": "Anonymous Chat"
-    })
+            "error": "Authentication required",
+            "message": "Please log in to use the chat feature"
+        }), 401
 
 # ===== SESSION MANAGEMENT ENDPOINTS =====
 
@@ -390,6 +286,7 @@ def get_user_sessions():
         logger.error(f"Error getting user sessions: {e}", exc_info=True)
         return jsonify({"error": "Failed to retrieve sessions"}), 500
 
+
 @chatbot_routes.route("/chat/sessions/<session_id>", methods=["POST"])
 def get_session_with_messages(session_id):
     """Get a specific session with all its messages"""
@@ -435,9 +332,9 @@ def get_session_with_messages(session_id):
             session["updated_at"] = session["updated_at"].isoformat()
         
         # Format message timestamps
-        for msg in session.get("messages", []):
-            if isinstance(msg.get("timestamp"), datetime):
-                msg["timestamp"] = msg["timestamp"].isoformat()
+        # for msg in session.get("messages", []):
+        #     if isinstance(msg.get("timestamp"), datetime):
+        #         msg["timestamp"] = msg["timestamp"].isoformat()
         
         logger.info(f"Retrieved session {session_id} with {len(session.get('messages', []))} messages")
         return jsonify(session)
@@ -575,6 +472,10 @@ def create_new_session():
             logger.warning(f"User not found for email: {email}")
             return jsonify({"error": "User not found"}), 404
         
+
+        user_sessions_count = chat_sessions_collection.count_documents({"user_id": user["user_id"]})
+        session_no = user_sessions_count + 1
+        
         # Create new session
         now = datetime.now(timezone.utc)
         date_group = now.strftime("%Y-%m-%d")
@@ -589,6 +490,7 @@ def create_new_session():
             "date_group": date_group,
             "message_count": 0,
             "is_pinned": False,
+            "session_no": session_no,
             "messages": []
         }
         
@@ -722,12 +624,12 @@ def generate_selfcare_pdf():
 
     return jsonify({"message": "Self-care plan sent successfully to email."})
 
-
 @chatbot_routes.route("/voice_chat", methods=["POST"])
 def voice_chat():
     logger.debug("Received /voice_chat request")
+
     try:
-        # Check if audio file exists in request
+        # ===== Check if audio file exists =====
         if "audio" not in request.files:
             logger.warning("No audio file found in request")
             return jsonify({"error": "Audio file is required"}), 400
@@ -735,41 +637,27 @@ def voice_chat():
         audio_file = request.files["audio"]
         logger.debug(f"Audio file received: {audio_file.filename}")
 
-        
-    
-
-        # Access token (optional)
+        # ===== Get optional access token =====
         access_token = request.form.get("access_token")
         if not access_token or access_token.lower() == "null":
             access_token = None
         logger.debug(f"Access token received: {bool(access_token)}")
 
-        # Read file into BytesIO for transcription
-        # audio_data = BytesIO(audio_file.read())
-        logger.debug("Audio data loaded into memory for transcription")
+        # ===== Get optional session_id =====
+        session_id = request.form.get("session_id")
+        if not session_id or session_id.lower() == "null" or session_id == "":
+            session_id = None
+        logger.debug(f"Session ID received: {session_id}")
 
-        # Transcription
+        # ===== Transcription Step (Gemini) =====
         try:
-            # transcription = elevenlabs.speech_to_text.convert(
-            #     file=audio_data,
-            #     model_id="scribe_v1",
-            #     tag_audio_events=True,
-            #     diarize=True,
-            # )
-            # message = transcription.text.strip()
-            UPLOAD_DIR = "uploads"  # your custom folder
-
-            # Ensure folder exists
+            UPLOAD_DIR = "uploads"
             os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-            # Save file to that folder
             temp_path = os.path.join(UPLOAD_DIR, "uploaded_audio.mp3")
             audio_file.save(temp_path)
 
             # Upload to Gemini
             myfile = client.files.upload(file=temp_path)
-
-            # logger.debug(f"File uploaded to GenAI: {myfile.id}")
 
             prompt = """You are an AI transcription assistant.  
                         Your task is to accurately transcribe the provided audio recording into text.  
@@ -780,121 +668,123 @@ def voice_chat():
                         - Preserve natural pauses, filler words, and incomplete sentences.  
                         - Format as plain text transcript.  
                         - If audio is unclear, mark it as [inaudible].
-                        - Do not add any additional commentary or interpretation.
-                        - Ensure the transcription is clear and easy to read.
+                        - Do not add commentary.
                         - Use punctuation to reflect the natural flow of speech."""
-            
+
             response = client.models.generate_content(
-                        model='gemini-2.5-flash',
-                        contents=[prompt, myfile]
-                        )
-            
-            message = response.text
+                model='gemini-2.5-flash',
+                contents=[prompt, myfile]
+            )
+
+            message = response.text.strip()
             logger.debug(f"Transcription result: {message}")
+
         except Exception as e:
             logger.error(f"Error during transcription: {e}", exc_info=True)
             return jsonify({"error": "Failed to transcribe audio"}), 500
-        
+
         finally:
-        # ✅ Always clean up temp file
+            # Always clean up temp file
             if os.path.exists(temp_path):
                 os.remove(temp_path)
 
-
-        # If authenticated
-        if access_token:
-            try:
-                decoded_token = decode_token(access_token)
-                email = decoded_token.get("sub")
-                logger.debug(f"Decoded token. Email: {email}")
-
-                user = users_collection.find_one({"email": email})
-                if not user:
-                    logger.warning(f"No user found for email: {email}")
-                    return jsonify({"error": "User not found"}), 404
-
-                chatbot_preference = user.get("chatbot_preference")
-                username = user.get("username", "User")
-                logger.debug(f"Chatbot preference: {chatbot_preference}, Username: {username}")
-
-                # Generate response
-                response_text, sentiment_score = generate_llm_response_sentiment(
-                    message, chatbot_preference, username
-                )
-                logger.debug(f"Generated bot response: {response_text}")
-
-                # Convert response to speech
-                try:
-                    audio = elevenlabs.text_to_speech.convert(
-                        text=response_text,
-                        voice_id="JBFqnCBsd6RMkjVDRZzb",
-                        model_id="eleven_multilingual_v2",
-                        output_format="mp3_44100_128",
-                    )
-                    # play(audio)
-                    logger.debug("Converting to raw")
-                    audio_bytes = b"".join(audio)
-                    audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
-                    print("Audio conversion successful")
-                except Exception as e:
-                    logger.error(f"Error generating TTS: {e}", exc_info=True)
-
-                # Store in DB
-                chat_entry = {
-                    "user_id": user["user_id"],
-                    "email": user["email"],
-                    "user_message": message,
-                    "bot_response": response_text,
-                    "timestamp": datetime.now(timezone.utc),
-                    "sentiment_score": sentiment_score
-                }
-                chats_collection.insert_one(chat_entry)
-                logger.debug("Chat entry inserted for authenticated user")
-
-                return jsonify({
-                    "reply": response_text,
-                    "sentiment_score": sentiment_score,
-                    "user_message": message,
-                    "audio": audio_base64
-                })
-
-            except Exception as e:
-                logger.error(f"Error processing authenticated request: {e}", exc_info=True)
-                return jsonify({"error": "Authentication or processing failed"}), 500
-
-        # If unauthenticated
-        else:
-            logger.debug("No access token. Processing as unauthenticated user")
-            response_text, sentiment_score = generate_llm_response_sentiment(message, None, None)
-            audio = elevenlabs.text_to_speech.convert(
-                        text=response_text,
-                        voice_id="JBFqnCBsd6RMkjVDRZzb",
-                        model_id="eleven_multilingual_v2",
-                        output_format="mp3_44100_128",
-                    )
-            # play(audio)
-            audio_bytes = b"".join(audio)
-            logger.debug("Converting to raw")
-            audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
-
-            user_id = str(uuid.uuid4())
-            chat_entry = {
-                "user_id": user_id,
-                "email": "unauthenticated",
-                "user_message": message,
-                "bot_response": response_text,
-                "timestamp": datetime.now(timezone.utc),
-                "sentiment_score": sentiment_score
-            }
-            chats_collection.insert_one(chat_entry)
-            logger.debug("Chat entry inserted for unauthenticated user")
-
+        # ===== Handle authentication =====
+        if not access_token:
+            logger.debug("No access token. Voice chat requires authentication")
             return jsonify({
-                "reply": response_text,
-                "sentiment_score": sentiment_score,
-                "user_message": message,
-                "audio": audio_base64
+                "error": "Authentication required",
+                "message": "Please log in to use voice chat"
+            }), 401
+
+        # ===== Decode token =====
+        try:
+            decoded_token = decode_token(access_token)
+            email = decoded_token.get("sub")
+            user = users_collection.find_one({"email": email})
+
+            if not user:
+                logger.warning(f"No user found for email: {email}")
+                return jsonify({"error": "User not found"}), 404
+
+            user_id = user["user_id"]
+            username = user.get("username", "User")
+            logger.debug(f"Authenticated user: {email}, ID: {user_id}")
+
+        except Exception as e:
+            logger.error(f"Error decoding token: {e}", exc_info=True)
+            return jsonify({"error": "Invalid or expired token"}), 401
+
+        # ===== Get or Create Session =====
+        if session_id:
+            session = chat_sessions_collection.find_one({
+                "session_id": session_id,
+                "user_id": user_id
             })
+            if not session:
+                logger.warning(f"Session {session_id} not found for user {email}")
+                return jsonify({"error": "Session not found"}), 404
+            logger.debug(f"Using existing session: {session_id}")
+        else:
+            now = datetime.now(timezone.utc)
+            today = now.strftime("%Y-%m-%d")
+
+            user_sessions_count = chat_sessions_collection.count_documents({"user_id": user_id})
+            session_no = user_sessions_count + 1
+
+            session = {
+                "session_id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "email": email,
+                "title": "New Chat",
+                "created_at": now,
+                "updated_at": now,
+                "date_group": today,
+                "message_count": 0,
+                "is_pinned": False,
+                "session_no": session_no,
+                "messages": []
+            }
+            chat_sessions_collection.insert_one(session)
+            logger.info(f"Created new session: {session['session_id']}")
+            session_id = session["session_id"]
+
+        # ===== Generate LLM Response =====
+        try:
+            response_text, sentiment_score = generate_llm_response_with_session(
+                user_message=message,
+                username=email,
+                session_id=session_id,
+                chatbot_tools=chatbot_tools
+            )
+            logger.debug(f"Voice response received: {response_text[:100]}...")
+        except Exception as e:
+            logger.error(f"Error generating voice response: {e}", exc_info=True)
+            return jsonify({"error": "Failed to generate response"}), 500
+
+
+        # ===== Generate TTS Audio =====
+        try:
+            audio = elevenlabs.text_to_speech.convert(
+                text=response_text,
+                voice_id="JBFqnCBsd6RMkjVDRZzb",
+                model_id="eleven_multilingual_v2",
+                output_format="mp3_44100_128",
+            )
+            audio_bytes = b"".join(audio)
+            audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+            logger.debug("Audio conversion successful")
+        except Exception as e:
+            logger.error(f"Error generating TTS: {e}", exc_info=True)
+            audio_base64 = None
+
+        # ===== Return Final Response =====
+        return jsonify({
+            "reply": response_text,
+            "sentiment_score": sentiment_score,
+            "user_message": message,
+            "audio": audio_base64,
+            "session_id": session_id
+        })
 
     except Exception as e:
         logger.error(f"Unexpected error in /voice_chat: {e}", exc_info=True)
